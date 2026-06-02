@@ -19,12 +19,6 @@ A feature-rich userscript for [Shell Shockers](https://shellshock.io) that adds 
 
 > Updates are pulled automatically by your userscript manager once installed.
 
-### Optional add-ons
-
-These are smaller standalone userscripts that work alongside (or without) Better HUD:
-
-- **[Silent Reload](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Silent-Reload.user.js)** — toggle (default `\` key) that suppresses the local reload animation/sound *and* the outgoing reload packet, so neither you nor other players see or hear the reload. The reload timer still ticks normally, so ammo refills on schedule.
-
 ---
 
 ## Features
