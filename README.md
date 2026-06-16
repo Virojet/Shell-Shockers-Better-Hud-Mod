@@ -20,6 +20,34 @@
 
 That's it. Updates install automatically from then on.
 
+> [!NOTE]
+> Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
+
+<details>
+<summary><b>Enabling Developer Mode &amp; allowing userscripts</b></summary>
+
+**1. Open your browser's Extensions page**
+
+- **Google Chrome** — menu (three dots, top-right) → **Extensions** → **Manage Extensions**, or type `chrome://extensions` in the address bar
+- **Microsoft Edge** — menu (three dots, top-right) → **Extensions**, or type `edge://extensions`
+- **Brave** — menu (three lines, top-right) → **Extensions**, or type `brave://extensions`
+- **Opera GX** — **Extensions** button (cube icon) on the left sidebar, or type `opera://extensions`
+
+**2. Enable Developer Mode**
+
+- Click the **Developer Mode** toggle (usually top-right of the Extensions page).
+- This lets you install unreviewed or custom scripts if your manager requires it.
+
+> [!NOTE]
+> On Opera GX you may need to close the window and open a new one for the change to take effect.
+
+**3. Allow userscripts to run**
+
+- Find your userscript manager (e.g. **Tampermonkey**, **Violentmonkey**) and click **Details**.
+- Find the option **Allow User Scripts** / **Allow Unreviewed Scripts** and toggle it **On**.
+
+</details>
+
 ---
 
 ## What you get
