@@ -2,7 +2,7 @@
 
 A feature-rich userscript for [Shell Shockers](https://shellshock.io) that adds a customizable HUD, performance controls, a crosshair editor, server-region picker, stats tracker, and more — all integrated cleanly into the game's native UI.
 
-[![Version](https://img.shields.io/badge/version-4.7-blue.svg)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.8-blue.svg)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Tampermonkey](https://img.shields.io/badge/userscript-Tampermonkey-red.svg)](https://www.tampermonkey.net/)
 
@@ -81,10 +81,16 @@ Works on all Shell Shockers mirror domains, including:
 
 ## Changelog
 
-### v4.7 (current)
-- New **Use Valorant Sens** toggle: overlays Valorant-style sens numbers (0.400, 0.300, etc.) on the Mouse Speed slider with two-way sync
-- FPS cap reworked — self-guarding flush so the throttle holds reliably (was previously letting sub-millisecond timers slip through and exceed 1000fps)
-- Watcher IIFE throttled and deferred until `DOMContentLoaded` to avoid starving the Shell Shockers loading screen
+### v4.8 (current)
+- **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
+- **Legacy Skins & Legacy Sounds** toggles (classic gun models and SFX), togglable live without reload
+- **FOV (Black Bars)** option: widens horizontal field of view via in-game letterboxing — no image distortion, no FOV-value change
+- **Skin Unlocker** is now command-only (`toggle skins` in the Import Settings Code prompt); `setfps` / `setping` commands accept a single value too
+- **Performance pass:** restored frustum culling (was rendering off-screen geometry), gated the nametag render hook and uncap rAF override behind their settings, pause non-essential timers/observers during matches, and removed duplicate legacy code that double-loaded audio
+- **Bug fixes:** match-stats no longer stuck at 0 (collision-proof per-slot keying), can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize
+
+### v4.7
+See [`archive/Better-UI-V4.7.txt`](./archive/Better-UI-V4.7.txt).
 
 ### v4.6
 See [`archive/Better-UI-V4.6.txt`](./archive/Better-UI-V4.6.txt).
