@@ -2,39 +2,39 @@
 
 > A customizable HUD, crosshair editor, performance controls, server picker, and stats tracker — built cleanly into the [Shell Shockers](https://shellshock.io) UI.
 
-[![➜ INSTALL](https://img.shields.io/badge/%E2%9E%9C%20INSTALL-one--click-brightgreen?style=for-the-badge)](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)
+[![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
 [![Version](https://img.shields.io/badge/version-4.8-blue?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 
 ---
 
-## ⚡ Install in 30 seconds
+## Install in 30 seconds
 
 | Step | Action |
 |:---:|---|
 | **1** | Add a userscript manager — **[Tampermonkey](https://www.tampermonkey.net/)** (recommended) or [Violentmonkey](https://violentmonkey.github.io/) |
-| **2** | **[➜ Click here to install Better HUD](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)** — the install dialog opens automatically |
+| **2** | **[Click here to install Better HUD](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)** — the install dialog opens automatically |
 | **3** | Open **[shellshock.io](https://shellshock.io)** → find the new **MODS** & **CROSSHAIR** tabs in Settings |
 
 That's it. Updates install automatically from then on.
 
 ---
 
-## ✨ What you get
+## What you get
 
-| | Feature |
-|:---:|---|
-| 🎯 | **Crosshair Editor** — full customization with save / load / share profiles and a live gallery |
-| 📊 | **HUD Controls** — FPS / ping display, hide any HUD element, volume slider, tab-out key |
-| ⚡ | **Performance** — render scale, disable post-FX / shadows / particles, frustum & raycast skips |
-| 🌐 | **Server Picker** — pick your region from the frontpage with live ping |
-| 📈 | **Stats Tracker** — session K/D/KDR with an end-of-match overlay |
-| 🎨 | **Legacy Skins & Sounds** — classic gun models and SFX, toggled live |
-| 🖱️ | **Valorant Sens** — Valorant-style sensitivity numbers synced to the in-game slider |
+| Feature | Description |
+|---|---|
+| **Crosshair Editor** | Full customization with save / load / share profiles and a live gallery |
+| **HUD Controls** | FPS / ping display, hide any HUD element, volume slider, tab-out key |
+| **Performance** | Render scale, disable post-FX / shadows / particles, frustum & raycast skips |
+| **Server Picker** | Pick your region from the frontpage with live ping |
+| **Stats Tracker** | Session K/D/KDR with an end-of-match overlay |
+| **Legacy Skins & Sounds** | Classic gun models and SFX, toggled live |
+| **Valorant Sens** | Valorant-style sensitivity numbers synced to the in-game slider |
 
 <details>
-<summary><b>📖 Full feature list</b></summary>
+<summary><b>Full feature list</b></summary>
 
 #### HUD & Widgets
 - **FPS / Ping display** with frametime mode, session timer, opacity control, and customizable values
@@ -78,13 +78,13 @@ That's it. Updates install automatically from then on.
 
 ---
 
-## 🎮 Usage
+## Usage
 
 All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, switch between **Basic** and **Advanced** modes, and **hover any option name** for a description tooltip.
 
 ---
 
-## 🌐 Compatibility
+## Compatibility
 
 Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ others.
 
@@ -97,7 +97,7 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 #### v4.8 — current
 - **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
@@ -117,7 +117,7 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ---
 
-## 🛠️ Development
+## Development
 
 The userscript is a single self-contained file:
 
