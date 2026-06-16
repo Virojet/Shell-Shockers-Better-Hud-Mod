@@ -162,12 +162,6 @@ The userscript is a single self-contained file:
 
 [![Subscribe on YouTube](https://img.shields.io/badge/Subscribe-%40subtovirojet-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-<a href="https://www.youtube.com/watch?v=yfxL-zzbl4E">
-  <img src="https://img.youtube.com/vi/yfxL-zzbl4E/maxresdefault.jpg" alt="Watch the latest video on YouTube" width="600">
-</a>
-
-[**▶ Watch the latest video**](https://www.youtube.com/watch?v=yfxL-zzbl4E)
-
 </div>
 
 ---
