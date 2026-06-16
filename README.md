@@ -156,22 +156,19 @@ The userscript is a single self-contained file:
 
 ## Creator
 
-Made by **Virojet** — Shell Shockers gameplay, montages, and mod content on YouTube.
-
-- **Channel:** [youtube.com/@subtovirojet](https://www.youtube.com/@subtovirojet)
-- **Latest uploads:** [youtube.com/@subtovirojet/videos](https://www.youtube.com/@subtovirojet/videos)
-
-### Featured video
-
 <div align="center">
-  <a href="https://www.youtube.com/watch?v=yfxL-zzbl4E">
-    <img src="https://img.youtube.com/vi/yfxL-zzbl4E/maxresdefault.jpg" alt="Watch on YouTube" width="640">
-  </a>
-  <br>
-  <a href="https://www.youtube.com/watch?v=yfxL-zzbl4E"><b>▶ Watch on YouTube</b></a>
-</div>
 
-If you find Better HUD useful, a subscribe helps a lot.
+**Made by Virojet** — Shell Shockers gameplay, montages, and mod content.
+
+[![Subscribe on YouTube](https://img.shields.io/badge/Subscribe-%40subtovirojet-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+
+<a href="https://www.youtube.com/watch?v=yfxL-zzbl4E">
+  <img src="https://img.youtube.com/vi/yfxL-zzbl4E/maxresdefault.jpg" alt="Watch the latest video on YouTube" width="600">
+</a>
+
+[**▶ Watch the latest video**](https://www.youtube.com/watch?v=yfxL-zzbl4E)
+
+</div>
 
 ---
 
