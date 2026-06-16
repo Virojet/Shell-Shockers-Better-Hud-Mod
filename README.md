@@ -6,6 +6,7 @@
 &nbsp;
 [![Version](https://img.shields.io/badge/version-4.8-blue?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
+[![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
 ---
 
@@ -124,6 +125,19 @@ The userscript is a single self-contained file:
 1. Edit `Shell-Shockers-Better-Hud.user.js` directly
 2. Reload the Shell Shockers tab — Tampermonkey picks up the change
 3. Bump `@version` in the header for a release
+
+---
+
+## Creator
+
+Made by **Virojet** — Shell Shockers gameplay, montages, and mod content on YouTube.
+
+- **Channel:** [youtube.com/@subtovirojet](https://www.youtube.com/@subtovirojet)
+- **Latest uploads:** [youtube.com/@subtovirojet/videos](https://www.youtube.com/@subtovirojet/videos)
+
+<!-- FEATURED_VIDEO -->
+
+If you find Better HUD useful, a subscribe helps a lot.
 
 ---
 
