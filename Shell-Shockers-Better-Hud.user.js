@@ -1,7 +1,13 @@
 ﻿// ==UserScript==
-// @name         Shell Shockers Better UI V4.8
+// @name         Shell Shockers Better UI
 // @version      4.8
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
+// @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
+// @author       Virojet
+// @homepageURL  https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
+// @supportURL   https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/issues
+// @downloadURL  https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
+// @updateURL    https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
 // @match        *://*.shellshock.io/*
 // @match        *://*.algebra.best/*
 // @match        *://*.algebra.vip/*
@@ -1890,5 +1896,129 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
         if (document.pointerLockElement) observer.disconnect();
         else observeHarmonizer();
     });
+
+    (function installVersionChangelog() {
+        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8";
+        const changelogKey = "ssb-better-ui-changelog-seen";
+        const changelogItems = [
+            "Added auto-update metadata so future releases can install through Tampermonkey/Violentmonkey.",
+            "Removed Ultra Performance because it lowered FPS on some systems.",
+            "Restored raw Uncap FPS behavior after target pacing tested lower than expected.",
+            "Added the separate Better UI profiler script for finding FPS bottlenecks."
+        ];
+
+        function hasSeenChangelog() {
+            try {
+                return localStorage.getItem(changelogKey) === changelogVersion;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        function markChangelogSeen() {
+            try {
+                localStorage.setItem(changelogKey, changelogVersion);
+            } catch (err) {}
+        }
+
+        function showChangelog() {
+            if (hasSeenChangelog() || document.getElementById("ssb-changelog-overlay")) return;
+            if (document.pointerLockElement) return;
+
+            const style = document.createElement("style");
+            style.id = "ssb-changelog-style";
+            style.textContent = `
+                #ssb-changelog-overlay {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 2147483647;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(9, 46, 60, 0.58);
+                    font-family: "Nunito", system-ui, sans-serif;
+                }
+                #ssb-changelog-panel {
+                    width: min(520px, calc(100vw - 32px));
+                    background: linear-gradient(180deg, #81d5e6 0%, #58b7cc 100%);
+                    border: 4px solid #0E7697;
+                    border-radius: 8px;
+                    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+                    color: #0C576F;
+                    padding: 22px 24px 20px;
+                    box-sizing: border-box;
+                }
+                #ssb-changelog-panel h2 {
+                    margin: 0 0 10px;
+                    font-family: "Sigmar One", system-ui, sans-serif;
+                    font-size: 28px;
+                    line-height: 1.1;
+                    color: #ffffff;
+                    text-shadow: 0 3px 0 rgba(12, 87, 111, 0.45);
+                    letter-spacing: 0;
+                }
+                #ssb-changelog-panel .ssb-changelog-sub {
+                    margin: 0 0 14px;
+                    font-size: 15px;
+                    font-weight: 800;
+                }
+                #ssb-changelog-panel ul {
+                    margin: 0 0 18px 20px;
+                    padding: 0;
+                }
+                #ssb-changelog-panel li {
+                    margin: 8px 0;
+                    font-size: 15px;
+                    font-weight: 700;
+                    line-height: 1.35;
+                }
+                #ssb-changelog-panel button {
+                    width: 100%;
+                    height: 44px;
+                    border: 3px solid #0E7697;
+                    border-radius: 8px;
+                    background: #ffffff;
+                    color: #0C576F;
+                    font-size: 18px;
+                    font-weight: 900;
+                    cursor: pointer;
+                }
+                #ssb-changelog-panel button:hover {
+                    filter: brightness(1.05);
+                }
+            `;
+
+            const overlay = document.createElement("div");
+            overlay.id = "ssb-changelog-overlay";
+            overlay.innerHTML = `
+                <div id="ssb-changelog-panel" role="dialog" aria-modal="true" aria-labelledby="ssb-changelog-title">
+                    <h2 id="ssb-changelog-title">Better UI v${changelogVersion}</h2>
+                    <p class="ssb-changelog-sub">New update installed. Here's what changed:</p>
+                    <ul>${changelogItems.map(item => `<li>${item}</li>`).join("")}</ul>
+                    <button type="button">Got it</button>
+                </div>
+            `;
+
+            overlay.querySelector("button").addEventListener("click", () => {
+                markChangelogSeen();
+                overlay.remove();
+            });
+
+            (document.head || document.documentElement).appendChild(style);
+            document.body.appendChild(overlay);
+        }
+
+        function scheduleChangelog() {
+            if (hasSeenChangelog()) return;
+            const run = () => setTimeout(showChangelog, 1200);
+            if (document.body) run();
+            else document.addEventListener("DOMContentLoaded", run, { once: true });
+        }
+
+        document.addEventListener("pointerlockchange", () => {
+            if (!document.pointerLockElement) scheduleChangelog();
+        });
+        scheduleChangelog();
+    })();
 
 })();
