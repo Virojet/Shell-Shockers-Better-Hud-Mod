@@ -32,7 +32,6 @@ That's it. Updates install automatically from then on.
 | **Server Picker** | Pick your region from the frontpage with live ping |
 | **Stats Tracker** | Session K/D/KDR with an end-of-match overlay |
 | **Legacy Skins & Sounds** | Classic gun models and SFX, toggled live |
-| **Valorant Sens** | Valorant-style sensitivity numbers synced to the in-game slider |
 
 <details>
 <summary><b>Full feature list</b></summary>
@@ -67,7 +66,6 @@ That's it. Updates install automatically from then on.
 #### Visual & Audio
 - **Legacy Skins** — classic gun models for the default weapons (visual only)
 - **Legacy Sounds** — classic weapon and game sound effects
-- **Valorant Sens overlay** with two-way sync (`shell_sens = valorant_sens × 75`, tunable)
 
 #### Other
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
