@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8.2
+// @version      4.8.3
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -1899,17 +1899,19 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
     });
 
     (function installVersionChangelog() {
-        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.2";
+        const installedVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.3";
+        const changelogVersion = installedVersion;
+        const displayVersion = "4.8";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const changelogItems = [
-            "Auto-update enabled: Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs.",
-            "In-game changelog popup: new versions show a one-time \"what changed\" panel when Shell Shockers opens.",
-            "Crosshair Profiles redesigned into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile Gallery (light cards, per-tile preview, active badge, \"Create new\" tile).",
-            "Legacy Skins & Legacy Sounds toggles (classic gun models and SFX), togglable live without reload.",
-            "FOV (Black Bars) option: widens horizontal field of view via in-game letterboxing - no image distortion, no FOV-value change.",
-            "Skin Unlocker reworked and streamlined.",
-            "Performance pass: restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, removed Ultra Performance, and removed duplicate legacy code that double-loaded audio.",
-            "Bug fixes: match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize."
+            { label: "Auto-update", text: "Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs." },
+            { label: "Changelog", text: "New versions show a one-time \"what changed\" panel when Shell Shockers opens." },
+            { label: "Profiles", text: "Crosshair Profiles redesigned into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile Gallery (light cards, per-tile preview, active badge, \"Create new\" tile)." },
+            { label: "Legacy", text: "Legacy Skins & Legacy Sounds toggles (classic gun models and SFX), togglable live without reload." },
+            { label: "FOV", text: "FOV (Black Bars) option widens horizontal field of view via in-game letterboxing - no image distortion, no FOV-value change." },
+            { label: "Skins", text: "Skin Unlocker reworked and streamlined." },
+            { label: "Performance", text: "Restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, removed Ultra Performance, and removed duplicate legacy code that double-loaded audio." },
+            { label: "Fixes", text: "Match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize." }
         ];
 
         function hasSeenChangelog() {
@@ -1940,46 +1942,117 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background: rgba(9, 46, 60, 0.58);
+                    background: rgba(7, 39, 52, 0.62);
+                    backdrop-filter: blur(2px);
                     font-family: "Nunito", system-ui, sans-serif;
-                }
-                #ssb-changelog-panel {
-                    width: min(520px, calc(100vw - 32px));
-                    background: linear-gradient(180deg, #81d5e6 0%, #58b7cc 100%);
-                    border: 4px solid #0E7697;
-                    border-radius: 8px;
-                    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-                    color: #0C576F;
-                    padding: 22px 24px 20px;
+                    padding: 18px;
                     box-sizing: border-box;
                 }
+                #ssb-changelog-panel {
+                    width: min(660px, 100%);
+                    max-height: min(760px, calc(100vh - 36px));
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    background: #8ED9E8;
+                    border: 4px solid #0E7697;
+                    border-radius: 8px;
+                    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+                    color: #0C576F;
+                    box-sizing: border-box;
+                }
+                #ssb-changelog-panel .ssb-changelog-head {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    padding: 18px 22px 16px;
+                    background: #1196B8;
+                    border-bottom: 4px solid #0E7697;
+                }
+                #ssb-changelog-panel .ssb-changelog-kicker {
+                    margin: 0 0 3px;
+                    font-size: 12px;
+                    line-height: 1.2;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    color: #BDF6FF;
+                }
                 #ssb-changelog-panel h2 {
-                    margin: 0 0 10px;
+                    margin: 0;
                     font-family: "Sigmar One", system-ui, sans-serif;
-                    font-size: 28px;
+                    font-size: 30px;
                     line-height: 1.1;
                     color: #ffffff;
                     text-shadow: 0 3px 0 rgba(12, 87, 111, 0.45);
                     letter-spacing: 0;
                 }
+                #ssb-changelog-panel .ssb-changelog-version {
+                    flex: 0 0 auto;
+                    min-width: 76px;
+                    padding: 8px 12px;
+                    border: 3px solid #ffffff;
+                    border-radius: 8px;
+                    background: #FF981F;
+                    color: #ffffff;
+                    text-align: center;
+                    font-size: 18px;
+                    font-weight: 900;
+                    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.14);
+                }
+                #ssb-changelog-panel .ssb-changelog-body {
+                    overflow: auto;
+                    padding: 16px 18px 8px;
+                }
                 #ssb-changelog-panel .ssb-changelog-sub {
-                    margin: 0 0 14px;
+                    margin: 0 0 12px;
                     font-size: 15px;
                     font-weight: 800;
                 }
-                #ssb-changelog-panel ul {
-                    margin: 0 0 18px 20px;
-                    padding: 0;
+                #ssb-changelog-panel .ssb-changelog-list {
+                    display: grid;
+                    gap: 8px;
                 }
-                #ssb-changelog-panel li {
-                    margin: 8px 0;
+                #ssb-changelog-panel .ssb-changelog-item {
+                    display: grid;
+                    grid-template-columns: 116px 1fr;
+                    gap: 12px;
+                    align-items: start;
+                    padding: 10px 12px;
+                    border: 2px solid rgba(14, 118, 151, 0.42);
+                    border-radius: 8px;
+                    background: rgba(255, 255, 255, 0.54);
+                    box-sizing: border-box;
+                }
+                #ssb-changelog-panel .ssb-changelog-tag {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 28px;
+                    padding: 3px 9px;
+                    border-radius: 7px;
+                    background: #ffffff;
+                    color: #0E7697;
+                    border: 2px solid rgba(14, 118, 151, 0.32);
+                    font-size: 12px;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    box-sizing: border-box;
+                }
+                #ssb-changelog-panel .ssb-changelog-text {
+                    margin: 0;
                     font-size: 15px;
                     font-weight: 700;
                     line-height: 1.35;
                 }
+                #ssb-changelog-panel .ssb-changelog-foot {
+                    padding: 12px 18px 18px;
+                    background: rgba(255, 255, 255, 0.18);
+                    border-top: 2px solid rgba(14, 118, 151, 0.22);
+                }
                 #ssb-changelog-panel button {
                     width: 100%;
-                    height: 44px;
+                    height: 46px;
                     border: 3px solid #0E7697;
                     border-radius: 8px;
                     background: #ffffff;
@@ -1987,9 +2060,34 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
                     font-size: 18px;
                     font-weight: 900;
                     cursor: pointer;
+                    box-shadow: inset 0 -4px 0 rgba(14, 118, 151, 0.16);
                 }
                 #ssb-changelog-panel button:hover {
-                    filter: brightness(1.05);
+                    background: #F5FDFF;
+                }
+                @media (max-width: 560px) {
+                    #ssb-changelog-panel .ssb-changelog-head {
+                        align-items: flex-start;
+                        padding: 16px;
+                    }
+                    #ssb-changelog-panel h2 {
+                        font-size: 24px;
+                    }
+                    #ssb-changelog-panel .ssb-changelog-version {
+                        min-width: 62px;
+                        font-size: 15px;
+                        padding: 7px 9px;
+                    }
+                    #ssb-changelog-panel .ssb-changelog-body {
+                        padding: 12px;
+                    }
+                    #ssb-changelog-panel .ssb-changelog-item {
+                        grid-template-columns: 1fr;
+                        gap: 7px;
+                    }
+                    #ssb-changelog-panel .ssb-changelog-tag {
+                        justify-self: start;
+                    }
                 }
             `;
 
@@ -1997,10 +2095,27 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
             overlay.id = "ssb-changelog-overlay";
             overlay.innerHTML = `
                 <div id="ssb-changelog-panel" role="dialog" aria-modal="true" aria-labelledby="ssb-changelog-title">
-                    <h2 id="ssb-changelog-title">Better UI v${changelogVersion}</h2>
-                    <p class="ssb-changelog-sub">New update installed. Here's what changed:</p>
-                    <ul>${changelogItems.map(item => `<li>${item}</li>`).join("")}</ul>
-                    <button type="button">Got it</button>
+                    <div class="ssb-changelog-head">
+                        <div>
+                            <p class="ssb-changelog-kicker">Update installed</p>
+                            <h2 id="ssb-changelog-title">Better UI</h2>
+                        </div>
+                        <div class="ssb-changelog-version">v${displayVersion}</div>
+                    </div>
+                    <div class="ssb-changelog-body">
+                        <p class="ssb-changelog-sub">Here's what changed in this release:</p>
+                        <div class="ssb-changelog-list">
+                            ${changelogItems.map(item => `
+                                <div class="ssb-changelog-item">
+                                    <span class="ssb-changelog-tag">${item.label}</span>
+                                    <p class="ssb-changelog-text">${item.text}</p>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                    <div class="ssb-changelog-foot">
+                        <button type="button">Got it</button>
+                    </div>
                 </div>
             `;
 
