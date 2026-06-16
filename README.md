@@ -20,6 +20,9 @@
 
 That's it. Updates install automatically from then on.
 
+> [!IMPORTANT]
+> Already installed an older copy? Reinstall once from the button above. That installs the new auto-update headers, so future releases update automatically.
+
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
 
@@ -127,11 +130,13 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 ## Changelog
 
 #### v4.8 — current
+- **Auto-update enabled:** Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs
+- **In-game changelog popup:** new versions show a one-time "what changed" panel when Shell Shockers opens
 - **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
 - **Legacy Skins & Legacy Sounds** toggles (classic gun models and SFX), togglable live without reload
 - **FOV (Black Bars)** option: widens horizontal field of view via in-game letterboxing — no image distortion, no FOV-value change
 - **Skin Unlocker** reworked and streamlined
-- **Performance pass:** restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, and removed duplicate legacy code that double-loaded audio
+- **Performance pass:** restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, removed Ultra Performance, and removed duplicate legacy code that double-loaded audio
 - **Bug fixes:** match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize
 
 <details>
