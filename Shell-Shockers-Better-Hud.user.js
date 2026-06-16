@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8
+// @version      4.8.1
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -1131,7 +1131,8 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
 			(rb=>{A.enabled?(f.style.display="",g.style.display="none",rb&&(rb.style.display="")):(f.style.display="none",g.style.display="",rb&&(rb.style.display="none"))})(document.getElementById("ch2-reset-crosshair"))
 		};
 		let b=a("Enable Crosshair Customizer","enabled",A,$);
-		b.style.marginBottom="0px",enableCard.appendChild(b);
+		b.style.marginBottom="0px";
+		enableCard.appendChild(b);
 
 		// GALLERY WRAPPER
 		let galWrap = document.createElement("div");
@@ -1898,13 +1899,14 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
     });
 
     (function installVersionChangelog() {
-        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8";
+        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const changelogItems = [
-            "Added auto-update metadata so future releases can install through Tampermonkey/Violentmonkey.",
+            "Auto-update is now enabled through the GitHub repo.",
+            "New versions now show this one-time in-game changelog.",
             "Removed Ultra Performance because it lowered FPS on some systems.",
             "Restored raw Uncap FPS behavior after target pacing tested lower than expected.",
-            "Added the separate Better UI profiler script for finding FPS bottlenecks."
+            "Cleaned up a crosshair settings lint warning."
         ];
 
         function hasSeenChangelog() {

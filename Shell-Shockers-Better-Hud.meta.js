@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8
+// @version      4.8.1
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
