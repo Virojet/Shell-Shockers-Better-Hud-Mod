@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8.1
+// @version      4.8.2
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -1899,14 +1899,17 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
     });
 
     (function installVersionChangelog() {
-        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.1";
+        const changelogVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.2";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const changelogItems = [
-            "Auto-update is now enabled through the GitHub repo.",
-            "New versions now show this one-time in-game changelog.",
-            "Removed Ultra Performance because it lowered FPS on some systems.",
-            "Restored raw Uncap FPS behavior after target pacing tested lower than expected.",
-            "Cleaned up a crosshair settings lint warning."
+            "Auto-update enabled: Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs.",
+            "In-game changelog popup: new versions show a one-time \"what changed\" panel when Shell Shockers opens.",
+            "Crosshair Profiles redesigned into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile Gallery (light cards, per-tile preview, active badge, \"Create new\" tile).",
+            "Legacy Skins & Legacy Sounds toggles (classic gun models and SFX), togglable live without reload.",
+            "FOV (Black Bars) option: widens horizontal field of view via in-game letterboxing - no image distortion, no FOV-value change.",
+            "Skin Unlocker reworked and streamlined.",
+            "Performance pass: restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, removed Ultra Performance, and removed duplicate legacy code that double-loaded audio.",
+            "Bug fixes: match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize."
         ];
 
         function hasSeenChangelog() {
