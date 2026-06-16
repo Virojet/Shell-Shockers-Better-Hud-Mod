@@ -130,7 +130,7 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
 - **Legacy Skins & Legacy Sounds** toggles (classic gun models and SFX), togglable live without reload
 - **FOV (Black Bars)** option: widens horizontal field of view via in-game letterboxing — no image distortion, no FOV-value change
-- **Skin Unlocker** is now command-only (`toggle skins` in the Import Settings Code prompt); `setfps` / `setping` commands accept a single value too
+- **Skin Unlocker** reworked and streamlined
 - **Performance pass:** restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, and removed duplicate legacy code that double-loaded audio
 - **Bug fixes:** match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize
 
