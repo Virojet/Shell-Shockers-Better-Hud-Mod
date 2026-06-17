@@ -4,6 +4,7 @@
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
+// @license      MIT
 // @homepageURL  https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @supportURL   https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/issues
 // @downloadURL  https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
