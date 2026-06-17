@@ -101,7 +101,7 @@ That's it. Updates install automatically from then on.
 #### Other
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings as a shareable code
-- Basic / Advanced UI modes with searchable settings
+- Searchable settings
 - Settings persist via `localStorage`
 
 </details>
@@ -110,7 +110,7 @@ That's it. Updates install automatically from then on.
 
 ## Usage
 
-All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, switch between **Basic** and **Advanced** modes, and **hover any option name** for a description tooltip.
+All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
 
 ---
 
