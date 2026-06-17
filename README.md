@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.8.3-blue?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.8.4-blue?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -130,6 +130,7 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 ## Changelog
 
 #### v4.8 — current
+- **Scope fix:** FOV black bars now switch off while scoped, so scoped guns render cleanly
 - **Auto-update enabled:** Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs
 - **In-game changelog popup:** new versions show a one-time "what changed" panel when Shell Shockers opens
 - **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
