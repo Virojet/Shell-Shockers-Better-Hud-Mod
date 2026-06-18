@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8.4
+// @version      4.8.5
 // @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -1900,11 +1900,12 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
     });
 
     (function installVersionChangelog() {
-        const installedVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.4";
+        const installedVersion = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : "4.8.5";
         const changelogVersion = installedVersion;
-        const displayVersion = "4.8.4";
+        const displayVersion = "4.8.5";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const changelogItems = [
+            { label: "Update check", text: "Better HUD now checks for a new version each time Shell Shockers loads and shows a one-click update prompt." },
             { label: "Scope fix", text: "FOV black bars now switch off while scoped, so scoped guns render cleanly." },
             { label: "Auto-update", text: "Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs." },
             { label: "Changelog", text: "New versions show a one-time \"what changed\" panel when Shell Shockers opens." },
@@ -2141,6 +2142,54 @@ let ec_code=document.createElement("button");ec_code.className="ch2-profile-btn"
             if (!document.pointerLockElement) scheduleChangelog();
         });
         scheduleChangelog();
+    })();
+
+    (function ssbUpdateChecker() {
+        const META_URL = "https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js";
+        const DOWNLOAD_URL = "https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js";
+        const installed = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ? GM_info.script.version : null;
+        if (!installed) return;
+
+        function isNewer(remote, local) {
+            const a = String(remote).split("."), b = String(local).split(".");
+            for (let i = 0; i < Math.max(a.length, b.length); i++) {
+                const x = parseInt(a[i] || "0", 10), y = parseInt(b[i] || "0", 10);
+                if (x > y) return true;
+                if (x < y) return false;
+            }
+            return false;
+        }
+
+        function showToast(remote) {
+            if (document.getElementById("ssb-update-toast")) return;
+            const el = document.createElement("div");
+            el.id = "ssb-update-toast";
+            el.style.cssText = "position:fixed;top:14px;right:14px;z-index:2147483647;background:#8ED9E8;border:3px solid #0E7697;border-radius:10px;color:#0C576F;font-family:'Nunito',system-ui,sans-serif;padding:12px 14px 11px;box-shadow:0 12px 32px rgba(0,0,0,.4);max-width:300px;";
+            el.innerHTML = '<div style="font-size:14px;font-weight:800;margin-bottom:9px;">Better HUD <b>v' + remote + '</b> is available.</div>';
+            const btn = document.createElement("a");
+            btn.href = DOWNLOAD_URL;
+            btn.target = "_blank";
+            btn.rel = "noopener";
+            btn.textContent = "Update now";
+            btn.style.cssText = "display:inline-block;background:#FF981F;color:#fff;text-decoration:none;padding:7px 15px;border-radius:8px;font-weight:900;font-size:13px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.16);margin-right:10px;";
+            const later = document.createElement("span");
+            later.textContent = "Later";
+            later.style.cssText = "cursor:pointer;font-size:12px;font-weight:700;opacity:.75;";
+            later.onclick = () => el.remove();
+            el.appendChild(btn);
+            el.appendChild(later);
+            (document.body || document.documentElement).appendChild(el);
+        }
+
+        function check() {
+            fetch(META_URL + "?_=" + Date.now()).then(r => r.text()).then(txt => {
+                const m = txt.match(/@version\s+([0-9.]+)/);
+                if (m && isNewer(m[1], installed)) showToast(m[1]);
+            }).catch(() => {});
+        }
+
+        if (document.body) check();
+        else window.addEventListener("DOMContentLoaded", check);
     })();
 
 })();
