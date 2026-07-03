@@ -2,9 +2,9 @@
 
 > A customizable HUD, crosshair editor, performance controls, server picker, and stats tracker — built cleanly into the [Shell Shockers](https://shellshock.io) UI.
 
-[![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)
+[![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.8.5-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -15,13 +15,19 @@
 | Step | Action |
 |:---:|---|
 | **1** | Add a userscript manager — **[Tampermonkey](https://www.tampermonkey.net/)** (recommended) or [Violentmonkey](https://violentmonkey.github.io/) |
-| **2** | **[Click here to install Better HUD](https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/raw/main/Shell-Shockers-Better-Hud.user.js)** — the install dialog opens automatically |
+| **2** | **[Click here to install Better HUD](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)** — the install dialog opens automatically |
 | **3** | Open **[shellshock.io](https://shellshock.io)** → find the new **MODS** & **CROSSHAIR** tabs in Settings |
 
 That's it. Updates install automatically from then on.
 
+Direct install URL:
+`https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js`
+
+Auto-update metadata URL:
+`https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
+
 > [!IMPORTANT]
-> Already installed an older copy? Reinstall once from the button above. That installs the new auto-update headers, so future releases update automatically.
+> Already on v4.8 or newer? Reload Shell Shockers and your userscript manager should detect v4.9 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -61,8 +67,8 @@ That's it. Updates install automatically from then on.
 | **HUD Controls** | FPS / ping display, hide any HUD element, volume slider, tab-out key |
 | **Performance** | Render scale, disable post-FX / shadows / particles, frustum & raycast skips |
 | **Server Picker** | Pick your region from the frontpage with live ping |
-| **Stats Tracker** | Session K/D/KDR with an end-of-match overlay |
-| **Legacy Skins & Sounds** | Classic gun models and SFX, toggled live |
+| **Stats Tracker** | Session K/D/KDR, match history, and an end-of-match overlay |
+| **Legacy Skins & Sounds** | Classic gun models and SFX available from settings |
 
 <details>
 <summary><b>Full feature list</b></summary>
@@ -91,6 +97,7 @@ That's it. Updates install automatically from then on.
 
 #### Stats Tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
+- **Stats History** saves recent matches so you can revisit scoreboards, maps, modes, servers, and durations
 - Pinned compact stats above the pause weapon select
 - Configurable hotkey
 
@@ -112,6 +119,8 @@ That's it. Updates install automatically from then on.
 
 All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
 
+To check what's new later, click the **Shell Shockers Better UI v4.9** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
+
 ---
 
 ## Compatibility
@@ -129,21 +138,20 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.8 — current
-- **Update on reload:** checks for a new version each time the game loads and shows a one-click update prompt
-- **Scope fix:** FOV black bars now switch off while scoped, so scoped guns render cleanly
-- **Auto-update enabled:** Tampermonkey/Violentmonkey can now detect future releases from GitHub instead of requiring manual copy/paste installs
-- **In-game changelog popup:** new versions show a one-time "what changed" panel when Shell Shockers opens
-- **Crosshair Profiles redesigned** into a compact CS2-style icon bar (save / duplicate / export / import / delete) with custom SVG icons, plus a reworked profile **Gallery** (light cards, per-tile preview, active badge, "Create new" tile)
-- **Legacy Skins & Legacy Sounds** restore classic gun models and SFX live without reload
-- **FOV (Black Bars)** option: widens horizontal field of view via in-game letterboxing — no image distortion, no FOV-value change
-- **Skins** handling reworked and streamlined
-- **Performance pass:** restored frustum culling, gated the nametag render hook and uncap rAF override behind their settings, paused non-essential timers/observers during matches, removed Ultra Performance, and removed duplicate legacy code that double-loaded audio
-- **Bug fixes:** match-stats no longer stuck at 0, can't-move-on-spawn after tab-out, and unequal crosshair arms on window resize
+#### v4.9 — current
+- **Changelog access:** click the version text at the bottom of the mod settings panel to reopen the changelog any time, with older versions available from a dropdown
+- **Stats History:** recent matches are now saved so you can revisit the scoreboard, map, mode, server, and match duration later
+- **Hide Scope Frame:** hide the scope overlay while scoped for a cleaner full-screen scoped view
+- **Low Textures:** optional lower texture filtering for cheaper GPU sampling and extra FPS
+- **Adaptive UI:** mod menus and panels now scale better across resolutions instead of relying on fixed pixel sizing
+- **Stats fixes:** stat screenshots use the game font, long stats panels scroll correctly, duplicated empty stat rows are gone, and the match timer ticks again
+- **Settings fixes:** imported/reset settings save correctly, and the server-picker arrow no longer sticks
 
 <details>
 <summary>Older versions</summary>
 
+- **v4.8.5** — update-on-reload prompt, scope cleanup, auto-update headers, and the first in-game changelog popup
+- **v4.8.2** — redesigned crosshair profiles, profile gallery, FOV black bars, classic models and SFX settings, performance cleanup, and match-stats fixes
 - **v4.7** — see [`archive/Better-UI-V4.7.txt`](./archive/Better-UI-V4.7.txt)
 - **v4.6** — see [`archive/Better-UI-V4.6.txt`](./archive/Better-UI-V4.6.txt)
 
