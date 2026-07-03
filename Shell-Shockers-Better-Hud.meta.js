@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name         Shell Shockers Better UI
 // @version      4.9
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
