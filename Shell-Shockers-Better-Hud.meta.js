@@ -1,14 +1,14 @@
 ﻿// ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.8.5
-// @description  FPS, Ping, HUD controls + styled Server Selector integrated into the native UI.
+// @version      4.9
+// @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
 // @license      MIT
-// @homepageURL  https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
-// @supportURL   https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod/issues
-// @downloadURL  https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
-// @updateURL    https://raw.githubusercontent.com/ViroGear/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
+// @homepageURL  https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod
+// @supportURL   https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues
+// @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
+// @updateURL    https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
 // @match        *://*.shellshock.io/*
 // @match        *://*.algebra.best/*
 // @match        *://*.algebra.vip/*
