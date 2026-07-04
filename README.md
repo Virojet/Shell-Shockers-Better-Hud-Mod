@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.9-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9.1-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -27,7 +27,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on v4.8 or newer? Reload Shell Shockers and your userscript manager should detect v4.9 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on v4.8 or newer? Reload Shell Shockers and your userscript manager should detect v4.9.1 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -119,7 +119,7 @@ Auto-update metadata URL:
 
 All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
 
-To check what's new later, click the **Shell Shockers Better UI v4.9** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
+To check what's new later, click the **Shell Shockers Better UI v4.9.1** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
 
 ---
 
@@ -138,7 +138,11 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9 — current
+#### v4.9.1 — current
+- **Stats copy fix:** the **Copy / Download as image** button now captures the entire stats panel — no more clipped columns or stretched layout
+- **Absurd stats fix:** players no longer show impossible totals (e.g. 1000+ kills) when several share a name or a player slot is recycled mid-match
+
+#### v4.9
 - **Changelog access:** click the version text at the bottom of the mod settings panel to reopen the changelog any time, with older versions available from a dropdown
 - **Stats History:** recent matches are now saved so you can revisit the scoreboard, map, mode, server, and match duration later
 - **Hide Scope Frame:** hide the scope overlay while scoped for a cleaner full-screen scoped view
