@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      4.9.4
+// @version      4.9.5
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -1992,12 +1992,11 @@
     });
 
     (function installVersionChangelog() {
-        const installedVersion = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ? GM_info.script.version : "4.9.3";
-        const displayVersion = installedVersion;
-        // Tie the changelog to the installed @version: every update shows the
-        // "what's new" panel exactly once, dismissing stores that version, and it
-        // reappears only after the user updates to a newer @version.
-        const changelogVersion = installedVersion;
+        const installedVersion = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ? GM_info.script.version : "4.9.5";
+        const displayVersion = "4.9";
+        // Keep the visible changelog on the v4.9 release notes even for patch
+        // releases; the userscript @version still drives manager auto-updates.
+        const changelogVersion = "4.9";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const changelogItems = [
             { label: "Update Prompt", text: "The \"update available\" notification no longer nags when you're already on the latest version." },
@@ -2009,6 +2008,7 @@
             { label: "Low Textures", text: "New Low Texture Filtering option drops anisotropic/trilinear filtering for cheaper GPU sampling and extra FPS. Fully reversible." },
             { label: "Skins", text: "Skin loadouts are more reliable now, with better memory for recent choices and cleaner inventory filtering." },
             { label: "Adaptive UI", text: "The MODS and CROSSHAIR panels now scale to your resolution, so long settings pages stay usable on smaller screens and proportional on larger ones." },
+            { label: "Favorites Controls", text: "Export and import favorite inventory items with a shareable code; the buttons stay aligned beside the egg-color picker and scale with your resolution." },
             { label: "Stats Fixes", text: "Stat screenshots now use the game font with corrected spacing/sizes, long stats panels scroll properly, duplicate empty 0 / 0 rows are removed, and the live match timer ticks again." },
             { label: "Settings Fixes", text: "Imported/reset settings save correctly, FOV black bars automatically enable the matching scope helpers when needed, and the server-picker arrow no longer sticks." }
         ];
@@ -3052,6 +3052,126 @@
             : '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="rgba(0,0,0,0.25)" stroke="#fff" stroke-width="1.4" d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01z"/></svg>';
     }
 
+    /* ---- favorites export / import code ---- */
+    function favClick() { try { window.BAWK && window.BAWK.play && window.BAWK.play("ui_click"); } catch (e) { } }
+    function encodeFavCode() {
+        const ids = [...getFavs()].map(Number).filter((n) => Number.isFinite(n) && n >= 0).map((n) => Math.floor(n));
+        return "FAV-" + ids.map((n) => n.toString(36)).join(".");
+    }
+    function decodeFavCode(code) {
+        if (typeof code !== "string") return null;
+        code = code.trim();
+        if (!/^FAV-/i.test(code)) return null;
+        const body = code.slice(4).trim();
+        if (!body) return [];
+        const ids = [];
+        for (const part of body.split(".")) {
+            if (!part) continue;
+            const n = parseInt(part, 36);
+            if (Number.isFinite(n) && n >= 0) ids.push(n);
+        }
+        return ids;
+    }
+    function exportFavCode() {
+        const favs = getFavs();
+        if (!favs.size) { alert("You haven't favorited any items yet.\nStar some inventory items first, then export."); return; }
+        const code = encodeFavCode();
+        favClick();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code)
+                .then(() => alert("Favorites code copied to clipboard! (" + favs.size + " item" + (favs.size === 1 ? "" : "s") + ")\n\n" + code))
+                .catch(() => prompt("Copy your favorites code:", code));
+        } else {
+            prompt("Copy your favorites code:", code);
+        }
+    }
+    function importFavCode() {
+        const code = prompt("Paste a favorites code (starts with FAV-):");
+        if (code === null) return;
+        const ids = decodeFavCode(code);
+        if (!ids) { alert("Invalid favorites code. It should start with FAV-."); return; }
+        const cur = getFavs();
+        if (cur.size && !confirm("Replace your " + cur.size + " favorited item" + (cur.size === 1 ? "" : "s") + " with the " + ids.length + " from this code?")) return;
+        setFavs(new Set(ids));
+        favClick();
+        try { decorateTiles(); } catch (e) { }
+        try { refreshGrid(); } catch (e) { }
+        alert("Imported " + ids.length + " favorite" + (ids.length === 1 ? "" : "s") + ".");
+    }
+    // Export / Import Favorites buttons on the INVENTORY screen, placed just left
+    // of the egg-color picker (#equip_free_colors). Only shown while
+    // "Show Favorites Icon" is enabled and the egg-color row is visible.
+    function favCodeMetrics() {
+        const vw = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1280);
+        const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 720);
+        const scale = Math.max(0.74, Math.min(1.08, Math.min(vw / 1280, vh / 720)));
+        const size = Math.round(Math.max(30, Math.min(46, 42 * scale)));
+        return {
+            size,
+            gap: Math.round(Math.max(4, Math.min(9, 8 * scale))),
+            icon: Math.round(Math.max(15, Math.min(23, size * 0.5))),
+            radius: Math.round(Math.max(7, Math.min(11, size * 0.24))),
+            shadow: Math.round(Math.max(3, Math.min(5, size * 0.1))),
+            clearance: Math.round(Math.max(14, Math.min(24, 18 * scale)))
+        };
+    }
+    function ensureFavCodeButtons() {
+        const box = document.getElementById("equip_free_colors") || document.querySelector(".egg-color-select");
+        const panel = document.getElementById("equip_panel_middle");
+        let el = document.getElementById("ssb-favcode-inv");
+        if (!showFavIcon() || !box || !panel || box.getBoundingClientRect().width < 10) {
+            if (el) el.remove();
+            return;
+        }
+        if (getComputedStyle(panel).position === "static") panel.style.position = "relative";
+        if (!el) {
+            el = document.createElement("div");
+            el.id = "ssb-favcode-inv";
+            el.style.cssText = "position:absolute;display:flex;align-items:center;gap:var(--ssb-favcode-gap,8px);z-index:30;";
+            const favCodeIcons = {
+                exp: '<svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true"><path d="M12 1l6.2 6.8a.6.6 0 0 1-.44 1H14.5V15a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V8.8H6.24a.6.6 0 0 1-.44-1L12 1z"/><path d="M3 14.5h3V18a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5h3V19a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-4.5z"/></svg>',
+                imp: '<svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true"><path d="M12 16l-6.2-6.8a.6.6 0 0 1 .44-1H9.5V2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6.2h3.26a.6.6 0 0 1 .44 1L12 16z"/><path d="M3 14.5h3V18a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5h3V19a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-4.5z"/></svg>'
+            };
+            const mk = (label, icon, fn, title) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = "ssb-favcode-btn";
+                b.title = title;
+                b.setAttribute("aria-label", label);
+                b.setAttribute("data-tooltip", title);
+                b.innerHTML = icon;
+                b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); fn(); });
+                return b;
+            };
+            el.appendChild(mk("Export Favorites", favCodeIcons.exp, exportFavCode, "Export Favorites"));
+            el.appendChild(mk("Import Favorites", favCodeIcons.imp, importFavCode, "Import Favorites"));
+            panel.appendChild(el);
+        }
+        const br = box.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+        const firstSwatch = Array.from(box.children || [])
+            .map((node) => node.getBoundingClientRect())
+            .filter((rect) => rect.width > 8 && rect.height > 8 && rect.top < br.top + br.height * 0.75)
+            .sort((a, b) => a.left - b.left)[0];
+        const ar = firstSwatch || br;
+        const m = favCodeMetrics();
+        const spaceLeft = Math.max(0, br.left - pr.left);
+        let size = m.size, gap = m.gap;
+        if (spaceLeft && size * 2 + gap + m.clearance > spaceLeft) {
+            size = Math.max(28, Math.floor((spaceLeft - m.clearance - gap) / 2));
+            gap = Math.max(3, Math.min(gap, Math.round(size * 0.18)));
+        }
+        el.style.setProperty("--ssb-favcode-size", size + "px");
+        el.style.setProperty("--ssb-favcode-gap", gap + "px");
+        el.style.setProperty("--ssb-favcode-icon", Math.round(Math.max(14, Math.min(m.icon, size * 0.52))) + "px");
+        el.style.setProperty("--ssb-favcode-radius", Math.round(Math.max(6, Math.min(m.radius, size * 0.26))) + "px");
+        el.style.setProperty("--ssb-favcode-shadow", Math.round(Math.max(2, Math.min(m.shadow, size * 0.1))) + "px");
+        el.style.setProperty("--ssb-favcode-press", Math.round(Math.max(2, Math.min(3, size * 0.08))) + "px");
+        const left = br.left - pr.left - el.offsetWidth - m.clearance;
+        const top = ar.top - pr.top + ar.height / 2 - el.offsetHeight / 2;
+        el.style.left = Math.max(0, Math.round(left)) + "px";
+        el.style.top = Math.round(top) + "px";
+    }
+
     /* ---- mod-menu toggles ---- */
     function modToggle(grid, cls, text, tip, get, onChange) {
         if (grid.querySelector("." + cls)) return;
@@ -3098,6 +3218,13 @@
         transition: transform .1s, background .15s; }
       .ssb-star:hover { transform: scale(1.15); background: rgba(0,0,0,0.55); }
       .ssb-star--on { background: rgba(0,0,0,0.15); }
+      .ssb-favcode-btn { width:var(--ssb-favcode-size,42px); height:var(--ssb-favcode-size,42px); padding:0; border:none; border-radius:var(--ssb-favcode-radius,10px); cursor:pointer; color:#fff;
+        background:#0E7697; box-shadow:0 var(--ssb-favcode-shadow,4px) 0 #0C576F; display:inline-flex; align-items:center; justify-content:center;
+        transition:transform .1s ease, background .1s ease, box-shadow .1s ease; box-sizing:border-box;
+        text-shadow:0 1px 2px rgba(0,0,0,.3); }
+      .ssb-favcode-btn:hover { background:#2db8d4; box-shadow:0 var(--ssb-favcode-shadow,4px) 0 #1b7385; transform:translateY(-1px); }
+      .ssb-favcode-btn:active { transform:translateY(var(--ssb-favcode-press,3px)); box-shadow:0 1px 0 #1b7385; }
+      .ssb-favcode-btn svg { width:var(--ssb-favcode-icon,21px); height:var(--ssb-favcode-icon,21px); display:block; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
     `;
         (document.head || document.documentElement).appendChild(s);
     }
@@ -3119,6 +3246,7 @@
             let _wasInInventory = false, _wasPauseWSVisible = false;
             setInterval(() => {
                 injectModMenuToggle();   // (re)add the checkboxes whenever the settings panel is built
+                try { ensureFavCodeButtons(); } catch (e) { } // export/import favorites buttons on the inventory
                 installSkinCacheHooks();
                 installFavFilterHook();  // keep the favorites filter outermost
                 installSearchFix();      // restore unlocked skins when the item search is cleared

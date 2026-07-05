@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.9.4-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9.5-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -27,7 +27,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on v4.8 or newer? Reload Shell Shockers and your userscript manager should detect v4.9.4 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.5 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -68,6 +68,7 @@ Auto-update metadata URL:
 | **Performance** | Render scale, disable post-FX / shadows / particles, frustum & raycast skips |
 | **Server Picker** | Pick your region from the frontpage with live ping |
 | **Stats Tracker** | Session K/D/KDR, match history, and an end-of-match overlay |
+| **Inventory Favorites** | Star inventory items and export / import favorites with a shareable code |
 | **Legacy Skins & Sounds** | Classic gun models and SFX available from settings |
 
 <details>
@@ -108,6 +109,7 @@ Auto-update metadata URL:
 #### Other
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings as a shareable code
+- Export / import inventory favorites as a shareable code
 - Searchable settings
 - Settings persist via `localStorage`
 
@@ -119,7 +121,7 @@ Auto-update metadata URL:
 
 All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
 
-To check what's new later, click the **Shell Shockers Better HUD v4.9.4** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
+To check what's new later, click the **Shell Shockers Better HUD v4.9** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
 
 ---
 
@@ -138,25 +140,17 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9.4 — current
+#### v4.9 — current
 - **Update prompt fix:** the "update available" toast no longer appears when you're already on the latest version, and won't re-nag once dismissed
-
-#### v4.9.3
-- **What's-new popup on every update:** the changelog now follows the installed version, so each update shows the notes once, then stays dismissed until the next update
-
-#### v4.9.2
 - **More accurate stats:** duplicate-named players now get their own scoreboard rows instead of merging into one, and your kills / deaths are preserved if you leave and rejoin the same match
-
-#### v4.9.1
 - **Stats copy fix:** the **Copy / Download as image** button now captures the entire stats panel — no more clipped columns or stretched layout
 - **Absurd stats fix:** players no longer show impossible totals (e.g. 1000+ kills) when several share a name or a player slot is recycled mid-match
-
-#### v4.9
 - **Changelog access:** click the version text at the bottom of the mod settings panel to reopen the changelog any time, with older versions available from a dropdown
 - **Stats History:** recent matches are now saved so you can revisit the scoreboard, map, mode, server, and match duration later
 - **Hide Scope Frame:** hide the scope overlay while scoped for a cleaner full-screen scoped view
 - **Low Textures:** optional lower texture filtering for cheaper GPU sampling and extra FPS
 - **Adaptive UI:** mod menus and panels now scale better across resolutions instead of relying on fixed pixel sizing
+- **Favorites controls:** export / import favorites buttons stay aligned beside the egg-color picker and scale with the player's resolution
 - **Stats fixes:** stat screenshots use the game font, long stats panels scroll correctly, duplicated empty stat rows are gone, and the match timer ticks again
 - **Settings fixes:** imported/reset settings save correctly, and the server-picker arrow no longer sticks
 
