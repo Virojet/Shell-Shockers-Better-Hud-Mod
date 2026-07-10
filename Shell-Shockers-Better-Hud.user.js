@@ -2754,6 +2754,8 @@
         c.current = isLoadoutMap(raw.current) ? Object.assign({}, raw.current) : null;
         c.byPrimary = raw.byPrimary && typeof raw.byPrimary === "object" && !Array.isArray(raw.byPrimary) ? raw.byPrimary : {};
         c.byClass = raw.byClass && typeof raw.byClass === "object" && !Array.isArray(raw.byClass) ? raw.byClass : {};
+        // Migrate older caches: drop hat/stamp from the per-weapon entries (now global-only).
+        [c.byPrimary, c.byClass].forEach((g) => { for (const k in g) { if (g[k]) { delete g[k]["1"]; delete g[k]["2"]; } } });
         return c;
     }
     function primaryClassIndex(primaryId) {
@@ -2780,12 +2782,16 @@
         if (!isLoadoutMap(map)) return null;
         const c = normalizeSkinCache(readJSON(LS.skinCache, null));
         const copy = Object.assign({}, map);
+        // Hat (1) and stamp (2) are GLOBAL egg equipment, not per-gun. Cache them only in
+        // `current`; the per-weapon caches store just the gun skins, so switching weapons
+        // never re-applies a gun's saved hat/stamp.
+        const gun = Object.assign({}, map); delete gun["1"]; delete gun["2"];
         const hasCustomWeapon = loadoutHasCustomWeapon(copy);
         if (hasCustomWeapon || !isLoadoutMap(c.current)) c.current = copy;
         if (copy["3"] != null) {
-            if (hasCustomWeapon || !c.byPrimary[String(copy["3"])]) c.byPrimary[String(copy["3"])] = copy;
+            if (hasCustomWeapon || !c.byPrimary[String(copy["3"])]) c.byPrimary[String(copy["3"])] = gun;
             const cls = primaryClassIndex(copy["3"]);
-            if (cls !== "" && (hasCustomWeapon || !c.byClass[cls])) c.byClass[cls] = copy;
+            if (cls !== "" && (hasCustomWeapon || !c.byClass[cls])) c.byClass[cls] = gun;
         }
         writeJSON(LS.skinCache, c);
         if (hasCustomWeapon || !activeLatestSkinMap) activeLatestSkinMap = copy;
