@@ -2012,7 +2012,6 @@
             { label: "Stats History", text: "Stats History is now built into the mod, so you can revisit recent match results from the stats panel." },
             { label: "Hide Scope Frame", text: "New Gameplay option hides the scope frame while scoped for a clean full-screen scoped view, with scope state preserved and no frozen edges." },
             { label: "Low Textures", text: "New Low Texture Filtering option drops anisotropic/trilinear filtering for cheaper GPU sampling and extra FPS. Fully reversible." },
-            { label: "Skins", text: "Skin loadouts are more reliable now, with better memory for recent choices and cleaner inventory filtering." },
             { label: "Adaptive UI", text: "The MODS and CROSSHAIR panels now scale to your resolution, so long settings pages stay usable on smaller screens and proportional on larger ones." },
             { label: "Favorites Controls", text: "Export and import favorite inventory items with a shareable code; the buttons stay aligned beside the egg-color picker and scale with your resolution." },
             { label: "Stats Fixes", text: "Stat screenshots now use the game font with corrected spacing/sizes, long stats panels scroll properly, duplicate empty 0 / 0 rows are removed, and the live match timer ticks again." },
