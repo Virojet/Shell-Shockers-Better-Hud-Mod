@@ -145,7 +145,6 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Accurate live stats:** kills (including **melee and grenade** kills) count reliably, a new game or round restarts at **0**, and leave-and-rejoin still carries your totals over
 - **Stats History:** every match/round gets its own entry (no overwrites), games save even when the server code can't be read, and you can now **Download** a match scoreboard (not just Copy). A renamed match hides its game code — hover the name to reveal it — and the code is kept out of copied/saved images
 - **Live server regions:** the picker mirrors the game's real region list — retired regions (US Central) disappear, new ones appear automatically with live ping, and region names no longer pick up a stray "ms"
-- **Skin Unlocker:** toggling it off now applies without a reload, and remembered skins keep your **hat & stamp global** instead of tying them to a specific gun
 - **UI polish:** the respawn-screen volume slider and Match Stats box are sized to match the native panel, and the selected-region checkmark no longer appears upside down
 - **Performance:** less idle and in-match overhead from observers, timers, and stats saves
 
