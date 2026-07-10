@@ -2030,7 +2030,6 @@
                     { label: "Profiles", text: "Crosshair Profiles got a compact icon bar, custom SVG icons, and a cleaner profile gallery." },
                     { label: "Legacy", text: "Legacy Skins and Legacy Sounds restore classic gun models and SFX live without a reload." },
                     { label: "FOV", text: "FOV (Black Bars) widens horizontal field of view with in-game letterboxing, without image distortion." },
-                    { label: "Skins", text: "Skin handling was reworked and streamlined." },
                     { label: "Performance", text: "Restored frustum culling, gated heavier hooks behind their settings, paused non-essential work during matches, and removed duplicate legacy audio loading." },
                     { label: "Fixes", text: "Fixed match stats getting stuck at 0, can't-move-on-spawn after tab-out, and uneven crosshair arms after resize." }
                 ]
@@ -2044,7 +2043,6 @@
                     { label: "Profiles", text: "Crosshair Profiles were redesigned with save, duplicate, export, import, and delete controls plus a gallery view." },
                     { label: "Legacy", text: "Legacy Skins and Legacy Sounds became live settings." },
                     { label: "FOV", text: "FOV (Black Bars) was added for wider horizontal view with letterboxing and no image stretch." },
-                    { label: "Skins", text: "Skin tools were cleaned up and simplified." },
                     { label: "Performance", text: "Performance work restored frustum culling, gated optional hooks, paused non-essential work in matches, and removed duplicate audio loading." },
                     { label: "Fixes", text: "Fixed stuck match stats, spawn movement after tab-out, and crosshair resize issues." }
                 ]
