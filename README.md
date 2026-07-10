@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.9.5-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9.6-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -27,7 +27,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.5 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.6 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -121,7 +121,7 @@ Auto-update metadata URL:
 
 All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
 
-To check what's new later, click the **Shell Shockers Better HUD v4.9** text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
+To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
 
 ---
 
@@ -140,7 +140,19 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9 — current
+#### v4.9.6 — current
+- **Loading freeze fixed:** the game no longer hangs on the loading screen when **Uncap FPS** is on — it now engages only in-match, so the game always loads and reloads cleanly
+- **Accurate live stats:** kills (including **melee and grenade** kills) count reliably, a new game or round restarts at **0**, and leave-and-rejoin still carries your totals over
+- **Stats History:** every match/round gets its own entry (no overwrites), games save even when the server code can't be read, and you can now **Download** a match scoreboard (not just Copy). A renamed match hides its game code — hover the name to reveal it — and the code is kept out of copied/saved images
+- **Live server regions:** the picker mirrors the game's real region list — retired regions (US Central) disappear, new ones appear automatically with live ping, and region names no longer pick up a stray "ms"
+- **Skin Unlocker:** toggling it off now applies without a reload, and remembered skins keep your **hat & stamp global** instead of tying them to a specific gun
+- **UI polish:** the respawn-screen volume slider and Match Stats box are sized to match the native panel, and the selected-region checkmark no longer appears upside down
+- **Performance:** less idle and in-match overhead from observers, timers, and stats saves
+
+<details>
+<summary>Older versions</summary>
+
+#### v4.9
 - **Update prompt fix:** the "update available" toast no longer appears when you're already on the latest version, and won't re-nag once dismissed
 - **More accurate stats:** duplicate-named players now get their own scoreboard rows instead of merging into one, and your kills / deaths are preserved if you leave and rejoin the same match
 - **Stats copy fix:** the **Copy / Download as image** button now captures the entire stats panel — no more clipped columns or stretched layout
@@ -153,9 +165,6 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Favorites controls:** export / import favorites buttons stay aligned beside the egg-color picker and scale with the player's resolution
 - **Stats fixes:** stat screenshots use the game font, long stats panels scroll correctly, duplicated empty stat rows are gone, and the match timer ticks again
 - **Settings fixes:** imported/reset settings save correctly, and the server-picker arrow no longer sticks
-
-<details>
-<summary>Older versions</summary>
 
 - **v4.8.5** — update-on-reload prompt, scope cleanup, auto-update headers, and the first in-game changelog popup
 - **v4.8.2** — redesigned crosshair profiles, profile gallery, FOV black bars, classic models and SFX settings, performance cleanup, and match-stats fixes
