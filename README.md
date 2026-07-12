@@ -123,19 +123,6 @@ All settings live under the game's **Settings** menu in the new **MODS** and **C
 
 To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
 
-### Commands
-
-A few features aren't checkboxes — you trigger them by typing a command into the **Import Settings Code** box (MODS ▸ *Import Settings Code*). Commands are case-insensitive; each one shows a confirmation and takes effect immediately.
-
-| Command | What it does |
-|---|---|
-| `hide scope frame` | Toggles the scope overlay/frame on or off while scoped. Not a menu option — command-only, since it can give an unfair edge |
-| `toggle skins` | Toggles the Skin Unlocker on or off |
-| `setfps <min> [max]` | Enables a custom FPS display value (single number, or a random range) |
-| `setfps off` | Disables the custom FPS value |
-| `setping <min> [max]` | Enables a custom ping display value (single number, or a random range) |
-| `setping off` | Disables the custom ping value |
-
 ---
 
 ## Compatibility
@@ -155,14 +142,14 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 #### v4.9.8 — current
 - **Match-end stats hardened:** longer matches no longer drop players from the scoreboard or write a junk 2-second duplicate match to Stats History — a second end-of-match rollover can no longer fire right after the first, and trivially short matches are never saved
-- **Hide Scope Frame disabled by default:** now off for everyone on update (it was an unfair edge, per the developers). It stays command-only and can still be re-enabled with the `hide scope frame` command in **Import Settings Code** (see [Commands](#commands))
+- **Hide Scope Frame disabled by default:** now off for everyone on update, and no longer available as a settings option, since it can give an unfair edge (per the developers)
 
 <details>
 <summary>Older versions</summary>
 
 #### v4.9.7
 - **Match-end scoreboard:** when a match ends, the live scoreboard now holds the final K / D instead of flashing to 0 — it resets only when the next match actually starts, and no longer writes a blank duplicate match to Stats History
-- **Hide Scope Frame is now command-only:** removed from the settings menu at the developers' request since it can give an unfair edge. It still works, but only via the `hide scope frame` command in **Import Settings Code** (see [Commands](#commands))
+- **Hide Scope Frame:** removed from the settings menu at the developers' request since it can give an unfair edge
 
 #### v4.9.6
 - **Loading freeze fixed:** the game no longer hangs on the loading screen when **Uncap FPS** is on — it now engages only in-match, so the game always loads and reloads cleanly
