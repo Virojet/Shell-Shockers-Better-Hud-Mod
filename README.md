@@ -140,8 +140,8 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9.9 — current
-- **No more random mid-match resets:** the live scoreboard no longer resets to 0 during a match. A one-frame stat glitch could look like a match ending; the tracker now requires the signal to persist before resetting, so normal play — including tabbing out and back in — never wipes your stats
+#### v4.9.11 — current
+- **No more random mid-match resets:** the live scoreboard no longer resets to 0 during a match. A one-frame stat glitch or a background game connection could look like a match ending; the tracker now requires the signal to persist before resetting, so normal play — including tabbing out and back in — never wipes your stats
 
 <details>
 <summary>Older versions</summary>
