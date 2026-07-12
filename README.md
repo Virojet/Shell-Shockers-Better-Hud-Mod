@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.9.7-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9.8-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -27,7 +27,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.7 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.8 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -123,6 +123,19 @@ All settings live under the game's **Settings** menu in the new **MODS** and **C
 
 To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
 
+### Commands
+
+A few features aren't checkboxes — you trigger them by typing a command into the **Import Settings Code** box (MODS ▸ *Import Settings Code*). Commands are case-insensitive; each one shows a confirmation and takes effect immediately.
+
+| Command | What it does |
+|---|---|
+| `hide scope frame` | Toggles the scope overlay/frame on or off while scoped. Not a menu option — command-only, since it can give an unfair edge |
+| `toggle skins` | Toggles the Skin Unlocker on or off |
+| `setfps <min> [max]` | Enables a custom FPS display value (single number, or a random range) |
+| `setfps off` | Disables the custom FPS value |
+| `setping <min> [max]` | Enables a custom ping display value (single number, or a random range) |
+| `setping off` | Disables the custom ping value |
+
 ---
 
 ## Compatibility
@@ -140,11 +153,16 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9.7 — current
-- **Match-end scoreboard:** when a match ends, the live scoreboard now holds the final K / D instead of flashing to 0 — it resets only when the next match actually starts, and no longer writes a blank duplicate match to Stats History
+#### v4.9.8 — current
+- **Match-end stats hardened:** longer matches no longer drop players from the scoreboard or write a junk 2-second duplicate match to Stats History — a second end-of-match rollover can no longer fire right after the first, and trivially short matches are never saved
+- **Hide Scope Frame disabled by default:** now off for everyone on update (it was an unfair edge, per the developers). It stays command-only and can still be re-enabled with the `hide scope frame` command in **Import Settings Code** (see [Commands](#commands))
 
 <details>
 <summary>Older versions</summary>
+
+#### v4.9.7
+- **Match-end scoreboard:** when a match ends, the live scoreboard now holds the final K / D instead of flashing to 0 — it resets only when the next match actually starts, and no longer writes a blank duplicate match to Stats History
+- **Hide Scope Frame is now command-only:** removed from the settings menu at the developers' request since it can give an unfair edge. It still works, but only via the `hide scope frame` command in **Import Settings Code** (see [Commands](#commands))
 
 #### v4.9.6
 - **Loading freeze fixed:** the game no longer hangs on the loading screen when **Uncap FPS** is on — it now engages only in-match, so the game always loads and reloads cleanly
@@ -161,7 +179,7 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Absurd stats fix:** players no longer show impossible totals (e.g. 1000+ kills) when several share a name or a player slot is recycled mid-match
 - **Changelog access:** click the version text at the bottom of the mod settings panel to reopen the changelog any time, with older versions available from a dropdown
 - **Stats History:** recent matches are now saved so you can revisit the scoreboard, map, mode, server, and match duration later
-- **Hide Scope Frame:** hide the scope overlay while scoped for a cleaner full-screen scoped view
+- **Hide Scope Frame:** hides the scope overlay while scoped for a clean full-screen scoped view, with scope state preserved and no frozen edges
 - **Low Textures:** optional lower texture filtering for cheaper GPU sampling and extra FPS
 - **Adaptive UI:** mod menus and panels now scale better across resolutions instead of relying on fixed pixel sizing
 - **Favorites controls:** export / import favorites buttons stay aligned beside the egg-color picker and scale with the player's resolution
