@@ -4,7 +4,7 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.9.13-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-4.9.14-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -27,7 +27,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.13 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.9.14 automatically. If it does not update, install once from the button above to refresh the update headers.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -140,13 +140,18 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.9.13 — current
-- **Team swaps no longer wipe the scoreboard:** switching teams mid-game reshuffles player slots, which could make the tracker think the match had restarted and reset **everyone** to 0. Stat resets are now driven only by actually joining a new lobby
-- **Stats continue across rounds:** while you stay in the same lobby, your K / D keeps accumulating and stays a single Match History entry instead of splitting into a new one every round
-- **No more random mid-match resets:** a one-frame stat glitch or a background game connection can no longer look like a match ending — normal play, including tabbing out and back in, never wipes your stats
+#### v4.9.14 — current
+- **Infinite Chat History:** the game deletes older chat messages as the log grows, so scrolling back showed nothing. Chat is now kept for the whole match — pause or open chat and scroll up to read it all. New toggle under **MODS ▸ Game HUD**
+- **Match History button:** a button on the home screen, beside the Server selector, that opens your saved match history in one click. New toggle under **MODS ▸ Mod HUD Widgets**
+- **"Hide Game HUD" is now just "Game HUD"**, since the section holds more than hide toggles
 
 <details>
 <summary>Older versions</summary>
+
+#### v4.9.13
+- **Team swaps no longer wipe the scoreboard:** switching teams mid-game reshuffles player slots, which could make the tracker think the match had restarted and reset **everyone** to 0. Stat resets are now driven only by actually joining a new lobby
+- **Stats continue across rounds:** while you stay in the same lobby, your K / D keeps accumulating and stays a single Match History entry instead of splitting into a new one every round
+- **No more random mid-match resets:** a one-frame stat glitch or a background game connection can no longer look like a match ending — normal play, including tabbing out and back in, never wipes your stats
 
 #### v4.9.8
 - **Match-end stats hardened:** longer matches no longer drop players from the scoreboard or write a junk 2-second duplicate match to Stats History — a second end-of-match rollover can no longer fire right after the first, and trivially short matches are never saved
