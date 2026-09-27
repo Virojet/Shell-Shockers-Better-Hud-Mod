@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.0.0
+// @version      5.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -2207,7 +2207,7 @@ window.__ssbMenuPoll = window.__ssbMenuPoll || (function () {
     });
 
     (function installVersionChangelog() {
-        const installedVersion = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ? GM_info.script.version : "5.0.0";
+        const installedVersion = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ? GM_info.script.version : "5.0";
         const displayVersion = "5.0";
         // Keep the visible changelog on the v5.0 release notes even for patch
         // releases; the userscript @version still drives manager auto-updates.
