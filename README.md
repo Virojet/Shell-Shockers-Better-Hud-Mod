@@ -4,9 +4,11 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-4.10.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-5.0.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+
+**New in v5:** smoother menus, faster loading, no more chat covering the screen, and a new Block Ads toggle. [See the changelog](#changelog).
 
 ---
 
@@ -27,7 +29,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Reload Shell Shockers and your userscript manager should detect v4.10.0 automatically. If it does not update, install once from the button above to refresh the update headers.
+> Already on an older version? Your userscript manager picks up v5.0.0 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -64,10 +66,10 @@ Auto-update metadata URL:
 | Feature | Description |
 |---|---|
 | **Crosshair Editor** | Full customization with save / load / share profiles and a live gallery |
-| **HUD Controls** | FPS / ping display, hide any HUD element, volume slider, tab-out key |
+| **HUD Controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
 | **Performance** | Render scale, disable post-FX / shadows / particles, frustum & raycast skips |
 | **Server Picker** | Pick your region from the frontpage with live ping |
-| **Stats Tracker** | Session K/D/KDR, match history, and an end-of-match overlay |
+| **Stats Tracker** | Session K/D/KDR, match history one click from the home screen, and an end-of-match overlay |
 | **Inventory Favorites** | Star inventory items and export / import favorites with a shareable code |
 | **Legacy Skins & Sounds** | Classic gun models and SFX available from settings |
 
@@ -78,6 +80,8 @@ Auto-update metadata URL:
 - **FPS / Ping display** with frametime mode, session timer, opacity control, and customizable values
 - **Server-region picker** integrated into the frontpage with live ping
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, nametags, scope lines, best-streak counters
+- **Infinite Chat History** — keeps the whole match's chat; pause or open chat and scroll back to read it all
+- **Match History button** on the home screen, beside the Server selector
 - **Volume slider** added directly to the pause menu
 - **Auto-fullscreen** on pointer lock
 - **Tab-out key** — release pointer lock without snapping the camera
@@ -107,6 +111,7 @@ Auto-update metadata URL:
 - **Legacy Sounds** — classic weapon and game sound effects
 
 #### Other
+- **Block Ads** — optional, off by default; hides in-game video and banner ads after a page reload (F5)
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings as a shareable code
 - Export / import inventory favorites as a shareable code
@@ -125,6 +130,14 @@ To check what's new later, click the **Shell Shockers Better HUD** version text 
 
 ---
 
+## Troubleshooting
+
+- **Update not showing up?** Click the Tampermonkey icon → **Check for userscript updates**, or install again from the button at the top. Your settings are kept.
+- **Block Ads didn't change anything?** It takes effect after a full page reload (**F5**); leaving and rejoining a match isn't enough.
+- **Something broke after a Shell Shockers update?** Press **F12**, open **Console**, and find the `[Better UI] Game patches:` line. If it ends with `NOT applied: …`, the game changed something the mod relies on. [Open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste that line.
+
+---
+
 ## Compatibility
 
 Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ others.
@@ -140,21 +153,34 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v4.10 — current
+#### v5.0 — current
+
+- **Smoother menus:** no more stutter when opening panels or switching tabs. A background check that re-measured the whole page after every change no longer runs, and the mod's own background work on the menus is about halved
+- **Faster loading:** the mod prepares the game's code in one pass instead of three, so there's about 80 ms less work before the game starts
+- **Infinite Chat stays small:** while you play, the chat stays a small box in the corner instead of growing to cover the screen after you pause and resume
+- **Stuck chat box fixed:** the blue paused-chat box no longer stays on screen after you spawn
+- **Chat fixes:** with Infinite Chat History on, the "share game link" line shows once when you join, messages from your last match no longer carry over, and messages that arrive together stay in order
+- **Block Ads:** new toggle under **MODS ▸ Game HUD** that hides in-game video and banner ads and the leftover promo boxes. Off by default; press **F5** after changing it
+- **Tighter settings panel:** the MODS list now reaches down to Cancel / Confirm, so the big empty gap at the bottom is gone
+- **Positional audio:** with Audio Optimization on (the default), sounds above or below you now adjust as you climb or drop
+- **Lighter matches:** Stats History saves at most every 15 seconds mid-match, and always right away when the match ends or you pause
+- **Reliable startup:** fixed an error that could stop some features from loading when the userscript manager starts the mod very early
+- **Easier bug reports:** the browser console now lists which game tweaks loaded (see [Troubleshooting](#troubleshooting))
+
+#### v4.10
 
 - **Better defaults:** new installs start with the recommended `M-Fb1Ul0Gb1Gl1Sp1` settings preset
 - **Cleaner first launch:** the HUD box and front-page server list are hidden, shell-burst particles and scope lines are disabled, and match stats stay pinned
 - **Consistent reset:** **Reset All Mod Settings** restores the same recommended v4.10 defaults
 - **Saved preferences preserved:** updating does not overwrite settings a user has already chosen
 
-#### v4.9.14
+<details>
+<summary>Older versions</summary>
 
+#### v4.9.14
 - **Infinite Chat History:** the game deletes older chat messages as the log grows, so scrolling back showed nothing. Chat is now kept for the whole match — pause or open chat and scroll up to read it all. New toggle under **MODS ▸ Game HUD**
 - **Match History button:** a button on the home screen, beside the Server selector, that opens your saved match history in one click. New toggle under **MODS ▸ Mod HUD Widgets**
 - **"Hide Game HUD" is now just "Game HUD"**, since the section holds more than hide toggles
-
-<details>
-<summary>Older versions</summary>
 
 #### v4.9.13
 - **Team swaps no longer wipe the scoreboard:** switching teams mid-game reshuffles player slots, which could make the tracker think the match had restarted and reset **everyone** to 0. Stat resets are now driven only by actually joining a new lobby
@@ -206,7 +232,7 @@ The userscript is a single self-contained file:
 
 1. Edit `Shell-Shockers-Better-Hud.user.js` directly
 2. Reload the Shell Shockers tab — Tampermonkey picks up the change
-3. Bump `@version` in the header for a release
+3. Bump `@version` in the header for a release. On push to `main`, the **Sync meta.js** workflow copies the header into `Shell-Shockers-Better-Hud.meta.js`, the file userscript managers check for updates
 
 ---
 
