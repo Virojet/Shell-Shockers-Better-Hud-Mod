@@ -4,11 +4,11 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-5.0.1-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-5.1.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-**New in v5:** smoother menus, faster loading, no more chat covering the screen, and a new Block Ads toggle. [See the changelog](#changelog).
+**New in v5.1:** a cleaner MODS tab with section shortcuts, in-game pop-ups instead of browser popups, and a Check for updates button. [See the changelog](#changelog).
 
 ---
 
@@ -29,7 +29,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Your userscript manager picks up v5.0.1 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
+> Already on an older version? Your userscript manager picks up v5.1.0 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -77,9 +77,9 @@ Auto-update metadata URL:
 <summary><b>Full feature list</b></summary>
 
 #### HUD & Widgets
-- **FPS / Ping display** with frametime mode, session timer, opacity control, and customizable values
+- **FPS / Ping display** with frametime mode, session timer, an optional see-through box, and customizable values
 - **Server-region picker** integrated into the frontpage with live ping
-- **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, nametags, scope lines, best-streak counters
+- **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
 - **Infinite Chat History** — keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Match History button** on the home screen, beside the Server selector
 - **Volume slider** added directly to the pause menu
@@ -113,7 +113,9 @@ Auto-update metadata URL:
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings as a shareable code
 - Export / import inventory favorites as a shareable code
-- Searchable settings
+- Searchable settings, with section shortcuts (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
+- In-game pop-ups for codes and confirmations instead of browser popups
+- **Check for updates** button at the bottom of the MODS tab
 - Settings persist via `localStorage`
 
 </details>
@@ -122,15 +124,15 @@ Auto-update metadata URL:
 
 ## Usage
 
-All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box to jump to an option, and **hover any option name** for a description tooltip.
+All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box or the section buttons beside it to jump to an option, and **hover any option name** for a description tooltip.
 
-To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases.
+To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases. **Check for updates**, next to it, looks for a newer version right away.
 
 ---
 
 ## Troubleshooting
 
-- **Update not showing up?** Click the Tampermonkey icon → **Check for userscript updates**, or install again from the button at the top. Your settings are kept.
+- **Update not showing up?** Press **Check for updates** at the bottom of the MODS tab, or click the Tampermonkey icon → **Check for userscript updates**, or install again from the button at the top. Your settings are kept.
 - **Block Ads didn't change anything?** It takes effect after a full page reload (**F5**); leaving and rejoining a match isn't enough.
 - **Something broke after a Shell Shockers update?** Press **F12**, open **Console**, and find the `[Better UI] Game patches:` line. If it ends with `NOT applied: …`, the game changed something the mod relies on. [Open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste that line.
 
@@ -151,7 +153,19 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v5.0.1 — current
+#### v5.1 — current
+
+- **In-game pop-ups:** copying, importing and resetting settings, crosshair profiles, match history and favorites now use Better HUD's own pop-ups instead of the browser's. The confirmation shows the code you copied, and if your browser blocks the clipboard you get the code to copy by hand
+- **New MODS layout:** settings are regrouped into HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay and Manage, with shortcut buttons beside the search box that stay pinned while you scroll. New controls are marked **NEW**
+- **Clearer names:** for example **Hide Scoreboard & Kill Feed** (was Hide Player Readouts), **Server Picker**, **Match History Button** and **Hide Box Background**. Searching for the old names still finds them
+- **Better search:** also searches each setting's description, has a clear button, and tells you when nothing matches. **Esc** clears it
+- **Complete settings codes:** codes now include Block Ads, Infinite Chat History, the Match History button and the favorites options, and **Reset All Mod Settings** resets them too
+- **Check for updates:** a new button at the bottom of the MODS tab checks GitHub right away
+- **Preview backgrounds:** one-click Sky, Grey, Dark and White backgrounds for the crosshair preview
+- **Update prompt:** the update-available card has a clearer layout, a close button and a **What's new** link
+- **Consistent tooltips:** every Better HUD button shows the same styled tooltip, including the stats panel and crosshair profile buttons
+
+#### v5.0.1
 
 - **Pause menu position:** with Block Ads on, the pause menu no longer sits higher than normal; it stays where the game usually puts it
 - **Hide Chat hides the whole chat:** the chat box in the bottom-left corner is hidden too, not just the messages
