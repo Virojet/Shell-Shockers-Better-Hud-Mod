@@ -1,10 +1,10 @@
 # Shell Shockers — Better HUD
 
-> A customizable HUD, crosshair editor, performance controls, server picker, and stats tracker — built cleanly into the [Shell Shockers](https://shellshock.io) UI.
+> A customizable HUD, crosshair editor, server picker, and stats tracker — built cleanly into the [Shell Shockers](https://shellshock.io) UI.
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-5.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-5.0.1-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -29,7 +29,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Your userscript manager picks up v5.0 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
+> Already on an older version? Your userscript manager picks up v5.0.1 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -67,7 +67,7 @@ Auto-update metadata URL:
 |---|---|
 | **Crosshair Editor** | Full customization with save / load / share profiles and a live gallery |
 | **HUD Controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Performance** | Render scale, disable post-FX / shadows / particles, frustum & raycast skips |
+| **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, FOV black bars |
 | **Server Picker** | Pick your region from the frontpage with live ping |
 | **Stats Tracker** | Session K/D/KDR, match history one click from the home screen, and an end-of-match overlay |
 | **Inventory Favorites** | Star inventory items and export / import favorites with a shareable code |
@@ -92,12 +92,10 @@ Auto-update metadata URL:
 - Static (outer) lines, plus-shape dot, rounded dot, and more
 - Live preview in the settings panel
 
-#### Performance
-- **Render scale** slider — trade resolution for FPS (1× native up to 4× downscale)
-- Disable post-processing (bloom / FXAA / DoF / motion blur), shadows, anti-aliasing, particles
-- Skip pointer-pick raycasts for higher FPS
+#### Effects & FPS
+- **Uncap FPS** — match high-refresh-rate monitors
+- Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst, or all particles
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
-- Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst
 - **FOV (Black Bars)** — wider horizontal field of view via in-game letterboxing, no distortion
 
 #### Stats Tracker
@@ -153,7 +151,15 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v5.0 — current
+#### v5.0.1 — current
+
+- **Pause menu position:** with Block Ads on, the pause menu no longer sits higher than normal; it stays where the game usually puts it
+- **Hide Chat hides the whole chat:** the chat box in the bottom-left corner is hidden too, not just the messages
+- **No more Server button blink:** the Server selector on the home screen no longer flickers off and on right after the page loads
+- **New crosshair profiles start enabled:** creating a profile turns the Crosshair Customizer on, so you can start editing right away
+- **Performance Settings removed:** Render Scale, Disable Shadows, Disable Anti-Aliasing and Low Texture Filtering are gone from the MODS tab. If you had any of them on, the game goes back to its normal graphics
+
+#### v5.0
 
 - **Smoother menus:** no more stutter when opening panels or switching tabs. A background check that re-measured the whole page after every change no longer runs, and the mod's own background work on the menus is about halved
 - **Faster loading:** the mod prepares the game's code in one pass instead of three, so there's about 80 ms less work before the game starts
