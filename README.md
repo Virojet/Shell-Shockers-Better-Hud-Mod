@@ -1,151 +1,196 @@
+<div align="center">
+
 # Shell Shockers — Better HUD
 
-> A customizable HUD, crosshair editor, server picker, and stats tracker — built cleanly into the [Shell Shockers](https://shellshock.io) UI.
+**A cleaner HUD, a full crosshair editor, match stats and a server picker, built right into the [Shell Shockers](https://shellshock.io) settings menu.**
 
-[![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
-&nbsp;
-[![Version](https://img.shields.io/badge/version-5.2.2-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
-[![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+<br>
 
-**New in v5.2:** starter crosshairs, a one-click crosshair picker, a reorderable gallery, center-dot outlines, and safer settings codes. [See the changelog](#changelog).
+[![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
+
+[![Version](https://img.shields.io/badge/version-5.2.2-0E7697?style=flat-square)](#changelog)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
+[![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
+[![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v52) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+
+</div>
 
 ---
 
-## Install in 30 seconds
+## Install
 
-| Step | Action |
-|:---:|---|
-| **1** | Add a userscript manager — **[Tampermonkey](https://www.tampermonkey.net/)** (recommended) or [Violentmonkey](https://violentmonkey.github.io/) |
-| **2** | **[Click here to install Better HUD](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)** — the install dialog opens automatically |
-| **3** | Open **[shellshock.io](https://shellshock.io)** → find the new **MODS** & **CROSSHAIR** tabs in Settings |
+**About a minute, and free.** Updates install on their own afterwards.
 
-That's it. Updates install automatically from then on.
+1. **Get Tampermonkey** for your browser: [Chrome](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) · [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd) · [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/) · [Opera GX & others](https://www.tampermonkey.net/) (or use [Violentmonkey](https://violentmonkey.github.io/))
+2. **[Click here to install Better HUD](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)**, then press **Install** on the page that opens
+3. **Open [shellshock.io](https://shellshock.io)** → ⚙️ **Settings** → the new **MODS** and **CROSSHAIR** tabs
 
-Direct install URL:
-`https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js`
+> [!TIP]
+> **Nothing happens in step 3?** Chrome, Edge, Brave and Opera need one extra switch: open your browser's **Extensions** page → **Tampermonkey** → **Details** → turn on **Allow User Scripts** (on some browsers it's **Developer Mode**, top-right of the Extensions page). Then reload the game. [Step-by-step for each browser ↓](#allow-user-scripts)
 
-Auto-update metadata URL:
-`https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
-
-> [!IMPORTANT]
-> Already on an older version? Your userscript manager picks up v5.2.2 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
-
-> [!NOTE]
-> Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
-
+<a name="allow-user-scripts"></a>
 <details>
-<summary><b>Enabling Developer Mode &amp; allowing userscripts</b></summary>
+<summary><b>Allow user scripts, step by step</b></summary>
 
-**1. Open your browser's Extensions page**
+<br>
 
-- **Google Chrome** — menu (three dots, top-right) → **Extensions** → **Manage Extensions**, or type `chrome://extensions` in the address bar
-- **Microsoft Edge** — menu (three dots, top-right) → **Extensions**, or type `edge://extensions`
-- **Brave** — menu (three lines, top-right) → **Extensions**, or type `brave://extensions`
-- **Opera GX** — **Extensions** button (cube icon) on the left sidebar, or type `opera://extensions`
+**1. Open the Extensions page**
 
-**2. Enable Developer Mode**
+| Browser | How |
+|---|---|
+| **Chrome** | ⋮ menu → **Extensions** → **Manage Extensions**, or go to `chrome://extensions` |
+| **Edge** | ⋯ menu → **Extensions**, or go to `edge://extensions` |
+| **Brave** | ≡ menu → **Extensions**, or go to `brave://extensions` |
+| **Opera GX** | Cube icon in the left sidebar, or go to `opera://extensions` |
 
-- Click the **Developer Mode** toggle (usually top-right of the Extensions page).
-- This lets you install unreviewed or custom scripts if your manager requires it.
+**2. Turn on Developer Mode** with the toggle near the top-right of the page.
+
+**3. Allow user scripts:** find **Tampermonkey** (or Violentmonkey), click **Details**, and switch **Allow User Scripts** / **Allow Unreviewed Scripts** on.
 
 > [!NOTE]
-> On Opera GX you may need to close the window and open a new one for the change to take effect.
-
-**3. Allow userscripts to run**
-
-- Find your userscript manager (e.g. **Tampermonkey**, **Violentmonkey**) and click **Details**.
-- Find the option **Allow User Scripts** / **Allow Unreviewed Scripts** and toggle it **On**.
+> On Opera GX, close the window and open a new one for the change to take effect.
 
 </details>
 
+### Updating
+
+You don't need to do anything. Tampermonkey picks up new versions by itself, and Better HUD reminds you once when a new version comes out. The bottom of the **MODS** tab always shows whether you're **Up to date**.
+
+Want it right now? Press **Update** (or **Check for updates**) at the bottom of the MODS tab, or install again from the button above. Your settings and crosshairs are kept.
+
 ---
 
-## What you get
+## What's new in v5.2
 
-| Feature | Description |
-|---|---|
-| **Crosshair Editor** | Full customization with save / load / share profiles and a live gallery |
-| **HUD Controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, FOV black bars |
-| **Server Picker** | Pick your region from the frontpage with live ping |
-| **Stats Tracker** | Session K/D/KDR, match history one click from the home screen, and an end-of-match overlay |
-| **Inventory Favorites** | Star inventory items and export / import favorites with a shareable code |
-| **Legacy Skins & Sounds** | Classic gun models and SFX available from settings |
+- 🎯 **Starter crosshairs:** Default, Techno, Green Dot, No Hair and No Center Dot are ready to try in your gallery
+- ⚡ **Quick picker:** switch crosshairs in one click from the previews under **GALLERY**, and drag gallery cards into any order
+- ⚪ **Dot outline:** give the center dot its own outline color and width
+- 🔍 **Sharper everywhere:** the Still crosshair is pixel-crisp on high-res screens, and previews look the same at any resolution
+- 🔔 **Update reminder:** one friendly heads-up per new version, plus an up-to-date status in the MODS tab
+
+[Full changelog ↓](#changelog)
+
+---
+
+## Features
+
+| | Feature | What it does |
+|:---:|---|---|
+| 🎯 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
+| 🖥️ | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
+| 🚀 | **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, wider FOV with black bars |
+| 🌍 | **Server picker** | Choose your region from the home screen, with live ping |
+| 📊 | **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
+| ⭐ | **Inventory favorites** | Star inventory items and share them with a code |
+| 🔊 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
 <details>
 <summary><b>Full feature list</b></summary>
 
-#### HUD & Widgets
+#### HUD & widgets
 - **FPS / Ping display** with frametime mode, session timer, an optional see-through box, and customizable values
-- **Server-region picker** integrated into the frontpage with live ping
+- **Server-region picker** integrated into the home screen with live ping
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
-- **Infinite Chat History** — keeps the whole match's chat; pause or open chat and scroll back to read it all
+- **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Match History button** on the home screen, beside the Server selector
 - **Volume slider** added directly to the pause menu
 - **Auto-fullscreen** on pointer lock
-- **Tab-out key** — release pointer lock without snapping the camera
+- **Tab-out key**: release pointer lock without snapping the camera
 
-#### Crosshair Editor
-- Full customization with a **profile system** (save / load / duplicate / export / import) and a visual **gallery** you can reorder by dragging
+#### Crosshair editor
+- **Profiles**: save / load / duplicate / export / import, with a visual **gallery** you can reorder by dragging
 - **Starter crosshairs** to try, and a **quick picker** of small previews under GALLERY
 - Color, length, width, gap, opacity, rotation, scale, outline, dot shape, dot outline color and width
 - Static (outer) lines, plus-shape dot, rounded dot, and more
-- Live preview in the settings panel
+- Live preview with Sky, Grey, Dark and White backgrounds
 
 #### Effects & FPS
-- **Uncap FPS** — match high-refresh-rate monitors
+- **Uncap FPS** to match high-refresh-rate monitors
 - Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst, or all particles
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
-- **FOV (Black Bars)** — wider horizontal field of view via in-game letterboxing, no distortion
+- **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion
 
-#### Stats Tracker
+#### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
-- **Stats History** saves recent matches so you can revisit scoreboards, maps, modes, servers, and durations
+- **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them, and export JSON / CSV
 - Pinned compact stats above the pause weapon select
 - Configurable hotkey
 
-#### Visual & Audio
-- **Legacy Skins** — classic gun models for the default weapons (visual only)
-- **Legacy Sounds** — classic weapon and game sound effects
+#### Visual & audio
+- **Legacy Skins**: classic gun models for the default weapons (visual only)
+- **Legacy Sounds**: classic weapon and game sound effects
 
 #### Other
-- **Block Ads** — optional, off by default; hides in-game video and banner ads after a page reload (F5)
+- **Block Ads**: optional, off by default; hides in-game video and banner ads after a page reload (F5)
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
-- Export / import settings as a shareable code
-- Export / import inventory favorites as a shareable code
+- Export / import settings and inventory favorites as shareable codes
 - Searchable settings, with section shortcuts (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
 - In-game pop-ups for codes and confirmations instead of browser popups
-- **Check for updates** button at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
-- A one-time reminder when a new version comes out
+- **Check for updates** at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
 - Settings persist via `localStorage`
 
 </details>
 
 ---
 
-## Usage
+## Using it
 
-All settings live under the game's **Settings** menu in the new **MODS** and **CROSSHAIR** tabs. Use the **Search** box or the section buttons beside it to jump to an option, and **hover any option name** for a description tooltip.
-
-To check what's new later, click the **Shell Shockers Better HUD** version text at the bottom of the mod settings panel to reopen the changelog and browse older releases. **Check for updates**, next to it, looks for a newer version right away.
+- **Find everything** under the game's ⚙️ **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
+- **Search** or use the section buttons beside the search box to jump to an option. **Hover** any option for a description.
+- **See what changed** by clicking the **Shell Shockers Better HUD** version text at the bottom of the MODS tab.
 
 ---
 
 ## Troubleshooting
 
-- **Update not showing up?** Press **Check for updates** at the bottom of the MODS tab, or click the Tampermonkey icon → **Check for userscript updates**, or install again from the button at the top. Your settings are kept.
-- **Block Ads didn't change anything?** It takes effect after a full page reload (**F5**); leaving and rejoining a match isn't enough.
-- **Something broke after a Shell Shockers update?** Press **F12**, open **Console**, and find the `[Better UI] Game patches:` line. If it ends with `NOT applied: …`, the game changed something the mod relies on. [Open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste that line.
+<details>
+<summary><b>The MODS and CROSSHAIR tabs don't appear</b></summary>
+
+<br>
+
+Make sure Tampermonkey is on and **Allow User Scripts** is enabled ([how](#allow-user-scripts)), then reload the game with **F5**. Check that Better HUD is switched on in the Tampermonkey dashboard.
+
+</details>
+
+<details>
+<summary><b>An update isn't showing up</b></summary>
+
+<br>
+
+Press **Check for updates** at the bottom of the MODS tab, or click the Tampermonkey icon → **Check for userscript updates**, or install again from the [button at the top](#install). Your settings are kept.
+
+</details>
+
+<details>
+<summary><b>Block Ads didn't change anything</b></summary>
+
+<br>
+
+It takes effect after a full page reload (**F5**). Leaving and rejoining a match isn't enough.
+
+</details>
+
+<details>
+<summary><b>Something broke after a Shell Shockers update</b></summary>
+
+<br>
+
+Press **F12**, open **Console**, and find the `[Better UI] Game patches:` line. If it ends with `NOT applied: …`, the game changed something the mod relies on. [Open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste that line.
+
+</details>
 
 ---
 
 ## Compatibility
 
-Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ others.
+Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tampermonkey or Violentmonkey.
 
 <details>
 <summary>Show all domains</summary>
+
+<br>
 
 `shellshock.io`, `algebra.best`, `algebra.vip`, `biologyclass.club`, `deadlyegg.com`, `deathegg.world`, `eggboy.club`, `eggboy.xyz`, `eggcombat.com`, `egg.dance`, `eggfacts.fun`, `egghead.institute`, `eggisthenewblack.com`, `eggsarecool.com`, `geometry.best`, `geometry.monster`, `geometry.pw`, `geometry.report`, `hardboiled.life`, `hardshell.life`, `humanorganising.org`, `mathactivity.xyz`, `mathactivity.club`, `mathdrills.info`, `mathdrills.life`, and more.
 
@@ -202,6 +247,9 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Safer loading:** the screenshot library behind stat images is verified before it runs, and the classic sound files come from a fixed version
 - **Cleanup:** removed leftovers from retired settings and an unused server panel
 
+<details>
+<summary><b>v5.1 and older</b></summary>
+
 #### v5.1
 
 - **In-game pop-ups:** copying, importing and resetting settings, crosshair profiles, match history and favorites now use Better HUD's own pop-ups instead of the browser's. The confirmation shows the code you copied, and if your browser blocks the clipboard you get the code to copy by hand
@@ -243,8 +291,6 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 - **Consistent reset:** **Reset All Mod Settings** restores the same recommended v4.10 defaults
 - **Saved preferences preserved:** updating does not overwrite settings a user has already chosen
 
-<details>
-<summary>Older versions</summary>
 
 #### v4.9.14
 - **Infinite Chat History:** the game deletes older chat messages as the log grows, so scrolling back showed nothing. Chat is now kept for the whole match — pause or open chat and scroll up to read it all. New toggle under **MODS ▸ Game HUD**
@@ -297,19 +343,19 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Development
 
-The userscript is a single self-contained file:
+The userscript is a single self-contained file.
 
 1. Edit `Shell-Shockers-Better-Hud.user.js` directly
-2. Reload the Shell Shockers tab — Tampermonkey picks up the change
+2. Reload the Shell Shockers tab; Tampermonkey picks up the change
 3. Bump `@version` in the header for a release. On push to `main`, the **Sync meta.js** workflow copies the header into `Shell-Shockers-Better-Hud.meta.js`, the file userscript managers check for updates
 
 ---
 
-## Creator
-
 <div align="center">
 
-**Made by Virojet** — Shell Shockers gameplay, montages, and mod content.
+### Made by Virojet
+
+Shell Shockers gameplay, montages and mod content.
 
 [![Subscribe on YouTube](https://img.shields.io/badge/Subscribe-%40subtovirojet-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
@@ -317,8 +363,8 @@ The userscript is a single self-contained file:
 
 ---
 
-## License & Disclaimer
+## License & disclaimer
 
 [MIT](./LICENSE) © ViroGear.
 
-A client-side cosmetic and quality-of-life mod. It does **not** modify game logic, give unfair advantages, or interact with the server beyond what the official client does. Use at your own discretion — moderators may still act against use of any third-party scripts.
+A client-side cosmetic and quality-of-life mod. It does **not** modify game logic, give unfair advantages, or interact with the server beyond what the official client does. Use at your own discretion; moderators may still act against use of any third-party scripts.
