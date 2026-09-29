@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.1.0
+// @version      5.2.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -65,7 +65,7 @@
 // @match        *://*.zygote.cafe/*
 // @match        *://*.shellshockers.best/*
 // @match        *://*.eggboy.me/*
-// (html2canvas removed from @require - lazy-loaded on first screenshot via _ssbLoadHtml2Canvas)
+// (html-to-image is lazy-loaded from cdnjs, with an SRI hash, on the first stats screenshot)
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==

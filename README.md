@@ -4,11 +4,11 @@
 
 [![INSTALL](https://img.shields.io/badge/INSTALL-one--click-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 &nbsp;
-[![Version](https://img.shields.io/badge/version-5.1.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
+[![Version](https://img.shields.io/badge/version-5.2.0-black?style=for-the-badge)](./Shell-Shockers-Better-Hud.user.js)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](./LICENSE)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-**New in v5.1:** a cleaner MODS tab with section shortcuts, in-game pop-ups instead of browser popups, and a Check for updates button. [See the changelog](#changelog).
+**New in v5.2:** starter crosshairs, a one-click crosshair picker, a reorderable gallery, center-dot outlines, and safer settings codes. [See the changelog](#changelog).
 
 ---
 
@@ -29,7 +29,7 @@ Auto-update metadata URL:
 `https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js`
 
 > [!IMPORTANT]
-> Already on an older version? Your userscript manager picks up v5.1.0 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
+> Already on an older version? Your userscript manager picks up v5.2.0 on its next update check, and Better HUD shows an **Update now** prompt in-game. To update right away, click the Tampermonkey icon → **Check for userscript updates**, or install once from the button above. Your settings are kept.
 
 > [!NOTE]
 > Some userscript managers require **Developer Mode** (or an "Allow User Scripts" toggle) to be enabled before custom scripts will run. If the install doesn't take, follow the steps below.
@@ -87,8 +87,9 @@ Auto-update metadata URL:
 - **Tab-out key** — release pointer lock without snapping the camera
 
 #### Crosshair Editor
-- Full customization with a **profile system** (save / load / duplicate / export / import) and a visual **gallery**
-- Color, length, width, gap, opacity, rotation, scale, outline, dot shape
+- Full customization with a **profile system** (save / load / duplicate / export / import) and a visual **gallery** you can reorder by dragging
+- **Starter crosshairs** to try, and a **quick picker** of small previews under GALLERY
+- Color, length, width, gap, opacity, rotation, scale, outline, dot shape, dot outline color and width
 - Static (outer) lines, plus-shape dot, rounded dot, and more
 - Live preview in the settings panel
 
@@ -153,7 +154,43 @@ Works on **all Shell Shockers mirror domains** — `shellshock.io` and 40+ other
 
 ## Changelog
 
-#### v5.1 — current
+#### v5.2 — current
+
+**Crosshair**
+- **Starter crosshairs:** five profiles to try now lead your gallery: **Default**, **Techno**, **Green Dot**, **No Hair** and **No Center Dot**. Profiles you made are kept right after them
+- **Quick picker:** a row of small previews under **GALLERY** switches profiles in one click. When they don't all fit, a **+N** card opens the gallery
+- **Reorder the gallery:** drag cards to change their order (or focus a card and press **Alt + arrow keys**). The quick picker and the profile list follow the same order
+- **Dot outline:** the center dot has its own **Outline Color** and **Outline Width** (**Crosshair ▸ Center Dot ▸ Dot**). A wider outline grows around the dot so the fill keeps its size, for example a pink outline around a white dot. Width 0 removes the outline
+- **Profiles always on:** picking, saving, importing or creating a profile turns the Crosshair Customizer on
+- **Sharp Still crosshair:** the Still center crosshair is drawn on exact screen pixels, so it stays crisp on high-resolution screens and at any Windows scaling
+- **Consistent previews:** crosshair previews look the same at every resolution and scaling (arms used to grow with screen height while the dot didn't)
+- **Easier to use:** gallery cards work with the keyboard and show their buttons on touch screens, and the "customizer is off" message has a **Turn it on** button
+
+**Settings**
+- **Safer settings codes:** codes now end in a check, so a code that was cut off or mistyped is refused instead of half-applied. Importing lists what will change before you confirm, and hotkeys like `/` or `[` are saved correctly. Older codes still work
+- **Key pickers:** **Stats Hotkey** and **Tab Out Key** wait for the next key you press. **Esc** or a click elsewhere cancels, and **Clear** removes the key
+- **Search shows descriptions:** search results show each setting's description under its name
+- **Auto-pick Best Server:** now a setting under **MODS ▸ Menus**
+- **Keyboard controls:** MODS and Crosshair checkboxes work with **Tab** and **Space**, with a visible focus outline. Dialog fields are labeled and show clear validation messages
+- **Tidier tabs:** the MODS and CROSSHAIR tab labels are smaller and always fit their tabs at any resolution or zoom
+- **Clearer feedback:** section shortcuts with no search matches are disabled, Block Ads shows a notice until you reload, and narrow settings panels wrap their controls
+
+**Match History**
+- **Filters and export:** filter by mode or map, see your KDR, and export the matches you see as JSON or CSV
+- **Reliable edits:** renaming or deleting a match changes the right one, even when two matches share a game code
+- **Keyboard support:** open matches with **Enter**, and **Esc** closes the stats panel
+
+**Game screen**
+- **Pause menu:** with Block Ads on, the pause menu moves up into the space the banner ad used to take
+- **Chat history:** paused chat keeps your reading position and offers a jump-to-latest button when new messages arrive
+
+**Performance and reliability**
+- **Lighter background work:** menu tasks share one timer that sleeps while the tab is hidden or you're in a match. Match history is saved at most every 2 seconds, and mode, map and spectate detection read the game's own state instead of scanning the page
+- **Fewer update checks:** the automatic update check runs at most every 6 hours; **Check for updates** still checks right away
+- **Safer loading:** the screenshot library behind stat images is verified before it runs, and the classic sound files come from a fixed version
+- **Cleanup:** removed leftovers from retired settings and an unused server panel
+
+#### v5.1
 
 - **In-game pop-ups:** copying, importing and resetting settings, crosshair profiles, match history and favorites now use Better HUD's own pop-ups instead of the browser's. The confirmation shows the code you copied, and if your browser blocks the clipboard you get the code to copy by hand
 - **New MODS layout:** settings are regrouped into HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay and Manage, with shortcut buttons beside the search box that stay pinned while you scroll. New controls are marked **NEW**
