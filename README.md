@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.2.2-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.2.3-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
@@ -200,7 +200,11 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.2.2 — current
+#### v5.2.3 — current
+
+- **Dot outline saves:** the center dot's **Outline Color** is kept when you reload the page. It used to go back to black on every refresh
+
+#### v5.2.2
 
 - **Update reminder:** when a new Better HUD comes out, you get one friendly reminder the next time you load the game. It shows once per version, so it never nags
 - **Update status:** the bottom of the MODS tab shows whether you're **Up to date**. When an update is waiting, an **Update** button installs it in one click
