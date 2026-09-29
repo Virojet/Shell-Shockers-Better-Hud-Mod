@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.2.1
+// @version      5.2.2
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -77,7 +77,7 @@
    fail quietly. With localStorage "ssb-debug" set to "1", each tag logs its
    first failure once, so a game update that breaks one shows up in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.2.1");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.2.2");
 window.__ssbErr = window.__ssbErr || (function () {
     var on = false, seen = new Set();
     try { on = localStorage.getItem("ssb-debug") === "1"; } catch (e) { }
@@ -1223,7 +1223,20 @@ window.__ssbSettings = window.__ssbSettings || (function () {
 				#mod-settings-section .mod-search-empty { padding:30px 10px 10px; text-align:center; font-size:17px; font-weight:800; color:var(--ssb-ink); }
 				#mod-settings-section .mod-item .ssb-new-pill { margin-left:-8px; }
 				#mod-settings-footer { flex-wrap:wrap; gap:10px 14px; }
-				#mod-settings-footer .mod-footer-mid { display:inline-flex; align-items:center; }
+				#mod-settings-footer .mod-footer-mid { display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:8px; }
+				/* Update status beside "Check for updates": a quiet pill when current, the orange game button when there's an update. */
+				#ssb-update-status:empty { display:none; }
+				#ssb-update-status { display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 12px; box-sizing:border-box; border-radius:999px; font-size:13px; font-weight:800; line-height:1; white-space:nowrap; }
+				#ssb-update-status::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:currentColor; }
+				#ssb-update-status.is-latest { background:rgba(40,150,80,0.15); color:#17703b; }
+				#ssb-update-status.is-checking, #ssb-update-status.is-error { background:rgba(12,87,111,0.1); color:var(--ssb-ink); }
+				#ssb-update-status.is-checking::before { animation:ssb-upd-pulse 0.9s ease-in-out infinite alternate; }
+				@keyframes ssb-upd-pulse { from { opacity:0.25; } to { opacity:1; } }
+				#ssb-update-status.is-available { padding:0; background:none; }
+				#ssb-update-status.is-available::before { display:none; }
+				#ssb-update-status .ssb-upd-go { display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 12px; box-sizing:border-box; border:2px solid #924e0c; border-radius:8px; background:#f79520; color:#fff; font-size:13px; font-weight:900; text-decoration:none; text-shadow:rgba(0,0,0,0.25) 1px 1px 0; box-shadow:inset 0 -3px 0 rgba(0,0,0,0.16); transition:filter 0.12s; }
+				#ssb-update-status .ssb-upd-go:hover { filter:brightness(1.07); }
+				#ssb-update-status .ssb-upd-go::before { content:"↑"; font-size:14px; }
 				#mod-settings-footer .mod-footer-btn { height:30px; margin:0; padding:0 12px; border:2px solid var(--ssb-blue); border-radius:8px; background:rgba(255,255,255,0.35); color:var(--ssb-ink); font-family:"Nunito",system-ui,sans-serif; font-size:13px; font-weight:800; cursor:pointer; transition:background 0.12s; }
 				#mod-settings-footer .mod-footer-btn:hover { background:rgba(255,255,255,0.65); }
 				/* NEW-items dot on the MODS / CROSSHAIR tab, until the tab is opened */
@@ -1477,7 +1490,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                         return { names: [...names], unnamed: unnamed };
                     }
 
-                    let U = window.__ssbUI, _rebuild = () => { document.getElementById("mod-crosshair-section")?.__ssbPreviewDispose?.(); i.__ssbTabsDispose?.(); document.dispatchEvent(new Event("ssb:settings-change")); i.remove(), hdr.remove(), document.getElementById("mod-crosshair-section")?.remove(), document.getElementById("mod-settings-tab")?.remove(), document.getElementById("mod-crosshair-tab")?.remove(), eW(), eo(), ei(), eg(), y() }, _f5 = ch => ch.indexOf("tp-adBypass") >= 0 ? "\nPress F5 to apply Block Ads." : ""; let ec_code = document.createElement("button"); ec_code.className = "ch2-profile-btn", ec_code.textContent = "Copy Settings Code", ec_code.setAttribute("data-tooltip", "Copy all your MODS settings as a short code you can share or keep as a backup."), ec_code.style.cssText = "width: 100%; cursor: pointer; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", ec_code.addEventListener("click", () => { try { let t = packModSettings(d); ef("ui_click"), U.copyCode(t, "Settings code") } catch (o) { U.toast("Couldn't create the settings code: " + o.message, { type: "error" }) } }); /* Hidden commands typed into the Import box: [pattern, action returning the message to show]. */ let cmds = [[/^toggle skins$/i, () => { let on = !d.gameplay.skinUnlocker; return d.gameplay.skinUnlocker = on, window.__ssbSkinUnlocker = on, localStorage.setItem("tp-skinUnlocker", JSON.stringify(on)), document.dispatchEvent(new Event("ssb:settings-change")), on ? "Skin Unlocker is ON." : "Skin Unlocker is OFF." }], [/^hide scope frame$/i, () => { let on; if (typeof window.__ssbToggleScopeFrame === "function") on = window.__ssbToggleScopeFrame(); else { on = !(JSON.parse(localStorage.getItem("tp-hideScopeFrame") || "false") === true); localStorage.setItem("tp-hideScopeFrame", JSON.stringify(on)); } return on ? "Hide Scope Frame is ON." : "Hide Scope Frame is OFF." }], [/^toggle chat$/i, () => { let on = !(JSON.parse(localStorage.getItem("tp-chatBypass") || "false") === true); return localStorage.setItem("tp-chatBypass", JSON.stringify(on)), "Chat Filter Bypass is " + (on ? "ON" : "OFF") + ".\nFully reload the page (F5) for this to take effect — leaving and rejoining a match is not enough." }], [/^setfps\s+(\d+)(?:\s+(\d+))?$/i, fpsCmd => { let min = Math.max(1, Math.min(999, parseInt(fpsCmd[1], 10))), max = fpsCmd[2] ? Math.max(1, Math.min(999, parseInt(fpsCmd[2], 10))) : min; if (min > max) { let tmp = min; min = max; max = tmp } return d.hideFPS.min = min, d.hideFPS.max = max, d.hideFPS.random = !0, localStorage.setItem("tp-minFPS", JSON.stringify(min)), localStorage.setItem("tp-maxFPS", JSON.stringify(max)), localStorage.setItem("tp-randomFPS", JSON.stringify(!0)), "Custom FPS enabled: " + (min === max ? min + " FPS." : min + "-" + max + " FPS.") }], [/^(disable setfps|setfps disable|setfps off)$/i, () => (d.hideFPS.random = !1, localStorage.setItem("tp-randomFPS", JSON.stringify(!1)), "Custom FPS disabled.")], [/^setping\s+(\d+)(?:\s+(\d+))?$/i, pingCmd => { let min = Math.max(1, Math.min(999, parseInt(pingCmd[1], 10))), max = pingCmd[2] ? Math.max(1, Math.min(999, parseInt(pingCmd[2], 10))) : min; if (min > max) { let tmp = min; min = max; max = tmp } return d.ping.min = min, d.ping.max = max, d.ping.random = !0, localStorage.setItem("tp-minPing", JSON.stringify(min)), localStorage.setItem("tp-maxPing", JSON.stringify(max)), localStorage.setItem("tp-randomPing", JSON.stringify(!0)), "Custom Ping enabled: " + (min === max ? min + " ms." : min + "-" + max + " ms.") }], [/^(disable setping|setping disable|setping off)$/i, () => (d.ping.random = !1, localStorage.setItem("tp-randomPing", JSON.stringify(!1)), "Custom Ping disabled.")]]; let ei_code = document.createElement("button"); ei_code.className = "ch2-profile-btn", ei_code.textContent = "Import Settings Code", ei_code.setAttribute("data-tooltip", "Paste a settings code to load those MODS settings."), ei_code.style.cssText = "width: 100%; cursor: pointer; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", ei_code.addEventListener("click", async () => { let code = await U.prompt({ title: "Import Settings", text: "Paste a settings code. It starts with M2-, M- or SSB-MODS-.", placeholder: "M-…", ok: "Next", validate: v => { if (!(v = v.trim())) return "Paste a code first."; if (cmds.some(c => c[0].test(v))) return ""; if (!/^(M2?-|SSB-MODS-)/.test(v)) return "That isn't a settings code. It should start with M2-, M- or SSB-MODS-."; try { let o = unpackModSettings(v); if (!o || "object" != typeof o || Array.isArray(o)) return "That settings code is damaged." } catch (n) { return /incomplete/.test(n.message) ? "The code is incomplete or mistyped. Copy it again in full." : "That settings code is damaged." } return "" } }); if (null == code) return; code = code.trim(); for (let [re, run] of cmds) { let mt = re.exec(code); if (mt) { let msg = run(mt); ef("ui_equip"), U.toast(msg, { type: "success" }); return } } let o; try { o = unpackModSettings(code) } catch (n) { U.toast("Import failed: " + n.message, { type: "error" }); return } let diff = _ssbCodeChanges(o, code), shown = diff.names.slice(0, 8), more = diff.names.length - shown.length + diff.unnamed; if (!shown.length && !diff.unnamed) { U.toast("That code matches your current settings. Nothing to change.", { type: "success" }); return } if (!(await U.confirm({ title: "Import Settings", text: "This will change: " + shown.join(", ") + (more > 0 ? (shown.length ? " and " : "") + more + " more" : "") + ".\nYour crosshairs aren't affected.", ok: "Import", danger: !0 }))) return; try { !function e(t, o) { o && Object.keys(o).forEach(n => { null === o[n] || "object" != typeof o[n] || Array.isArray(o[n]) ? t[n] = o[n] : (t[n] || (t[n] = {}), e(t[n], o[n])) }) }(d, o), _ssbPersistD(); let ch = window.__ssbSettings.applyCode(code); ef("ui_equip"), U.toast("Settings imported." + _f5(ch), { type: "success" }), _rebuild() } catch (n) { U.toast("Import failed: " + n.message, { type: "error" }) } }); let es = document.createElement("button"); es.className = "ch2-reset-btn", es.textContent = "Reset All Mod Settings", es.setAttribute("data-tooltip", o["Reset All Mod Settings"]), es.style.cssText = "margin: 0; width: 100%; cursor: pointer; grid-column: 1 / -1; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", es.addEventListener("click", async () => { if (!(await U.confirm({ title: "Reset All", text: "Reset every MODS setting to its default?\nYour crosshairs aren't affected.", ok: "Reset", danger: !0 }))) return; let D = JSON.parse(JSON.stringify(dDefaults)); Object.keys(D).forEach(k => Object.assign(d[k], D[k])), _ssbPersistD(); let ch = window.__ssbSettings.reset(); ef("ui_click"), U.toast("All MODS settings are back to their defaults." + _f5(ch), { type: "success" }), _rebuild() }), et.appendChild(ec_code), et.appendChild(ei_code), et.appendChild(es); let el = document.createElement("div"); el.id = "mod-settings-footer", el.style.cssText = "margin-top: 30px; padding-top: 15px; border-top: 2px solid rgba(33,106,128,0.15); display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: #216a80; font-family: 'Nunito', system-ui, sans-serif;"; let ed = document.createElement("span"); ed.className = "mod-footer-version", ed.textContent = "Shell Shockers Better HUD v" + window.SSB_VERSION, ed.setAttribute("role", "button"), ed.tabIndex = 0, ed.setAttribute("data-tooltip", "Open the Better HUD changelog."); let fm = document.createElement("span"); fm.className = "mod-footer-mid"; let ecu = document.createElement("button"); ecu.type = "button", ecu.className = "mod-footer-btn", ecu.textContent = "Check for updates", ecu.setAttribute("data-tooltip", "Check GitHub for a newer version of Better HUD right now."), ecu.addEventListener("click", () => { ef("ui_click"), window.__ssbCheckUpdate ? window.__ssbCheckUpdate(!0) : U.toast("Update checks need Tampermonkey or Violentmonkey.", { type: "error" }) }), fm.appendChild(ecu), "5.1" === window.__ssbSettings.NEW_SINCE && fm.appendChild(window.__ssbSettings.newPill()), "undefined" == typeof GM_info && (fm.style.display = "none"); let ec = document.createElement("a"); ec.href = "https://www.youtube.com/@subtovirojet?sub_confirmation=1", ec.target = "_blank", ec.textContent = "Created by Virojet", ec.style.cssText = "color: #ff9800; text-decoration: none; transition: color 0.15s; font-family: 'Nunito', system-ui, sans-serif;", ec.addEventListener("mouseover", () => ec.style.color = "#e68a00"), ec.addEventListener("mouseout", () => ec.style.color = "#ff9800"), el.appendChild(ed), el.appendChild(fm), el.appendChild(ec), i.appendChild(el); let ep = document.createElement("div"); ep.id = "mod-crosshair-section", ep.style.cssText = "display:none;overflow-y:auto;box-sizing:border-box;padding:0 14px 30px;"; let em = t.parentElement; em.appendChild(hdr), em.appendChild(i), em.appendChild(ep), function e() {
+                    let U = window.__ssbUI, _rebuild = () => { document.getElementById("mod-crosshair-section")?.__ssbPreviewDispose?.(); i.__ssbTabsDispose?.(); document.dispatchEvent(new Event("ssb:settings-change")); i.remove(), hdr.remove(), document.getElementById("mod-crosshair-section")?.remove(), document.getElementById("mod-settings-tab")?.remove(), document.getElementById("mod-crosshair-tab")?.remove(), eW(), eo(), ei(), eg(), y() }, _f5 = ch => ch.indexOf("tp-adBypass") >= 0 ? "\nPress F5 to apply Block Ads." : ""; let ec_code = document.createElement("button"); ec_code.className = "ch2-profile-btn", ec_code.textContent = "Copy Settings Code", ec_code.setAttribute("data-tooltip", "Copy all your MODS settings as a short code you can share or keep as a backup."), ec_code.style.cssText = "width: 100%; cursor: pointer; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", ec_code.addEventListener("click", () => { try { let t = packModSettings(d); ef("ui_click"), U.copyCode(t, "Settings code") } catch (o) { U.toast("Couldn't create the settings code: " + o.message, { type: "error" }) } }); /* Hidden commands typed into the Import box: [pattern, action returning the message to show]. */ let cmds = [[/^toggle skins$/i, () => { let on = !d.gameplay.skinUnlocker; return d.gameplay.skinUnlocker = on, window.__ssbSkinUnlocker = on, localStorage.setItem("tp-skinUnlocker", JSON.stringify(on)), document.dispatchEvent(new Event("ssb:settings-change")), on ? "Skin Unlocker is ON." : "Skin Unlocker is OFF." }], [/^hide scope frame$/i, () => { let on; if (typeof window.__ssbToggleScopeFrame === "function") on = window.__ssbToggleScopeFrame(); else { on = !(JSON.parse(localStorage.getItem("tp-hideScopeFrame") || "false") === true); localStorage.setItem("tp-hideScopeFrame", JSON.stringify(on)); } return on ? "Hide Scope Frame is ON." : "Hide Scope Frame is OFF." }], [/^toggle chat$/i, () => { let on = !(JSON.parse(localStorage.getItem("tp-chatBypass") || "false") === true); return localStorage.setItem("tp-chatBypass", JSON.stringify(on)), "Chat Filter Bypass is " + (on ? "ON" : "OFF") + ".\nFully reload the page (F5) for this to take effect — leaving and rejoining a match is not enough." }], [/^setfps\s+(\d+)(?:\s+(\d+))?$/i, fpsCmd => { let min = Math.max(1, Math.min(999, parseInt(fpsCmd[1], 10))), max = fpsCmd[2] ? Math.max(1, Math.min(999, parseInt(fpsCmd[2], 10))) : min; if (min > max) { let tmp = min; min = max; max = tmp } return d.hideFPS.min = min, d.hideFPS.max = max, d.hideFPS.random = !0, localStorage.setItem("tp-minFPS", JSON.stringify(min)), localStorage.setItem("tp-maxFPS", JSON.stringify(max)), localStorage.setItem("tp-randomFPS", JSON.stringify(!0)), "Custom FPS enabled: " + (min === max ? min + " FPS." : min + "-" + max + " FPS.") }], [/^(disable setfps|setfps disable|setfps off)$/i, () => (d.hideFPS.random = !1, localStorage.setItem("tp-randomFPS", JSON.stringify(!1)), "Custom FPS disabled.")], [/^setping\s+(\d+)(?:\s+(\d+))?$/i, pingCmd => { let min = Math.max(1, Math.min(999, parseInt(pingCmd[1], 10))), max = pingCmd[2] ? Math.max(1, Math.min(999, parseInt(pingCmd[2], 10))) : min; if (min > max) { let tmp = min; min = max; max = tmp } return d.ping.min = min, d.ping.max = max, d.ping.random = !0, localStorage.setItem("tp-minPing", JSON.stringify(min)), localStorage.setItem("tp-maxPing", JSON.stringify(max)), localStorage.setItem("tp-randomPing", JSON.stringify(!0)), "Custom Ping enabled: " + (min === max ? min + " ms." : min + "-" + max + " ms.") }], [/^(disable setping|setping disable|setping off)$/i, () => (d.ping.random = !1, localStorage.setItem("tp-randomPing", JSON.stringify(!1)), "Custom Ping disabled.")]]; let ei_code = document.createElement("button"); ei_code.className = "ch2-profile-btn", ei_code.textContent = "Import Settings Code", ei_code.setAttribute("data-tooltip", "Paste a settings code to load those MODS settings."), ei_code.style.cssText = "width: 100%; cursor: pointer; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", ei_code.addEventListener("click", async () => { let code = await U.prompt({ title: "Import Settings", text: "Paste a settings code. It starts with M2-, M- or SSB-MODS-.", placeholder: "M-…", ok: "Next", validate: v => { if (!(v = v.trim())) return "Paste a code first."; if (cmds.some(c => c[0].test(v))) return ""; if (!/^(M2?-|SSB-MODS-)/.test(v)) return "That isn't a settings code. It should start with M2-, M- or SSB-MODS-."; try { let o = unpackModSettings(v); if (!o || "object" != typeof o || Array.isArray(o)) return "That settings code is damaged." } catch (n) { return /incomplete/.test(n.message) ? "The code is incomplete or mistyped. Copy it again in full." : "That settings code is damaged." } return "" } }); if (null == code) return; code = code.trim(); for (let [re, run] of cmds) { let mt = re.exec(code); if (mt) { let msg = run(mt); ef("ui_equip"), U.toast(msg, { type: "success" }); return } } let o; try { o = unpackModSettings(code) } catch (n) { U.toast("Import failed: " + n.message, { type: "error" }); return } let diff = _ssbCodeChanges(o, code), shown = diff.names.slice(0, 8), more = diff.names.length - shown.length + diff.unnamed; if (!shown.length && !diff.unnamed) { U.toast("That code matches your current settings. Nothing to change.", { type: "success" }); return } if (!(await U.confirm({ title: "Import Settings", text: "This will change: " + shown.join(", ") + (more > 0 ? (shown.length ? " and " : "") + more + " more" : "") + ".\nYour crosshairs aren't affected.", ok: "Import", danger: !0 }))) return; try { !function e(t, o) { o && Object.keys(o).forEach(n => { null === o[n] || "object" != typeof o[n] || Array.isArray(o[n]) ? t[n] = o[n] : (t[n] || (t[n] = {}), e(t[n], o[n])) }) }(d, o), _ssbPersistD(); let ch = window.__ssbSettings.applyCode(code); ef("ui_equip"), U.toast("Settings imported." + _f5(ch), { type: "success" }), _rebuild() } catch (n) { U.toast("Import failed: " + n.message, { type: "error" }) } }); let es = document.createElement("button"); es.className = "ch2-reset-btn", es.textContent = "Reset All Mod Settings", es.setAttribute("data-tooltip", o["Reset All Mod Settings"]), es.style.cssText = "margin: 0; width: 100%; cursor: pointer; grid-column: 1 / -1; height: 40px !important; padding: 0 16px !important; box-sizing: border-box !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;", es.addEventListener("click", async () => { if (!(await U.confirm({ title: "Reset All", text: "Reset every MODS setting to its default?\nYour crosshairs aren't affected.", ok: "Reset", danger: !0 }))) return; let D = JSON.parse(JSON.stringify(dDefaults)); Object.keys(D).forEach(k => Object.assign(d[k], D[k])), _ssbPersistD(); let ch = window.__ssbSettings.reset(); ef("ui_click"), U.toast("All MODS settings are back to their defaults." + _f5(ch), { type: "success" }), _rebuild() }), et.appendChild(ec_code), et.appendChild(ei_code), et.appendChild(es); let el = document.createElement("div"); el.id = "mod-settings-footer", el.style.cssText = "margin-top: 30px; padding-top: 15px; border-top: 2px solid rgba(33,106,128,0.15); display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: #216a80; font-family: 'Nunito', system-ui, sans-serif;"; let ed = document.createElement("span"); ed.className = "mod-footer-version", ed.textContent = "Shell Shockers Better HUD v" + window.SSB_VERSION, ed.setAttribute("role", "button"), ed.tabIndex = 0, ed.setAttribute("data-tooltip", "Open the Better HUD changelog."); let fm = document.createElement("span"); fm.className = "mod-footer-mid"; let ecu = document.createElement("button"); ecu.type = "button", ecu.className = "mod-footer-btn", ecu.textContent = "Check for updates", ecu.setAttribute("data-tooltip", "Check GitHub for a newer version of Better HUD right now."), ecu.addEventListener("click", () => { ef("ui_click"), window.__ssbCheckUpdate ? window.__ssbCheckUpdate(!0) : U.toast("Update checks need Tampermonkey or Violentmonkey.", { type: "error" }) }), fm.appendChild(ecu), function () { let us = document.createElement("span"); us.id = "ssb-update-status", us.setAttribute("role", "status"), us.setAttribute("aria-live", "polite"), fm.insertBefore(us, ecu), window.__ssbPaintUpdateStatus && window.__ssbPaintUpdateStatus(us) }(), "5.1" === window.__ssbSettings.NEW_SINCE && fm.appendChild(window.__ssbSettings.newPill()), "undefined" == typeof GM_info && (fm.style.display = "none"); let ec = document.createElement("a"); ec.href = "https://www.youtube.com/@subtovirojet?sub_confirmation=1", ec.target = "_blank", ec.textContent = "Created by Virojet", ec.style.cssText = "color: #ff9800; text-decoration: none; transition: color 0.15s; font-family: 'Nunito', system-ui, sans-serif;", ec.addEventListener("mouseover", () => ec.style.color = "#e68a00"), ec.addEventListener("mouseout", () => ec.style.color = "#ff9800"), el.appendChild(ed), el.appendChild(fm), el.appendChild(ec), i.appendChild(el); let ep = document.createElement("div"); ep.id = "mod-crosshair-section", ep.style.cssText = "display:none;overflow-y:auto;box-sizing:border-box;padding:0 14px 30px;"; let em = t.parentElement; em.appendChild(hdr), em.appendChild(i), em.appendChild(ep), function e() {
                         let t = document.getElementById("mod-crosshair-section");
                         if (!t) return;
                         let o = (e, ...t) => {
@@ -2557,6 +2570,9 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "5.2";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v52Items = [
+            { label: "Update Reminder", text: "When a new Better HUD comes out, you get one friendly reminder the next time you load the game. It shows once per version, so it never nags.", group: "v5.2.2" },
+            { label: "Update Status", text: "The bottom of the MODS tab shows whether you're up to date. When an update is waiting, an Update button installs it in one click.", group: "v5.2.2" },
+            { label: "Wider Crosshair Tab", text: "The Crosshair tab uses the same wide Settings window as MODS, so the profile buttons are never cut off.", group: "v5.2.2" },
             { label: "Settings Tabs", text: "The CROSSHAIR tab no longer sticks out past the right edge of the Settings window. All five tabs now share the row equally at any screen size.", group: "v5.2.1 fixes" },
             { label: "Settings Codes", text: "New settings codes end in a check, so a code that was cut off or mistyped is refused instead of half-applied. Importing lists what will change before you confirm, and hotkeys like / or [ are saved correctly. Older codes still work." },
             { label: "Key Pickers", text: "Stats Hotkey and Tab Out Key wait for the next key you press. Esc or a click elsewhere cancels, and Clear removes the key." },
@@ -2573,7 +2589,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             { label: "Pause Menu", text: "With Block Ads on, the pause menu moves up into the space the banner ad used to take." },
             { label: "Crosshair Tab", text: "Profile gallery cards can be reached with the keyboard and show their buttons on touch screens. The turned-off message has a Turn it on button, and the preview redraws once when shown instead of on several timers." },
             { label: "Safer Loading", text: "The screenshot library behind stat images is verified with an integrity hash before it runs, and the classic sound files come from a pinned version." },
-            { label: "Update Checks", text: "Automatic update checks run at most every 6 hours. The Check for updates button still checks right away." },
+            { label: "Update Checks", text: "Automatic update checks run at most every 30 minutes. The Check for updates button still checks right away." },
             { label: "Cleanup", text: "Removed leftovers from retired settings and an unused server panel." }
         ];
         const v51Items = [
@@ -3013,6 +3029,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             #ssb-update-toast .ssb-upd-secondary { border-color:var(--ssb-blue,#0E7697); background:#fff; color:var(--ssb-ink,#0C576F); box-shadow:inset 0 -3px 0 rgba(14,118,151,0.16); }
             #ssb-update-toast .ssb-upd-secondary:hover { background:#f5fdff; }
             #ssb-update-toast .ssb-upd-link { margin-left:auto; color:var(--ssb-ink,#0C576F); font-size:13px; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
+            #ssb-update-toast .ssb-upd-note { margin:10px 0 0; padding-top:8px; border-top:1px solid rgba(12,87,111,0.18); font-size:12px; font-weight:700; line-height:1.3; opacity:0.85; }
         `;
 
         function showToast(remote) {
@@ -3047,14 +3064,52 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             link.rel = "noopener";
             const actions = mk("div", "ssb-upd-actions");
             actions.append(btn, later, link);
-            el.append(close, mk("div", "ssb-upd-title", "Better HUD v" + remote + " is available"),
-                mk("div", "ssb-upd-text", "You have v" + installed + ". Updating keeps all your settings."), actions);
+            el.append(close, mk("div", "ssb-upd-title", "Better HUD v" + remote + " is out!"),
+                mk("div", "ssb-upd-text", "You're on v" + installed + ". Update to get the newest fixes and features. Your settings and crosshairs stay just as they are."), actions,
+                mk("div", "ssb-upd-note", "This is a one-time reminder. You can check any time at the bottom of the MODS tab."));
             document.body.appendChild(el);
         }
 
         function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
         function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { window.__ssbErr("update#2", e) } }
-        const CHECK_EVERY = 6 * 60 * 60 * 1000;   // the automatic check asks GitHub at most this often
+        const CHECK_EVERY = 30 * 60 * 1000;   // the automatic check asks GitHub at most this often
+
+        // Status shown beside "Check for updates" in the MODS footer.
+        let status = { state: "", remote: "" };
+        function paintStatus(target) {
+            const el = target || document.getElementById("ssb-update-status");   // the footer passes its pill before it's attached
+            if (!el) return;
+            const st = status.state;
+            el.className = st ? "is-" + st : "";
+            el.textContent = "";
+            el.removeAttribute("data-tooltip");
+            if (st === "available") {
+                const a = document.createElement("a");
+                a.className = "ssb-upd-go";
+                a.href = DOWNLOAD_URL;
+                a.target = "_blank";
+                a.rel = "noopener";
+                a.textContent = "Update to v" + status.remote;
+                a.setAttribute("data-tooltip", "You have v" + installed + ". Opens the installer; your settings and crosshairs are kept.");
+                el.appendChild(a);
+            } else if (st === "latest") {
+                el.textContent = "Up to date";
+                el.setAttribute("data-tooltip", "v" + installed + " is the newest version.");
+            } else if (st === "checking") {
+                el.textContent = "Checking\u2026";
+            } else if (st === "error") {
+                el.textContent = "Couldn't check";
+                el.setAttribute("data-tooltip", "GitHub couldn't be reached. Try Check for updates again later.");
+            }
+            const btn = el.parentElement && el.parentElement.querySelector(".mod-footer-btn");
+            if (btn) btn.disabled = st === "checking";
+        }
+        function setStatus(state, remote) {
+            status = { state: state, remote: remote || status.remote };
+            paintStatus();
+        }
+        const statusFor = remote => isNewer(remote, installed) ? "available" : "latest";
+        window.__ssbPaintUpdateStatus = paintStatus;
         // Shows the card (or the manual answer) for a known remote version.
         function consider(remote, manual) {
             const ui = window.__ssbUI;
@@ -3067,9 +3122,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 return;
             }
             if (!manual) {
+                // A friendly reminder once per new version: showing it counts, whether or not
+                // it's clicked. After that the MODS footer keeps saying an update is waiting.
                 const seen = lsGet("ssb-better-ui-changelog-seen");
                 if (seen && !isNewer(remote, seen)) return;
-                if (lsGet("ssb-update-dismissed") === remote) return;
+                if (lsGet("ssb-update-dismissed") === remote || lsGet("ssb-update-reminded") === remote) return;
+                lsSet("ssb-update-reminded", remote);
             } else {
                 const old = document.getElementById("ssb-update-toast");
                 if (old) old.remove();
@@ -3078,21 +3136,27 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         }
         // manual = the "Check for updates" button in MODS: it always asks GitHub,
         // always answers, and ignores an earlier "Later". The automatic check on
-        // load stays quiet unless there's something new, and inside the 6-hour
+        // load stays quiet unless there's something new, and inside the 30-minute
         // window it reuses the last answer instead of fetching.
         function check(manual) {
-            const ui = window.__ssbUI;
+            const ui = window.__ssbUI, cached = lsGet("ssb-update-remote");
             if (!manual) {
-                const last = parseInt(lsGet("ssb-update-checked"), 10) || 0, cached = lsGet("ssb-update-remote");
-                if (cached && last <= Date.now() && Date.now() - last < CHECK_EVERY) { consider(cached, false); return Promise.resolve(); }
+                const last = parseInt(lsGet("ssb-update-checked"), 10) || 0;
+                if (cached && last <= Date.now() && Date.now() - last < CHECK_EVERY) { setStatus(statusFor(cached), cached); consider(cached, false); return Promise.resolve(); }
             }
+            setStatus("checking");
             return fetch(META_URL + "?_=" + Date.now()).then(r => r.text()).then(txt => {
                 const m = txt.match(/@version\s+([0-9.]+)/);
                 if (!m) throw new Error("no @version");
                 lsSet("ssb-update-checked", String(Date.now()));
                 lsSet("ssb-update-remote", m[1]);
+                setStatus(statusFor(m[1]), m[1]);
                 consider(m[1], manual);
-            }).catch(e => { window.__ssbErr("update.check", e); if (manual && ui) ui.toast("Couldn't reach GitHub. Check your connection and try again.", { type: "error" }); });
+            }).catch(e => {
+                window.__ssbErr("update.check", e);
+                setStatus(cached ? statusFor(cached) : "error", cached);   // fall back to the last answer we had
+                if (manual && ui) ui.toast("Couldn't reach GitHub. Check your connection and try again.", { type: "error" });
+            });
         }
         window.__ssbCheckUpdate = check;
 
@@ -4021,7 +4085,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 // default md, so the popup keeps its exact size and the list's bottom
                 // edge moves down into the old gap.
                 "#popupInnards.mod-tab-active { height: min(calc(25em + var(--ss-space-xl) - var(--ss-space-md)), calc(100vh - 330px)); min-height: 0; margin-bottom: var(--ss-space-md) !important; }\n" +
-                "#popupInnards.mod-tab-active > #mod-settings-section { flex: 1 1 0; min-height: 0; max-height: none !important; }";
+                "#popupInnards.mod-tab-active > #mod-settings-section { flex: 1 1 0; min-height: 0; max-height: none !important; }\n" +
+                // The popup shrink-wraps its tab, so MODS (two long columns) came out ~43em wide and
+                // Crosshair only ~32em, clipping the profile row. Give both tabs the same width (the
+                // MODS width, in the game's vh-based em), capped to the screen. `fullwidth` sets
+                // width:100% !important, hence the !important here.
+                "#popupInnards.mod-tab-active { width: min(43.5em, calc(100vw - 6em)) !important; }";
             el.textContent += `
                 #mod-settings-section, #mod-crosshair-section { min-width:0; container-type:inline-size; }
                 #mod-settings-section .mod-item { min-width:0; gap:var(--ssb-gap); position:relative; }
