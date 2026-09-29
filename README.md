@@ -25,7 +25,7 @@
 
 1. **Get Tampermonkey** for your browser: [Chrome](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) · [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd) · [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/) · [Opera GX & others](https://www.tampermonkey.net/) (or use [Violentmonkey](https://violentmonkey.github.io/))
 2. **[Click here to install Better HUD](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)**, then press **Install** on the page that opens
-3. **Open [shellshock.io](https://shellshock.io)** → ⚙️ **Settings** → the new **MODS** and **CROSSHAIR** tabs
+3. **Open [shellshock.io](https://shellshock.io)** → **Settings** → the new **MODS** and **CROSSHAIR** tabs
 
 > [!TIP]
 > **Nothing happens in step 3?** Chrome, Edge, Brave and Opera need one extra switch: open your browser's **Extensions** page → **Tampermonkey** → **Details** → turn on **Allow User Scripts** (on some browsers it's **Developer Mode**, top-right of the Extensions page). Then reload the game. [Step-by-step for each browser ↓](#allow-user-scripts)
@@ -64,11 +64,11 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ## What's new in v5.2
 
-- 🎯 **Starter crosshairs:** Default, Techno, Green Dot, No Hair and No Center Dot are ready to try in your gallery
-- ⚡ **Quick picker:** switch crosshairs in one click from the previews under **GALLERY**, and drag gallery cards into any order
-- ⚪ **Dot outline:** give the center dot its own outline color and width
-- 🔍 **Sharper everywhere:** the Still crosshair is pixel-crisp on high-res screens, and previews look the same at any resolution
-- 🔔 **Update reminder:** one friendly heads-up per new version, plus an up-to-date status in the MODS tab
+- **Starter crosshairs:** Default, Techno, Green Dot, No Hair and No Center Dot are ready to try in your gallery
+- **Quick picker:** switch crosshairs in one click from the previews under **GALLERY**, and drag gallery cards into any order
+- **Dot outline:** give the center dot its own outline color and width
+- **Sharper everywhere:** the Still crosshair is pixel-crisp on high-res screens, and previews look the same at any resolution
+- **Update reminder:** one friendly heads-up per new version, plus an up-to-date status in the MODS tab
 
 [Full changelog ↓](#changelog)
 
@@ -76,15 +76,15 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ## Features
 
-| | Feature | What it does |
-|:---:|---|---|
-| 🎯 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
-| 🖥️ | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| 🚀 | **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, wider FOV with black bars |
-| 🌍 | **Server picker** | Choose your region from the home screen, with live ping |
-| 📊 | **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
-| ⭐ | **Inventory favorites** | Star inventory items and share them with a code |
-| 🔊 | **Legacy skins & sounds** | Classic gun models and sound effects |
+| Feature | What it does |
+|---|---|
+| **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
+| **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
+| **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, wider FOV with black bars |
+| **Server picker** | Choose your region from the home screen, with live ping |
+| **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
+| **Inventory favorites** | Star inventory items and share them with a code |
+| **Legacy skins & sounds** | Classic gun models and sound effects |
 
 <details>
 <summary><b>Full feature list</b></summary>
@@ -137,7 +137,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ## Using it
 
-- **Find everything** under the game's ⚙️ **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
+- **Find everything** under the game's **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
 - **Search** or use the section buttons beside the search box to jump to an option. **Hover** any option for a description.
 - **See what changed** by clicking the **Shell Shockers Better HUD** version text at the bottom of the MODS tab.
 
