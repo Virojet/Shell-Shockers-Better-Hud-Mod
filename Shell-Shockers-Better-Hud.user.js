@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.2.0
+// @version      5.2.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -77,7 +77,7 @@
    fail quietly. With localStorage "ssb-debug" set to "1", each tag logs its
    first failure once, so a game update that breaks one shows up in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.2.0");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.2.1");
 window.__ssbErr = window.__ssbErr || (function () {
     var on = false, seen = new Set();
     try { on = localStorage.getItem("ssb-debug") === "1"; } catch (e) { }
@@ -1191,9 +1191,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
 				#mod-settings-section .ch2-profile-btn.danger:active, #mod-crosshair-section .ch2-profile-btn.danger:active { transform: translateY(3px) !important; box-shadow: 0 1px 0 var(--ssb-red-shadow-hi) !important; }
 				#mod-settings-section input[type="file"], #mod-crosshair-section input[type="file"] { display: none !important; }
 				/* MODS / CROSSHAIR labels: sized like the native tab text (follows the UI scale), and capped by the tab strip's width
-				   (cqw = 1% of the strip, which holds five tabs) so CROSSHAIR always fits its tab at any resolution or zoom. */
+				   (cqw = 1% of the strip, which holds five tabs) so CROSSHAIR always fits its tab at any resolution or zoom.
+				   The game gives .ss_bigtab a min-width of 8em (em follows screen height), so five tabs overflowed the dialog on
+				   wider-than-tall screens; all five tabs share the strip equally and may shrink below it. */
 				.mod-tab-strip { container-type: inline-size; }
-				.mod-tab-label { font-size: min(calc(16px * var(--ssb-ui-scale, 1)), 2.4cqw) !important; line-height: 1; white-space: nowrap; letter-spacing: 0.02em; }
+				.mod-tab-strip > * { flex: 1 1 0 !important; min-width: 0 !important; }
+				.mod-tab-label { font-size: min(calc(16px * var(--ssb-ui-scale, 1)), 2.2cqw) !important; line-height: 1; white-space: nowrap; letter-spacing: 0.02em; }
 				.mod-tab-label { opacity: 0.4; transition: opacity 0.15s; }
 				#mod-settings-tab:hover .mod-tab-label, #mod-crosshair-tab:hover .mod-tab-label { opacity: 0.75; }
 				#mod-settings-tab.mod-tab-is-active .mod-tab-label, #mod-crosshair-tab.mod-tab-is-active .mod-tab-label { opacity: 1; }
@@ -2554,6 +2557,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "5.2";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v52Items = [
+            { label: "Settings Tabs", text: "The CROSSHAIR tab no longer sticks out past the right edge of the Settings window. All five tabs now share the row equally at any screen size.", group: "v5.2.1 fixes" },
             { label: "Settings Codes", text: "New settings codes end in a check, so a code that was cut off or mistyped is refused instead of half-applied. Importing lists what will change before you confirm, and hotkeys like / or [ are saved correctly. Older codes still work." },
             { label: "Key Pickers", text: "Stats Hotkey and Tab Out Key wait for the next key you press. Esc or a click elsewhere cancels, and Clear removes the key." },
             { label: "Match History", text: "Filter by mode or map, see your KDR, and rename or delete matches reliably even when two share a game code. Export the matches you see as JSON or CSV, and use the list with the keyboard." },
