@@ -8,12 +8,12 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.2.3-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.3.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v52) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v53) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
 
 </div>
 
@@ -62,13 +62,12 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.2
+## What's new in v5.3
 
-- **Starter crosshairs:** Default, Techno, Green Dot, No Hair and No Center Dot are ready to try in your gallery
-- **Quick picker:** switch crosshairs in one click from the previews under **GALLERY**, and drag gallery cards into any order
-- **Dot outline:** give the center dot its own outline color and width
-- **Sharper everywhere:** the Still crosshair is pixel-crisp on high-res screens, and previews look the same at any resolution
-- **Update reminder:** one friendly heads-up per new version, plus an up-to-date status in the MODS tab
+- **MODS sidebar:** a button for each section beside the search box, one section at a time, and every setting as a card with its description and a switch
+- **New Crosshair tab:** the preview and your profiles in one panel on the left, and Arms and Center Dot laid out like the MODS pages
+- **Footer bar:** the version, update status and **Check for updates** on one bar along the bottom of both tabs
+- **Pause menu:** a new glass **Reset Volume** button, and on tall screens the menu no longer covers the team scores
 
 [Full changelog ↓](#changelog)
 
@@ -126,7 +125,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Block Ads**: optional, off by default; hides in-game video and banner ads after a page reload (F5)
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings and inventory favorites as shareable codes
-- Searchable settings, with section shortcuts (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
+- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
 - In-game pop-ups for codes and confirmations instead of browser popups
 - **Check for updates** at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
 - Settings persist via `localStorage`
@@ -138,8 +137,8 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 ## Using it
 
 - **Find everything** under the game's **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
-- **Search** or use the section buttons beside the search box to jump to an option. **Hover** any option for a description.
-- **See what changed** by clicking the **Shell Shockers Better HUD** version text at the bottom of the MODS tab.
+- **Search**, or pick a section in the sidebar. Each setting's description is under its name.
+- **See what changed** by clicking the **Better HUD** version at the bottom of the MODS tab.
 
 ---
 
@@ -200,7 +199,34 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.2.3 — current
+#### v5.3 — current
+
+**MODS**
+- **Sidebar:** the search box and a button for each section (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage) sit in a panel on the left. The tab shows one section at a time and remembers the last one you opened
+- **Cards:** each setting is a card with its name, its description underneath and a switch. Cards that are on get an orange edge
+- **Search:** finds settings in every section. Section buttons with no matches are greyed out, and clearing the search takes you back to the section you were on
+- **Manage:** Copy, Import and Reset are tiles that say what they do
+
+**Crosshair**
+- **New layout:** the preview and your profiles share one panel on the left, and the preview grows to fill it. Arms and Center Dot are laid out like a MODS page, with switches, color fields and one-line sliders
+- **Background:** one field under the preview holds the four preset backgrounds and your own color
+- **Center Dot:** Dot, Plus and Still are one control with an icon each
+- **Gallery:** a page of its own with a **Back** button. Drag cards to reorder them, as before
+- **Reset Crosshair:** a quiet row at the end of the list. It still asks before resetting
+- **Fixes:** rows that appear after you open a group or change the dot shape are no longer cut off, and the highlight around the box or switch you're using shows in full
+
+**Both tabs**
+- **Footer bar:** the version, update status, **Check for updates** and the credit sit on one bar along the bottom. It stays put while you scroll
+- **Scrolling:** a slim scrollbar, and long lists fade out at the edge while there's more to scroll
+
+**Pause menu**
+- **Reset Volume:** a glass button with a reset icon, like Reset Crosshair
+- **Team scores:** on tall screens the pause menu no longer covers the team scores at the top
+
+<details>
+<summary><b>v5.2 and older</b></summary>
+
+#### v5.2.3
 
 - **Dot outline saves:** the center dot's **Outline Color** is kept when you reload the page. It used to go back to black on every refresh
 
@@ -250,9 +276,6 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 - **Fewer update checks:** the automatic update check runs at most every 6 hours; **Check for updates** still checks right away
 - **Safer loading:** the screenshot library behind stat images is verified before it runs, and the classic sound files come from a fixed version
 - **Cleanup:** removed leftovers from retired settings and an unused server panel
-
-<details>
-<summary><b>v5.1 and older</b></summary>
 
 #### v5.1
 
