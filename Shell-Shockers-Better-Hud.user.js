@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.3.0
+// @version      5.3.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -77,7 +77,7 @@
    fail quietly. With localStorage "ssb-debug" set to "1", each tag logs its
    first failure once, so a game update that breaks one shows up in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.3.0");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.3.1");
 window.__ssbErr = window.__ssbErr || (function () {
     var on = false, seen = new Set();
     try { on = localStorage.getItem("ssb-debug") === "1"; } catch (e) { }
@@ -712,6 +712,45 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         onToggle: function (v) { window.__ssbUI.toast("Block Ads is " + (v ? "on" : "off") + ". Press F5 to apply it."); }
     });
 }();
+/* Better HUD — "Disable Chat Cooldown" toggle, Settings ▸ MODS ▸ Chat.
+   The game counts your recent chat messages: each one you send adds 1, and
+   the count drops by 1 every 4 s (1/120 per 30 Hz tick). Above 2 it hides the
+   chat box and won't open chat, so you get 3 quick messages, then one every
+   4 s. Admins and the host of a private game skip the count. With the setting
+   on, sending skips it too, and the limit of 2 for opening chat and showing
+   the box becomes Infinity, so turning it on mid-cooldown frees the chat at
+   once instead of within 4 s. The patch is always installed and reads the
+   setting each time, so the toggle needs no reload, and with it off the game
+   runs as before. Only the limit in your browser changes: the server can
+   still limit or drop messages. */
+!function () {
+    var KEY = "tp-noChatCooldown", on = false;
+    try { on = JSON.parse(localStorage.getItem(KEY) || "false") === true; } catch (e) { window.__ssbErr("patches#7", e) }
+    window.__ssbNoChatCooldown = function () { return on; };
+    window.__ssbPatches.add("chat-cooldown", function (js) {
+        // Sending a message: er.adminRoles||Ob||(gN.chatLines++,gN.chatLines>2&&(Pb.style.visibility="hidden"))
+        var hits = 0, out = js.replace(/(\.adminRoles\|\|[\w$]+\|\|)(\([\w$]+\.chatLines\+\+)/g, function (all, skip, count) {
+            hits++;
+            return skip + "window.__ssbNoChatCooldown()||" + count;
+        });
+        if (hits !== 1) return js;
+        // Opening chat (gN.chatLines<=2&&aT()&&...) and showing the box each tick (i.chatLines<=2&&(Pb.style.visibility="visible")).
+        var parts = out.split(".chatLines<=2&&");
+        if (parts.length === 3) return parts.join(".chatLines<=(window.__ssbNoChatCooldown()?1/0:2)&&");
+        window.__ssbErr("patches#8", Error("chat-cooldown: chat limit not found"));
+        return out;
+    });
+    window.__ssbSettings.add({
+        key: KEY, section: "chat", after: "tp-infiniteChat", label: "Disable Chat Cooldown", code: "At", def: false,
+        tip: "Lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages and lets you send one more every 4 seconds.",
+        keywords: "spam limit slow mode delay wait timer messages",
+        get: function () { return on; },
+        set: function (v) {
+            on = !!v;
+            try { localStorage.setItem(KEY, JSON.stringify(on)); } catch (e) { window.__ssbErr("patches#9", e) }
+        }
+    });
+}();
 !function () {
     let _ssbBawk = undefined;
     Object.defineProperty(window, 'BAWK', {
@@ -1299,7 +1338,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
 				}
 				#mod-settings-section.ssb-paged .mod-header::after { display:block; margin-top:5px; font-family:"Nunito",system-ui,sans-serif; font-size:13.5px; font-weight:700; letter-spacing:0; line-height:1.3; text-transform:none; color:var(--pm-sub); }
 				#mod-settings-section.ssb-paged .mod-header[data-section="hud"]::after { content:"Choose which parts of the in-game HUD you see."; }
-				#mod-settings-section.ssb-paged .mod-header[data-section="chat"]::after { content:"Hide the chat, or keep its full history for the match."; }
+				#mod-settings-section.ssb-paged .mod-header[data-section="chat"]::after { content:"Hide the chat, keep its full history, or turn off its cooldown."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="effects"]::after { content:"Turn off visual effects for a cleaner, faster game."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Your frame rate and ping readout, and how it looks."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="menus"]::after { content:"Extras for the home screen, pause menu and inventory."; }
@@ -2996,12 +3035,13 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "5.3";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v53Items = [
-            { label: "MODS Sidebar", text: "The MODS tab has a sidebar with the search box and a button for each section, and shows one section at a time. Every setting is a card with its description and a switch. Search still finds settings in every section." },
-            { label: "New Crosshair Tab", text: "The preview and your profiles share one panel on the left. Arms and Center Dot are laid out like a MODS page, with switches, color fields and one-line sliders, and the gallery is a page of its own." },
-            { label: "Footer Bar", text: "The version, the update status and Check for updates sit on one bar along the bottom of both tabs. It stays put while you scroll." },
-            { label: "Reset Volume", text: "The pause menu's Reset Volume button has a new glass look with a reset icon." },
-            { label: "Pause Menu", text: "On tall screens the pause menu no longer covers the team scores at the top." },
-            { label: "Crosshair Fixes", text: "Rows that appear after you open a group or change the dot shape are no longer cut off, and the highlight around the box or switch you're using shows in full." }
+            { label: "Chat Cooldown", text: "New Disable Chat Cooldown switch under MODS ▸ Chat lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages, then lets you send one more every 4 seconds. It's off by default and works as soon as you turn it on.", group: "v5.3.1" },
+            { label: "MODS Sidebar", text: "The MODS tab has a sidebar with the search box and a button for each section, and shows one section at a time. Every setting is a card with its description and a switch. Search still finds settings in every section.", group: "v5.3" },
+            { label: "New Crosshair Tab", text: "The preview and your profiles share one panel on the left. Arms and Center Dot are laid out like a MODS page, with switches, color fields and one-line sliders, and the gallery is a page of its own.", group: "v5.3" },
+            { label: "Footer Bar", text: "The version, the update status and Check for updates sit on one bar along the bottom of both tabs. It stays put while you scroll.", group: "v5.3" },
+            { label: "Reset Volume", text: "The pause menu's Reset Volume button has a new glass look with a reset icon.", group: "v5.3" },
+            { label: "Pause Menu", text: "On tall screens the pause menu no longer covers the team scores at the top.", group: "v5.3" },
+            { label: "Crosshair Fixes", text: "Rows that appear after you open a group or change the dot shape are no longer cut off, and the highlight around the box or switch you're using shows in full.", group: "v5.3" }
         ];
         const v52Items = [
             { label: "Dot Outline Saves", text: "The center dot's Outline Color is kept when you reload the page. It used to go back to black on every refresh.", group: "v5.2.3" },

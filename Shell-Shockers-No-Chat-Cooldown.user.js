@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         Shell Shockers Better UI
-// @version      5.3.1
-// @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
-// @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
+// @name         Shell Shockers No Chat Cooldown
+// @version      1.0.0
+// @description  Removes the chat cooldown, so you can send chat messages back to back.
+// @namespace    https://github.com/Virojet
 // @author       Virojet
 // @license      MIT
 // @homepageURL  https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod
 // @supportURL   https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues
-// @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
-// @updateURL    https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
+// @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js
+// @updateURL    https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js
 // @match        *://*.shellshock.io/*
 // @match        *://*.algebra.best/*
 // @match        *://*.algebra.vip/*
@@ -65,7 +65,25 @@
 // @match        *://*.zygote.cafe/*
 // @match        *://*.shellshockers.best/*
 // @match        *://*.eggboy.me/*
-// (html-to-image is lazy-loaded from cdnjs, with an SRI hash, on the first stats screenshot)
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
+
+/* The game counts the chat messages you send in your player's chatLines: each
+   one adds 1, and the count drops by 1 every 4 s. Above 2 it hides the chat box
+   and won't open chat, so you get 3 quick messages, then one every 4 s.
+
+   This pins chatLines at 0. The game makes players with a constructor that
+   assigns this.chatLines=0, and assigning a name that the prototype chain
+   defines as an accessor runs the accessor's setter instead of adding the
+   property. So with this accessor on Object.prototype, players never get a
+   chatLines of their own: every read gives 0 and every write is dropped.
+
+   It doesn't touch the game's code, so it runs beside Better HUD, and it keeps
+   working as long as the game keeps the name chatLines. Only the limit in your
+   browser goes: the server may still have its own. */
+Object.defineProperty(Object.prototype, "chatLines", {
+    get: function () { return 0; },
+    set: function () { },
+    configurable: true
+});

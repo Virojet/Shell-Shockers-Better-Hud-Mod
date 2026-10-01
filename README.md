@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.3.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.3.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
@@ -93,6 +93,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Server-region picker** integrated into the home screen with live ping
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
+- **Disable Chat Cooldown**: send chat messages back to back instead of waiting after every 3
 - **Match History button** on the home screen, beside the Server selector
 - **Volume slider** added directly to the pause menu
 - **Auto-fullscreen** on pointer lock
@@ -139,6 +140,15 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Find everything** under the game's **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
 - **Search**, or pick a section in the sidebar. Each setting's description is under its name.
 - **See what changed** by clicking the **Better HUD** version at the bottom of the MODS tab.
+
+### Just the chat cooldown
+
+Only want to chat without the cooldown? **[Install Shell Shockers No Chat Cooldown](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js)**, a tiny separate script that does just that. It works with or without Better HUD. To turn it off, switch it off in Tampermonkey and reload the game.
+
+Better HUD has the same thing built in: **MODS ▸ Chat ▸ Disable Chat Cooldown**.
+
+> [!NOTE]
+> Both remove the limit in your browser only. The game's server may still have a limit of its own.
 
 ---
 
@@ -199,7 +209,12 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.3 — current
+#### v5.3.1 — current
+
+- **Disable Chat Cooldown:** a new switch under **MODS ▸ Chat** lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages, then lets you send one more every 4 seconds. It's off by default and works as soon as you turn it on
+- **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. [Install it here](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js)
+
+#### v5.3
 
 **MODS**
 - **Sidebar:** the search box and a button for each section (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage) sit in a panel on the left. The tab shows one section at a time and remembers the last one you opened
