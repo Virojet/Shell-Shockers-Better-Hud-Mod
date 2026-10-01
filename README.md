@@ -143,7 +143,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ### Just the chat cooldown
 
-Only want to chat without the cooldown? **[Install Shell Shockers No Chat Cooldown](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js)**, a tiny separate script that does just that. It works with or without Better HUD. To turn it off, switch it off in Tampermonkey and reload the game.
+Only want to chat without the cooldown? **[Install Shell Shockers No Chat Cooldown](https://raw.githubusercontent.com/Virojet/Shell-Shockers-No-Chat-Cooldown/main/Shell-Shockers-No-Chat-Cooldown.user.js)**, a tiny separate script that does just that ([its repo](https://github.com/Virojet/Shell-Shockers-No-Chat-Cooldown)). It works with or without Better HUD. To turn it off, switch it off in Tampermonkey and reload the game.
 
 Better HUD has the same thing built in: **MODS ▸ Chat ▸ Disable Chat Cooldown**.
 
@@ -212,7 +212,7 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 #### v5.3.1 — current
 
 - **Disable Chat Cooldown:** a new switch under **MODS ▸ Chat** lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages, then lets you send one more every 4 seconds. It's off by default and works as soon as you turn it on
-- **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. [Install it here](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-No-Chat-Cooldown.user.js)
+- **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. It has [its own repo](https://github.com/Virojet/Shell-Shockers-No-Chat-Cooldown)
 
 #### v5.3
 
