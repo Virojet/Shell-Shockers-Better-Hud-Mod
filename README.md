@@ -8,12 +8,12 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.3.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.4.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v53) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v54) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
 
 </div>
 
@@ -62,12 +62,11 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.3
+## What's new in v5.4
 
-- **MODS sidebar:** a button for each section beside the search box, one section at a time, and every setting as a card with its description and a switch
-- **New Crosshair tab:** the preview and your profiles in one panel on the left, and Arms and Center Dot laid out like the MODS pages
-- **Footer bar:** the version, update status and **Check for updates** on one bar along the bottom of both tabs
-- **Pause menu:** a new glass **Reset Volume** button, and on tall screens the menu no longer covers the team scores
+- **FOV (Black Bars):** works like dragging your browser window shorter. In a match, the game view, the HUD and the pause menu all fit between the black bars, and the scope lines up with them
+- **Disable Anti-Aliasing is back** under **MODS ▸ FPS & Ping**. It turns off the game's edge smoothing, which can raise your FPS on a weak graphics card
+- **Disable Chat Cooldown removed:** the game's servers now enforce the chat limit themselves, so the switch no longer helped
 
 [Full changelog ↓](#changelog)
 
@@ -79,7 +78,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
 | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Effects & FPS** | Uncap FPS, hide bullets / explosions / particles, wider FOV with black bars |
+| **Effects & FPS** | Uncap FPS, disable anti-aliasing, hide bullets / explosions / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
 | **Inventory favorites** | Star inventory items and share them with a code |
@@ -93,7 +92,6 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Server-region picker** integrated into the home screen with live ping
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
-- **Disable Chat Cooldown**: send chat messages back to back instead of waiting after every 3
 - **Match History button** on the home screen, beside the Server selector
 - **Volume slider** added directly to the pause menu
 - **Auto-fullscreen** on pointer lock
@@ -108,9 +106,10 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
+- **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
 - Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst, or all particles
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
-- **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion
+- **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. In a match, the HUD and menus fit between the bars, like in a shorter browser window
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
@@ -140,15 +139,6 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Find everything** under the game's **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
 - **Search**, or pick a section in the sidebar. Each setting's description is under its name.
 - **See what changed** by clicking the **Better HUD** version at the bottom of the MODS tab.
-
-### Just the chat cooldown
-
-Only want to chat without the cooldown? **[Install Shell Shockers No Chat Cooldown](https://raw.githubusercontent.com/Virojet/Shell-Shockers-No-Chat-Cooldown/main/Shell-Shockers-No-Chat-Cooldown.user.js)**, a tiny separate script that does just that ([its repo](https://github.com/Virojet/Shell-Shockers-No-Chat-Cooldown)). It works with or without Better HUD. To turn it off, switch it off in Tampermonkey and reload the game.
-
-Better HUD has the same thing built in: **MODS ▸ Chat ▸ Disable Chat Cooldown**.
-
-> [!NOTE]
-> Both remove the limit in your browser only. The game's server may still have a limit of its own.
 
 ---
 
@@ -209,7 +199,17 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.3.1 — current
+#### v5.4 — current
+
+- **FOV (Black Bars):** now works like dragging your browser window shorter. In a match, the game view, the HUD and the pause menu all fit between the black bars, sized as they would be in a window that short. The HUD used to stay full-screen, on top of the bars
+- **Scope lines:** the scope now lines up with the black bars, so FOV no longer turns on **Hide Scope Lines**. If it turned that on for you, switch it off under **MODS ▸ HUD**
+- **Disable Anti-Aliasing is back** under **MODS ▸ FPS & Ping**. It turns off the game's edge smoothing, which can raise your FPS on a weak graphics card. Press **F5** after changing it
+- **Disable Chat Cooldown removed:** the game's servers now enforce the chat limit themselves, so the switch no longer helped
+
+<details>
+<summary><b>v5.3 and older</b></summary>
+
+#### v5.3.1
 
 - **Disable Chat Cooldown:** a new switch under **MODS ▸ Chat** lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages, then lets you send one more every 4 seconds. It's off by default and works as soon as you turn it on
 - **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. It has [its own repo](https://github.com/Virojet/Shell-Shockers-No-Chat-Cooldown)
@@ -237,9 +237,6 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 **Pause menu**
 - **Reset Volume:** a glass button with a reset icon, like Reset Crosshair
 - **Team scores:** on tall screens the pause menu no longer covers the team scores at the top
-
-<details>
-<summary><b>v5.2 and older</b></summary>
 
 #### v5.2.3
 
