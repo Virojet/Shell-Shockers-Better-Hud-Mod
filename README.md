@@ -8,12 +8,12 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.4.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.5.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v54) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v55) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
 
 </div>
 
@@ -62,11 +62,11 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.4
+## What's new in v5.5
 
-- **FOV (Black Bars):** works like dragging your browser window shorter. In a match, the game view, the HUD and the pause menu all fit between the black bars, and the scope lines up with them
-- **Disable Anti-Aliasing is back** under **MODS ▸ FPS & Ping**. It turns off the game's edge smoothing, which can raise your FPS on a weak graphics card
-- **Disable Chat Cooldown removed:** the game's servers now enforce the chat limit themselves, so the switch no longer helped
+- **Smart Auto Detail** (on by default, under **MODS ▸ FPS & Ping**): when your FPS drops under 40, it lowers the resolution a step at a time instead of halving it, keeps a step only if it helps, and raises it again when your FPS recovers. Every match starts sharp
+- **FPS Check:** press **Run Check** at the bottom of **MODS ▸ FPS & Ping**. It looks for common causes of low FPS and tells you how to fix each one
+- **FOV (Black Bars):** the HUD and menus keep their normal size again, and only the game view goes between the bars. Turn on **Resize Everything** under **MODS ▸ Gameplay** to fit them between the bars too, like in v5.4
 
 [Full changelog ↓](#changelog)
 
@@ -78,7 +78,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
 | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Effects & FPS** | Uncap FPS, disable anti-aliasing, hide bullets / explosions / particles, wider FOV with black bars |
+| **Effects & FPS** | Uncap FPS, Smart Auto Detail, FPS Check, disable anti-aliasing, hide bullets / explosions / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
 | **Inventory favorites** | Star inventory items and share them with a code |
@@ -106,10 +106,12 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
+- **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
+- **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
 - Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst, or all particles
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
-- **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. In a match, the HUD and menus fit between the bars, like in a shorter browser window
+- **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. The HUD and menus keep their normal size; **Resize Everything** fits them between the bars too, like in a shorter browser window
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
@@ -172,6 +174,15 @@ It takes effect after a full page reload (**F5**). Leaving and rejoining a match
 </details>
 
 <details>
+<summary><b>The game runs at a low FPS</b></summary>
+
+<br>
+
+Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for common causes, like the browser not using your graphics card or a battery saver holding the game to 30 FPS, and tells you how to fix each one. Press **Copy** to share the report when you ask for help.
+
+</details>
+
+<details>
 <summary><b>Something broke after a Shell Shockers update</b></summary>
 
 <br>
@@ -199,15 +210,22 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.4 — current
+#### v5.5 — current
+
+- **Smart Auto Detail:** new under **MODS ▸ FPS & Ping**, on by default. When your FPS dips under 40, the game's own Auto Detail turns shadows off, then halves the resolution and keeps it that way. Smart Auto Detail takes over from it: it lowers the resolution a step at a time (85%, 70%, then 50%), keeps a step only if your FPS goes up, and raises it again once your FPS recovers. It leaves shadows alone and saves nothing, so every match starts sharp. The game's Auto Detail setting needs to stay on
+- **FPS Check:** a **Run Check** button at the bottom of **MODS ▸ FPS & Ping**. It measures your frame rate and looks for common causes of low FPS: the browser not using your graphics card, a faster graphics card left unused, a battery saver holding you to 30 FPS, or the game stuck at half resolution. It tells you how to fix each one, and **Copy** puts the report on your clipboard
+- **FOV (Black Bars):** the HUD and menus keep their normal size again, like in v5.3. Only the game view goes between the bars, and the scope lines up with it. The bars also wait for the match itself, so the loading screen and the inventory stay full-size
+- **Resize Everything:** a new switch under **MODS ▸ Gameplay**, below FOV (Black Bars). Turn it on to fit the HUD and menus between the bars too, like a shorter browser window (the v5.4 look)
+
+<details>
+<summary><b>v5.4 and older</b></summary>
+
+#### v5.4
 
 - **FOV (Black Bars):** now works like dragging your browser window shorter. In a match, the game view, the HUD and the pause menu all fit between the black bars, sized as they would be in a window that short. The HUD used to stay full-screen, on top of the bars
 - **Scope lines:** the scope now lines up with the black bars, so FOV no longer turns on **Hide Scope Lines**. If it turned that on for you, switch it off under **MODS ▸ HUD**
 - **Disable Anti-Aliasing is back** under **MODS ▸ FPS & Ping**. It turns off the game's edge smoothing, which can raise your FPS on a weak graphics card. Press **F5** after changing it
 - **Disable Chat Cooldown removed:** the game's servers now enforce the chat limit themselves, so the switch no longer helped
-
-<details>
-<summary><b>v5.3 and older</b></summary>
 
 #### v5.3.1
 

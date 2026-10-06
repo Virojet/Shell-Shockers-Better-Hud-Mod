@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.4.0
+// @version      5.5.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -77,7 +77,7 @@
    fail quietly. With localStorage "ssb-debug" set to "1", each tag logs its
    first failure once, so a game update that breaks one shows up in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.4.0");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "5.5.0");
 window.__ssbErr = window.__ssbErr || (function () {
     var on = false, seen = new Set();
     try { on = localStorage.getItem("ssb-debug") === "1"; } catch (e) { }
@@ -237,6 +237,17 @@ window.__ssbUI = window.__ssbUI || (function () {
         #ssb-dialog-panel .ssb-dlg-red { --c:#e81616; --b:#881a1a; --i1:#d11414; --i2:#e29092; }
         #ssb-dialog-panel .ssb-dlg-yolk { --c:#f79520; --b:#924e0c; --i1:#d97611; --i2:#f1c59a; }
         #ssb-dialog-panel .ssb-dlg-blue { --c:#0b93bd; --b:var(--ssb-ink); --i1:#086e8d; --i2:#00ade6; }
+        #ssb-dialog-panel.ssb-dlg-wide { width:min(560px,100%); }
+        #ssb-dialog-panel .ssb-dlg-report { max-height:min(58vh,560px); overflow-y:auto; margin:0 -4px; padding:0 4px; text-align:left; }
+        #ssb-dialog-panel .ssb-dlg-sub { margin:14px 0 6px; font-size:13px; font-weight:900; letter-spacing:0.6px; text-transform:uppercase; color:#fff; text-shadow:rgba(0,0,0,0.3) 1px 1px 0; }
+        #ssb-dialog-panel .ssb-dlg-sub:first-child { margin-top:0; }
+        #ssb-dialog-panel .ssb-dlg-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+        #ssb-dialog-panel .ssb-dlg-list li { margin:0; padding:9px 12px; border-radius:8px; background:rgba(255,255,255,0.9); color:var(--ssb-ink); }
+        #ssb-dialog-panel .ssb-dlg-list b { display:block; font-size:15px; font-weight:900; line-height:1.25; }
+        #ssb-dialog-panel .ssb-dlg-list span { display:block; margin-top:3px; font-size:14px; font-weight:700; line-height:1.35; color:var(--ssb-muted); }
+        #ssb-dialog-panel .ssb-dlg-facts li { display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:6px 12px; }
+        #ssb-dialog-panel .ssb-dlg-facts b { flex:none; font-size:14px; }
+        #ssb-dialog-panel .ssb-dlg-facts span { margin:0; text-align:right; }
         #ssb-toast-stack { position:fixed; top:14px; left:0; right:0; z-index:2147483647; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; font-family:"Nunito",system-ui,sans-serif; }
         #ssb-toast-stack * { font-size:inherit; letter-spacing:normal; }
         #ssb-toast-stack .ssb-toast { pointer-events:auto; cursor:pointer; max-width:min(540px,92vw); box-sizing:border-box; padding:10px 16px; border:3px solid var(--ssb-blue); border-radius:10px; background:var(--ssb-panel); color:var(--ssb-ink); font-size:15px; font-weight:800; line-height:1.3; text-align:center; white-space:pre-line; box-shadow:0 8px 22px rgba(0,0,0,0.3); animation:ssb-toast-in 0.16s ease; transition:opacity 0.2s; }
@@ -300,11 +311,13 @@ window.__ssbUI = window.__ssbUI || (function () {
             var prevFocus = document.activeElement;
             var ov = node("div"); ov.id = "ssb-dialog-overlay";
             var panel = node("div"); panel.id = "ssb-dialog-panel";
+            if (o.wide) panel.className = "ssb-dlg-wide";
             panel.setAttribute("role", "dialog");
             panel.setAttribute("aria-modal", "true");
             panel.setAttribute("aria-label", o.title || "Better HUD");
             panel.appendChild(node("h2", "ssb-dlg-title", o.title || "Better HUD"));
             if (o.text) panel.appendChild(node("p", "ssb-dlg-text", o.text));
+            if (o.body) panel.appendChild(o.body);
             var input = null, err = null;
             if (o.input) {
                 input = node("input", "ssb-dlg-input");
@@ -403,6 +416,24 @@ window.__ssbUI = window.__ssbUI || (function () {
         else legacy();
     }
 
+    // Copies longer text, like the FPS Check report. If the browser refuses, a hidden field stands in for copy()'s.
+    function copyText(text) {
+        var ok = function () { toast("Copied to clipboard.", { type: "success" }); };
+        var legacy = function () {
+            var back = document.activeElement, ta = node("textarea"), done = false;
+            ta.value = text;
+            ta.readOnly = true;
+            ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;";
+            document.body.appendChild(ta);
+            try { ta.select(); done = document.execCommand("copy"); } catch (e) { window.__ssbErr("ui#4", e) }
+            ta.remove();
+            try { if (back && back.focus) back.focus({ preventScroll: true }); } catch (e) { window.__ssbErr("ui#5", e) }
+            if (done) ok(); else toast("Your browser blocked copying.", { type: "error" });
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, legacy);
+        else legacy();
+    }
+
     var api = {
         toast: toast,
         confirm: function (o) {
@@ -444,6 +475,27 @@ window.__ssbUI = window.__ssbUI || (function () {
             fallback();
             return Promise.resolve();
         },
+        // A wider dialog with headed lists: { title, text, sections: [{ title, items: [{ label, text }], facts }], copy }.
+        // facts: one line per item, the label on the left. copy: the text a Copy button puts on the clipboard.
+        report: function (o) {
+            o = o || {};
+            var body = node("div", "ssb-dlg-report");
+            (o.sections || []).forEach(function (sec) {
+                if (!sec.items || !sec.items.length) return;
+                if (sec.title) body.appendChild(node("div", "ssb-dlg-sub", sec.title));
+                var list = node("ul", "ssb-dlg-list" + (sec.facts ? " ssb-dlg-facts" : ""));
+                sec.items.forEach(function (it) {
+                    var li = node("li");
+                    li.appendChild(node("b", null, it.label));
+                    if (it.text) li.appendChild(node("span", null, it.text));
+                    list.appendChild(li);
+                });
+                body.appendChild(list);
+            });
+            var buttons = [{ label: "Close", kind: "blue", value: undefined, primary: true }];
+            if (o.copy) buttons.unshift({ label: "Copy", kind: "yolk", run: function () { copyText(o.copy); } });
+            return dialog({ title: o.title, text: o.text, body: body, wide: true, cancel: undefined, buttons: buttons });
+        },
         ensureCss: ensureCss
     };
     return api;
@@ -479,7 +531,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         grid.insertBefore(row, after ? after.nextSibling : null);
     }
     var api = {
-        NEW_SINCE: "5.4",
+        NEW_SINCE: "5.5",
         items: items,
         row: function (o) {
             var row = document.createElement("label");
@@ -742,26 +794,406 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         onToggle: function (v) { window.__ssbUI.toast("Disable Anti-Aliasing is " + (v ? "on" : "off") + ". Press F5 to apply it."); }
     });
 }();
-/* Better HUD — FOV (Black Bars), Settings ▸ MODS ▸ Gameplay.
-   Works like dragging the browser window shorter. During a match the page is
-   a box 1/FOV of the window's height, centered between black bars, and the
-   game lays itself out for that box: the wider shape widens the view, and the
-   HUD and menus fit between the bars instead of sitting on them.
-   - The body is the box. position:fixed plus a transform makes it the
-     containing block of the game's absolute and fixed elements, which would
-     otherwise place themselves against the window.
-   - vh follows the box: each "Nvh" in the page's stylesheets becomes
-     calc(N * var(--ssb-vh, 1vh)), and --ssb-vh is a hundredth of the box
-     height while the box is up. The game sizes its whole UI in vh (its base
-     font size is 1.95vh). With --ssb-vh unset, every rule means what it did.
-   - A resize event then lets the game fit the 3D view, the scope and the hit
-     markers to the box itself: its canvas fills the body, and the render
-     follows the canvas.
-   __ssbViewBox() gives the box, or the whole window when there's none, to
-   code that places things in window pixels. */
+/* Better HUD — Smart Auto Detail and FPS Check, Settings ▸ MODS ▸ FPS & Ping.
+   The game's own Auto Detail checks every 4 seconds of a match whether the
+   frame rate is under 40. The first time, it turns shadows off. The next
+   time, it halves the resolution, saves High Res as off and stops checking.
+   One slow moment, or a cap that resolution can't lift (on battery, Chrome's
+   Energy Saver holds pages to 30 FPS), leaves the game blurry from then on.
+   Smart Auto Detail makes that call instead, while the game's Auto Detail is on:
+   - Under 40 FPS for 4 seconds, the resolution goes down a step: 85%, 70%,
+     then 50% of the game view's width and height.
+   - The next 4 seconds show whether that helped. Under 10% more FPS means the
+     resolution wasn't what held the game back: it goes back up, and the next
+     try waits a minute, then 2, then 4.
+   - At 55 FPS or more for 20 seconds, it goes back up a step. If that drops
+     under 40 FPS within a minute, the next step up waits twice as long.
+   - Nothing is saved, and shadows are left alone (they cost this game very
+     little). When the match ends, the game's own resolution is back.
+   The engine's setHardwareScalingLevel is wrapped, so the game's own calls
+   (High Res, window resizes) keep the step. A game patch skips the game's
+   check while this one is in charge; if a game update moves that check, the
+   patch misses and the game's Auto Detail works as before.
+   FPS Check measures the frame rate for a moment and looks for the usual
+   causes of low FPS, each with its fix. */
 !function () {
-    var STYLE_ID = "ssb-fov-style", VH = /(^|[^\w.-])(-?(?:\d+\.?\d*|\.\d+))vh(?![\w-])/g;
-    var box = null, want = 1, seen = new WeakSet(), watch = null, timer = 0, firing = false;
+    var KEY = "tp-smartDetail", STEPS = [1, 0.85, 0.7, 0.5], WINDOW = 4000, UP_FPS = 55;
+    var low = 40, patched = false;   // the game's threshold, and whether its check was found
+    var engine = null, setLevel = null, base = 1, step = 0;
+    var frames = 0, time = 0, last = 0, quietUntil = 0, windowStart = 0, renders = 0;
+    var match = null, lastMatch = null, probe = null;
+    var downWait = 60000, downAfter = 0, upHold = 20000, goodSince = 0, upAt = -Infinity, toasted = false;
+
+    function isOn() {
+        try { return JSON.parse(localStorage.getItem(KEY) || "true") !== false; } catch (e) { return true; }
+    }
+    // The game's own switch (Settings, monitor tab). The game saves it as "true" or "false".
+    function gameAutoDetail() {
+        try { return localStorage.getItem("autoDetail") !== "false"; } catch (e) { return true; }
+    }
+    function inGame() {
+        try { return !!(window.extern && window.extern.inGame); } catch (e) { return false; }
+    }
+    // The match itself: not the loading screen before it, or the inventory opened from its pause menu.
+    function onScreen() {
+        try { var v = window.vueData; return inGame() && !!(v && v.screens && v.showScreen === v.screens.game); } catch (e) { return false; }
+    }
+    function sceneEngine() {
+        try { var sc = window.P && window.P.scene; return sc && sc.getEngine ? sc.getEngine() : null; } catch (e) { return null; }
+    }
+    function active() { return patched && isOn() && gameAutoDetail() && inGame() && !!engine; }
+    function level() { return active() ? 1 / STEPS[step] : base; }
+    function apply() {
+        if (!engine) return;
+        var want = level();
+        if (Math.abs((+engine.getHardwareScalingLevel() || 1) - want) < 1e-6) return;
+        setLevel.call(engine, want);
+        quietUntil = Math.max(quietUntil, performance.now() + 500);   // frames right after the resize don't count
+        // The game fits its hit indicator to the render size when the window resizes.
+        try { window.dispatchEvent(new Event("resize")); } catch (e) { window.__ssbErr("detail#1", e) }
+    }
+    function hook(e) {
+        if (!e || e === engine || typeof e.setHardwareScalingLevel !== "function") return;
+        engine = e;
+        setLevel = e.setHardwareScalingLevel;
+        base = +e.getHardwareScalingLevel() || 1;
+        e.setHardwareScalingLevel = function (l) {
+            base = +l || 1;   // after a resize the game passes true, which means 1
+            return setLevel.call(this, level());
+        };
+        try {
+            e.onEndFrameObservable.add(function () {
+                var now = performance.now(), dt = now - last;
+                last = now;
+                renders++;
+                if (dt > 0 && dt < 1000 && now >= quietUntil) { frames++; time += dt; }
+            });
+        } catch (err) { window.__ssbErr("detail#2", err) }
+    }
+    function note(n, why, fps) {
+        step = n;
+        match.steps.push({ at: performance.now() - match.start, pct: Math.round(STEPS[n] * 100), why: why, fps: Math.round(fps) });
+        if (match.steps.length > 12) match.steps.shift();
+        apply();
+        if (why === "low" && !toasted) {
+            toasted = true;
+            window.__ssbUI.toast("Smart Auto Detail lowered the resolution to " + Math.round(STEPS[n] * 100) + "% (FPS was " + Math.round(fps) + ").");
+        }
+    }
+    function decide(fps, now) {
+        var p = probe;
+        probe = null;
+        if (p && p.down && fps < p.fps * 1.1) {   // under 10% more FPS: the resolution wasn't what held it back
+            note(p.from, "no help", fps);
+            downAfter = now + downWait;
+            downWait = Math.min(downWait * 2, 240000);
+            return;
+        }
+        if (p && !p.down) {
+            if (fps < low) {   // that step up was one too many
+                note(p.from, "too low", fps);
+                upHold = Math.min(upHold * 2, 320000);
+                return;
+            }
+            upAt = now;
+        }
+        if (fps < low) {
+            goodSince = 0;
+            if (step < STEPS.length - 1 && now >= downAfter) {
+                if (now - upAt < 60000) upHold = Math.min(upHold * 2, 320000);   // the last step up didn't last a minute
+                probe = { down: true, from: step, fps: fps };
+                note(step + 1, "low", fps);
+            }
+            return;
+        }
+        if (step > 0 && fps >= UP_FPS) {
+            if (!goodSince) goodSince = now - WINDOW;
+            if (now - goodSince >= upHold) {
+                goodSince = 0;
+                probe = { down: false, from: step, fps: fps };
+                note(step - 1, "recovered", fps);
+            }
+        } else goodSince = 0;
+    }
+    function tick() {
+        hook(sceneEngine());
+        if (!engine) return;
+        var now = performance.now();
+        if (!inGame()) {
+            if (match) {
+                if (match.time > 0) lastMatch = { fps: match.frames * 1000 / match.time, lowest: match.lowest, steps: match.steps };
+                match = null;
+            }
+            step = 0; probe = null; frames = 0; time = 0;
+            apply();
+            return;
+        }
+        if (!match) {
+            match = { start: now, frames: 0, time: 0, lowest: Infinity, steps: [] };
+            step = 0; probe = null; downWait = 60000; downAfter = 0; upHold = 20000; goodSince = 0; upAt = -Infinity;
+            quietUntil = Math.max(quietUntil, now + 5000);
+        }
+        if (!active()) { step = 0; probe = null; }
+        apply();   // follows this switch and the game's Auto Detail; nothing to do while the level is right
+        // The first seconds on the match screen load textures and shaders, so they don't count.
+        if (!onScreen()) quietUntil = Math.max(quietUntil, now + 5000);
+        if (now < quietUntil) { frames = 0; time = 0; windowStart = now; return; }
+        if (now - windowStart < WINDOW) return;
+        var n = frames, t = time;
+        frames = 0; time = 0; windowStart = now;
+        if (t < WINDOW / 2) return;   // mostly stalls: too little to go on
+        var fps = n * 1000 / t;
+        match.frames += n; match.time += t;
+        if (fps < match.lowest) match.lowest = fps;
+        if (active()) decide(fps, now);
+    }
+
+    window.__ssbAutoDetailOwns = function () { return patched && isOn() && !!engine; };
+    // The game's 4-second check reads like Rb/Tb<40&&er.engine.getFps()<40&&(shadows off, or half resolution).
+    window.__ssbPatches.add("auto-detail", function (src) {
+        var i = src.indexOf(".getFps()<");
+        if (i < 0 || src.indexOf(".getFps()<", i + 1) >= 0) return src;
+        var from = Math.max(0, i - 120), m = /[\w$]+\/[\w$]+<\d+&&[\w$.]+\.getFps\(\)<(\d+)&&/.exec(src.slice(from, i + 20));
+        if (!m) return src;
+        var at = from + m.index;
+        low = +m[1] || 40;
+        patched = true;
+        return src.slice(0, at) + "!(window.__ssbAutoDetailOwns&&window.__ssbAutoDetailOwns())&&" + src.slice(at);
+    });
+    window.__ssbSettings.add({
+        key: KEY, section: "fps", after: "tp-noAA", label: "Smart Auto Detail", code: "Fd", def: true,
+        tip: "Takes over from the game's Auto Detail, which needs to stay on. When your FPS drops under 40, it lowers the resolution a step at a time, keeps a step only if it helps, and raises it again when your FPS recovers. Nothing is saved, so every match starts sharp.",
+        keywords: "auto detail resolution quality lag low fps performance blurry high res render scale adaptive dynamic",
+        get: isOn,
+        set: function (v) {
+            try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr("detail#3", e) }
+            step = 0; probe = null;
+            apply();
+        }
+    });
+    window.__ssbMenuPoll(tick, 1000, { inMatch: true });
+    window.__ssbSmartDetail = {
+        tick: tick,
+        state: function () {
+            return {
+                on: isOn(), patched: patched, low: low, gameAutoDetail: gameAutoDetail(), active: active(), step: step,
+                pct: Math.round(100 / level()), base: base, probe: probe, downAfter: downAfter, upHold: upHold,
+                match: match && { fps: match.time ? match.frames * 1000 / match.time : 0, lowest: match.lowest, steps: match.steps.slice() },
+                lastMatch: lastMatch
+            };
+        }
+    };
+
+    // ---- FPS Check ----
+    var SOFTWARE = /swiftshader|llvmpipe|softpipe|software|basic render/i;
+    function rendererOf(gl) {
+        var ext = gl.getExtension("WEBGL_debug_renderer_info");
+        return String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || "");
+    }
+    function glInfo() {
+        var out = { renderer: "", aa: null };
+        try {
+            var e = engine || sceneEngine(), gl = e && e._gl;
+            if (gl) {
+                out.renderer = rendererOf(gl);
+                var attrs = gl.getContextAttributes();
+                out.aa = attrs ? !!attrs.antialias : null;
+            }
+        } catch (err) { window.__ssbErr("fpscheck#1", err) }
+        if (!out.renderer) {
+            try {   // the game's 3D view isn't up yet: ask a throwaway canvas
+                var c = document.createElement("canvas"), g = c.getContext("webgl2") || c.getContext("webgl");
+                if (g) {
+                    out.renderer = rendererOf(g);
+                    var lose = g.getExtension("WEBGL_lose_context");
+                    if (lose) lose.loseContext();
+                }
+            } catch (err) { window.__ssbErr("fpscheck#2", err) }
+        }
+        return out;
+    }
+    // "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)" -> "NVIDIA GeForce RTX 3060"
+    function gpuName(r) {
+        var m = /^ANGLE \((.*)\)$/.exec(r), parts = m ? m[1].split(", ") : [r], n = parts.length > 1 ? parts[1] : parts[0];
+        return n.replace(/^ANGLE Metal Renderer:\s*/i, "").replace(/\s*\(0x[0-9a-f]+\)/ig, "").replace(/\s+(Direct3D|D3D1|OpenGL|Vulkan|Metal|vs_\d).*$/i, "").trim() || r;
+    }
+    function gpuVendor(r) {
+        var m = /^ANGLE \(([^,]+),/.exec(r), v = (m ? m[1] : r).toLowerCase();
+        return /nvidia/.test(v) ? "nvidia" : /\bamd\b|\bati\b|radeon/.test(v) ? "amd" : /intel/.test(v) ? "intel" : "";
+    }
+    // Graphics built into the processor: most Intel chips, and AMD's "Radeon Graphics" APUs.
+    function builtIn(r) {
+        return /intel/i.test(r) && !/\barc\b/i.test(r) || /radeon\(tm\) graphics|radeon graphics|vega \d+ graphics|radeon\(tm\) \d{3}m|radeon \d{3}m/i.test(r);
+    }
+    function within(ms, p, fallback) {
+        return Promise.race([p, new Promise(function (r) { setTimeout(function () { r(fallback); }, ms); })]).catch(function () { return fallback; });
+    }
+    // The graphics card the browser would pick for heavy work (WebGPU), which can differ from the one drawing the game.
+    function fastGpu() {
+        var gpu = navigator.gpu;
+        if (!gpu || !gpu.requestAdapter) return Promise.resolve(null);
+        return within(2000, gpu.requestAdapter({ powerPreference: "high-performance" }).then(function (a) {
+            if (!a) return null;
+            if (a.info) return a.info;
+            return a.requestAdapterInfo ? a.requestAdapterInfo() : null;
+        }), null);
+    }
+    function battery() {
+        if (!navigator.getBattery) return Promise.resolve(null);
+        return within(1500, navigator.getBattery().then(function (b) { return { charging: !!b.charging, level: b.level }; }), null);
+    }
+    // The browser's own frame rate, from display-paced frame callbacks.
+    function sampleFrames(ms) {
+        var req = (window.__ssbNativeFrame && window.__ssbNativeFrame.request) || window.requestAnimationFrame.bind(window);
+        return new Promise(function (done) {
+            var times = [], t0 = performance.now(), over = false, stop = setTimeout(finish, ms + 500);
+            function frame() {
+                if (over) return;
+                var now = performance.now();
+                times.push(now);
+                if (now - t0 < ms) req(frame); else finish();
+            }
+            function finish() {
+                if (over) return;
+                over = true;
+                clearTimeout(stop);
+                if (times.length < 5) { done(null); return; }
+                var gaps = [];
+                for (var i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
+                var sorted = gaps.slice().sort(function (a, b) { return a - b; }), median = sorted[sorted.length >> 1];
+                var near30 = gaps.filter(function (g) { return g > 28 && g < 39; }).length / gaps.length;
+                done({ fps: (times.length - 1) * 1000 / (times[times.length - 1] - times[0]), steady30: median > 30 && median < 37 && near30 >= 0.8 });
+            }
+            req(frame);
+        });
+    }
+    function mmss(ms) { var t = Math.max(0, Math.round(ms / 1000)); return Math.floor(t / 60) + ":" + ("0" + t % 60).slice(-2); }
+    var WHY = { "low": "low FPS", "no help": "lower didn't help", "recovered": "FPS recovered", "too low": "too slow higher up" };
+    function check() {
+        var gl = glInfo();
+        var r0 = renders, t0 = performance.now();
+        return Promise.all([sampleFrames(1500), fastGpu(), battery()]).then(function (r) {
+            var frame = r[0], fast = r[1], bat = r[2], fixes = [], tips = [], facts = [];
+            // The game's own frame rate when it's drawing (it can run past the display with Uncap FPS), else the browser's.
+            var drawn = renders - r0, fps = drawn >= 5 ? drawn * 1000 / (performance.now() - t0) : frame ? frame.fps : 0;
+            var soft = SOFTWARE.test(gl.renderer), name = soft ? "Software, no graphics card" : gl.renderer ? gpuName(gl.renderer) : "Unknown";
+            var fastVendor = fast ? String(fast.vendor || "").toLowerCase() : "";
+            var e = engine || sceneEngine(), lvl = e ? +e.getHardwareScalingLevel() || 1 : 1;
+            var onBattery = !!(bat && !bat.charging), ad = gameAutoDetail(), on = isOn();
+            var cur = match && match.time > 0 ? match : null, prev = cur || lastMatch;
+            var avg = prev ? (prev === cur ? cur.frames * 1000 / cur.time : prev.fps) : 0, slow = prev ? avg < 50 : fps > 0 && fps < 50;
+
+            if (soft) fixes.push({ label: "Your graphics card isn't being used",
+                text: "The browser is drawing the game in software, which is very slow. Turn on \"Use graphics acceleration when available\" in your browser's settings (in Chrome: Settings ▸ System), then restart the browser. If it's already on, update your graphics driver." });
+            if (!soft && builtIn(gl.renderer) && /nvidia|amd/.test(fastVendor) && fastVendor !== gpuVendor(gl.renderer)) fixes.push({ label: "Your faster graphics card isn't being used",
+                text: "The game runs on " + name + ", but this PC also has " + (fastVendor === "nvidia" ? "an NVIDIA" : "an AMD") + " graphics card. " +
+                    (/Windows/.test(navigator.userAgent) ? "In Windows Settings ▸ System ▸ Display ▸ Graphics, set your browser to High performance, then restart the browser." : "Set your browser to use it in your system's graphics settings, then restart the browser.") });
+            if (frame && frame.steady30 && onBattery) fixes.push({ label: "Battery saver is holding you to 30 FPS",
+                text: "Your laptop is on battery and the browser is drawing 30 frames a second. Battery savers like Chrome's Energy Saver do this. Plug in, or turn Energy Saver off in Chrome Settings ▸ Performance." });
+            if (lvl > 1.99 && !(active() && step === STEPS.length - 1)) {
+                if (!ad) fixes.push({ label: "The game is drawing at half resolution",
+                    text: "High Res is off, so the game draws a quarter of the pixels and looks blurry. If your FPS allows it, turn High Res on in the game's Settings, on the monitor tab." });
+                else if (!on) fixes.push({ label: "The game is drawing at half resolution",
+                    text: "The game's Auto Detail halved it after a slow moment, and it stays that way. Turn on Smart Auto Detail above: it lowers the resolution in smaller steps, and only while that helps." });
+                else if (!patched) fixes.push({ label: "The game is drawing at half resolution",
+                    text: "The game's Auto Detail halved it after a slow moment. Smart Auto Detail can't take over in this version of the game, so check for a Better HUD update." });
+            }
+            if (slow && !on) tips.push({ label: "Turn on Smart Auto Detail", text: "It lowers the resolution a step at a time when your FPS drops, and raises it again when it recovers." });
+            if (slow && on && !ad) tips.push({ label: "Turn on the game's Auto Detail", text: "Smart Auto Detail only steps in while the game's Auto Detail is on (Settings, monitor tab)." });
+            if (gl.aa && !soft && (slow || builtIn(gl.renderer))) tips.push({ label: "Turn on Disable Anti-Aliasing", text: "It's above, in FPS & Ping. Edges look a little more jagged, but weaker graphics can gain a lot of FPS. Press F5 after turning it on." });
+            if (onBattery && !(frame && frame.steady30)) tips.push({ label: "Plug in", text: "Laptops slow their graphics down on battery." });
+
+            facts.push({ label: "Graphics", text: name });
+            if (fps) facts.push({ label: inGame() ? "Frame rate right now" : "Frame rate in the menu", text: Math.round(fps) + " FPS" });
+            if (prev) facts.push({ label: prev === cur ? "This match" : "Last match", text: Math.round(avg) + " FPS on average, " + Math.round(prev.lowest) + " at the lowest" });
+            if (e) facts.push({ label: "Game view", text: e.getRenderWidth() + " × " + e.getRenderHeight() + " pixels, " + Math.round(100 / lvl) + "% resolution" });
+            facts.push({ label: "Smart Auto Detail", text: !on ? "Off" : !patched ? "Not available in this game version" : !ad ? "Off until you turn on the game's Auto Detail" : active() ? "On, at " + Math.round(STEPS[step] * 100) + "% now" : "On" });
+            var steps = prev ? prev.steps : [];
+            if (steps.length) facts.push({ label: "Resolution changes", text: steps.slice(-4).map(function (x) { return mmss(x.at) + " " + x.pct + "% (" + (WHY[x.why] || x.why) + ")"; }).join(", ") });
+            if (gl.aa !== null) facts.push({ label: "Anti-aliasing", text: gl.aa ? "On" : "Off" });
+            if (bat) facts.push({ label: "Power", text: bat.charging ? "Plugged in" : "On battery (" + Math.round(bat.level * 100) + "%)" });
+
+            var text = fixes.length ? "Found " + (fixes.length === 1 ? "one thing" : fixes.length + " things") + " holding your FPS back." :
+                tips.length ? "No big problems found. These might still help." : "No common FPS problems found.";
+            var lines = ["Better HUD " + window.SSB_VERSION + " FPS Check", text];
+            [["Worth fixing", fixes], ["Might help", tips], ["Details", facts]].forEach(function (g) {
+                if (!g[1].length) return;
+                lines.push("", g[0] + ":");
+                g[1].forEach(function (it) { lines.push("- " + it.label + ": " + it.text); });
+            });
+            return {
+                title: "FPS Check", text: text, copy: lines.join("\n"),
+                sections: [{ title: "Worth fixing", items: fixes }, { title: "Might help", items: tips }, { title: "Details", items: facts, facts: true }]
+            };
+        });
+    }
+    var busy = false;
+    function run(b) {
+        if (busy) return;
+        busy = true;
+        try { window.BAWK && window.BAWK.play && window.BAWK.play("ui_click"); } catch (e) { window.__ssbErr("fpscheck#3", e) }
+        var label = b.textContent;
+        b.disabled = true;
+        b.textContent = "Checking…";
+        function done() { busy = false; b.disabled = false; b.textContent = label; }
+        check().then(function (rep) { done(); window.__ssbUI.report(rep); }, function (e) {
+            done();
+            window.__ssbErr("fpscheck#4", e);
+            window.__ssbUI.toast("The FPS Check couldn't finish. Try again.", { type: "error" });
+        });
+    }
+    // Its row in MODS ▸ FPS & Ping, laid out like the key pickers: the name on the left, a button on the right.
+    function row() {
+        var c = document.createElement("div");
+        c.className = "mod-slider-container";
+        c.setAttribute("data-setting", "ssb-fpsCheck");
+        c.setAttribute("data-keywords", "fps check test diagnose lag slow low frame rate graphics card gpu driver acceleration battery energy saver resolution");
+        var l = document.createElement("div");
+        l.className = "mod-slider-label";
+        l.textContent = "FPS Check";
+        l.setAttribute("data-tooltip", "Measures your frame rate and looks for common causes of low FPS, like the browser not using your graphics card or a battery saver holding it to 30 FPS. It tells you how to fix each one.");
+        l.style.cursor = "default";
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "mod-num-input mod-key-btn";
+        b.style.cssText = "width: 120px; padding: 6px 10px; cursor: pointer; font-weight: 700;";
+        b.textContent = "Run Check";
+        b.addEventListener("click", function () { run(b); });
+        c.appendChild(l);
+        c.appendChild(b);
+        return c;
+    }
+    window.__ssbFpsCheck = { row: row, check: check };
+}();
+/* Better HUD — FOV (Black Bars), Settings ▸ MODS ▸ Gameplay.
+   While a match is on screen, the game view is 1/FOV of the window's height,
+   centered between black bars, and its wider shape widens the view. "On
+   screen" leaves out the loading screen before the match (extern.inGame is
+   already true there) and the inventory or profile opened from its pause menu.
+   Resize Everything picks what the rest of the page does:
+   - Off (the default, as in 5.3): the HUD and menus keep their normal size
+     and places, over the bars. Only the canvas goes between them, and the
+     scope's border is fitted to it.
+   - On: the page works like a browser window dragged shorter. It becomes a box
+     between the bars, and the game lays itself out for that box, so the HUD
+     and menus fit between the bars too.
+     - The body is the box. position:fixed plus a transform makes it the
+       containing block of the game's absolute and fixed elements, which would
+       otherwise place themselves against the window.
+     - vh follows the box: each "Nvh" in the page's stylesheets becomes
+       calc(N * var(--ssb-vh, 1vh)), and --ssb-vh is a hundredth of the box
+       height while the box is up. The game sizes its whole UI in vh (its base
+       font size is 1.95vh). With --ssb-vh unset, every rule means what it did.
+   Either way, a resize event then lets the game fit the 3D view, the scope and
+   the hit markers to its canvas: the render follows the canvas.
+   __ssbViewBox() gives the box while everything is resized, or else the whole
+   window, to code that places things in window pixels. */
+!function () {
+    var STYLE_ID = "ssb-fov-style", KEY = "tp-fovResizeAll", VH = /(^|[^\w.-])(-?(?:\d+\.?\d*|\.\d+))vh(?![\w-])/g;
+    var box = null, all = false, want = 1, seen = new WeakSet(), watch = null, timer = 0, firing = false;
+    function resizeAll() {
+        try { return JSON.parse(localStorage.getItem(KEY) || "false") === true; } catch (e) { return false; }
+    }
     function fixStyle(st) {
         var props = [];
         for (var i = 0; i < st.length; i++) props.push(st[i]);
@@ -797,7 +1229,10 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         for (var i = 0; i < list.length; i++) fixSheet(list[i]);
     }
     function inMatch() {
-        try { return !!(window.extern && window.extern.inGame); } catch (e) { return false; }
+        try {
+            var v = window.vueData;
+            return !!(window.extern && window.extern.inGame && v && v.screens && v.showScreen === v.screens.game);
+        } catch (e) { return false; }
     }
     // Whole device pixels, so the 3D view and the Still crosshair stay sharp.
     function measure(f) {
@@ -811,11 +1246,13 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     }
     function apply(f) {
         want = f;
-        var st = document.getElementById(STYLE_ID), next = f > 1.001 && document.body && inMatch() ? measure(f) : null;
-        if (next && box && next.top === box.top && next.width === box.width && next.height === box.height) { fixAll(); return; }
+        var mode = resizeAll(), st = document.getElementById(STYLE_ID), next = f > 1.001 && document.body && inMatch() ? measure(f) : null;
+        if (next && box && mode === all && next.top === box.top && next.width === box.width && next.height === box.height) { if (all) fixAll(); return; }
         if (!next && !box) return;
         box = next;
-        if (box) {
+        all = mode;
+        if (box && !st) { st = document.createElement("style"); st.id = STYLE_ID; (document.head || document.documentElement).appendChild(st); }
+        if (box && all) {
             fixAll();
             if (!watch) {
                 // Stylesheets added or rewritten while the box is up get the vh fix too; the 500 ms check catches any outside <head>.
@@ -823,7 +1260,6 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 if (document.head) watch.observe(document.head, { childList: true, subtree: true, characterData: true });
                 watch.observe(document.documentElement, { childList: true });
             }
-            if (!st) { st = document.createElement("style"); st.id = STYLE_ID; (document.head || document.documentElement).appendChild(st); }
             st.textContent = "html{background:#000!important;overflow:hidden!important}" +
                 "body{position:fixed!important;left:0!important;top:" + box.top + "px!important;width:100%!important;height:" + box.height + "px!important;margin:0!important;overflow:hidden!important;transform:translate(0,0)!important}" +
                 ":root{--ssb-vh:" + box.height / 100 + "px}" +
@@ -831,7 +1267,13 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 "#egg-floatie-layer:not(.egg-floatie-layer--corner){translate:0 " + -box.top + "px}";
         } else {
             if (watch) { watch.disconnect(); watch = null; }
-            if (st) st.textContent = "";
+            if (box) st.textContent = "html{background:#000!important}" +
+                // The canvas's wrapper covers the window, so this places it against the window.
+                "#canvas{position:fixed!important;left:0!important;top:" + box.top + "px!important;right:auto!important;bottom:auto!important;width:100%!important;height:" + box.height + "px!important}" +
+                // The scope is a square as tall as the 3D view, centered on it; the game sizes its border for the whole window.
+                "#scopeBorder{top:" + box.top + "px!important;height:" + box.height + "px!important}" +
+                "#maskmiddle{width:" + box.height + "px!important;height:" + box.height + "px!important}";
+            else if (st) st.textContent = "";
         }
         // Once now, and once more after the page has settled at its new size.
         resize();
@@ -841,9 +1283,19 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     window.addEventListener("resize", function () { if (!firing && box) apply(want); });
     window.__ssbFov = { apply: apply };
     window.__ssbViewBox = function () {
-        return box ? { left: box.left, top: box.top, width: box.width, height: box.height }
+        return box && all ? { left: box.left, top: box.top, width: box.width, height: box.height }
             : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
     };
+    window.__ssbSettings.add({
+        key: KEY, section: "gameplay", after: "tp-fovStretch", label: "Resize Everything", code: "Gr", def: false,
+        tip: "With FOV (Black Bars) above 1, fits the HUD and menus between the bars too, like a shorter browser window. Off, they keep their normal size and only the game view goes between the bars.",
+        keywords: "fov black bars hud menus ui size shrink fit scale shorter window letterbox",
+        get: resizeAll,
+        set: function (v) {
+            try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr("fov#3", e) }
+            apply(want);
+        }
+    });
 }();
 !function () {
     let _ssbBawk = undefined;
@@ -973,7 +1425,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     try { localStorage.removeItem("tp-ultraPerf") } catch (__ssbUltraRemoveErr) { window.__ssbErr("core#1", __ssbUltraRemoveErr) } try { localStorage.removeItem("tp-hideNametags") } catch (__ssbNmRemoveErr) { window.__ssbErr("core#2", __ssbNmRemoveErr) } /* Keys of removed settings; older versions of Reset / Import also wrote tp-perfPriority through tp-statsAutoShow. tp-noChatCooldown was Disable Chat Cooldown (5.3.1). tp-noAA is Disable Anti-Aliasing again since 5.4, so it is no longer cleared. */ try { ["tp-renderScale", "tp-noShadows", "tpx-lowTex", "tp-boxOpacity", "tp-mode", "tp-perfPriority", "tp-noPostProcess", "tp-audioOptimized", "tp-preconnect", "tp-statsAutoShow", "tp-noChatCooldown"].forEach(k => localStorage.removeItem(k)); /* ch2-dotBorder was a retired key, cleared here on every load, but 5.2 reuses it for the center-dot Outline Color, so that wiped the colour on each refresh. Clear a pre-5.2 leftover once, then leave it alone. */ localStorage.getItem("ch2-dotBorderV2") || (localStorage.removeItem("ch2-dotBorder"), localStorage.setItem("ch2-dotBorderV2", "1")) } catch (__ssbPerfRemoveErr) { window.__ssbErr("core#3", __ssbPerfRemoveErr) } let e = {}, t = new Map; function o(e) { let o = t.get(e); if (o && o.isConnected) return o; let n = document.getElementById(e); return n ? t.set(e, n) : t.delete(e), n } let n = new Map; function i(e) { let t = n.get(e); if (t && t.isConnected) return t; let o = document.querySelector(e); return o ? n.set(e, o) : n.delete(e), o } function a(e, n, i) { let a = o(e); return a || ((a = document.createElement("style")).id = e, (i || document.head || document.documentElement).appendChild(a), t.set(e, a)), void 0 !== n && a.textContent !== n && (a.textContent = n), a } function r(e, n, i, r) { if (i) a(e, n, r); else { let s = o(e); s && (s.remove(), t.delete(e)) } } function s(e, t) { let o = localStorage.getItem(e); if (null === o) return t; try { return !0 === JSON.parse(o) } catch (n) { return t } } function l(e, t) { let o = localStorage.getItem(e); if (null === o) return t; let n = parseFloat(o); return Number.isFinite(n) ? n : t } let d = { hideFPS: { hideBox: s("tp-hideBox", !1), showMs: s("tp-showMs", !1), showSessionTime: s("tp-showSessionTime", !1), hide: s("tp-hideFPS", !1), min: l("tp-minFPS", 60), max: l("tp-maxFPS", 60), random: s("tp-randomFPS", !1), uncap: s("tp-uncapFPS", !1) }, ping: { hide: s("tp-hidePing", !1), min: l("tp-minPing", 1), max: l("tp-maxPing", 1), random: s("tp-randomPing", !1), preconnect: !0, autoPickBest: s("tp-autoPickBest", !1) }, ui: { hideEggCount: s("tp-hideEggCount", !1), hideChat: s("tp-hideChat", !1), hideKillFeed: s("tp-hideKillFeed", !1), autoFullscreen: s("tp-autoFullscreen", !1), hidePlayerList: s("tp-hidePlayerList", !1), hideBestStreak: s("tp-hideBestStreak", !1), hideGameStats: s("tp-hideGameStats", !1), hideAmmo: s("tp-hideAmmo", !1), hideGrenade: s("tp-hideGrenade", !1), hideHP: s("tp-hideHP", !1), showVolumeSlider: s("tp-showVolumeSlider", !0), showServerList: s("tp-showServerList", !0) }, gameplay: { tabOutKey: (localStorage.getItem("tp-tabOutKey") || "").trim() || "Tab", noExplosionSmoke: s("tp-noExplosionSmoke", !1), noExplosionFire: s("tp-noExplosionFire", !1), noYolk: s("tp-noYolk", !1), noShellBurst: s("tp-noShellBurst", !1), hideScopeLines: s("tp-hideScopeLines", !1), skinUnlocker: s("tp-skinUnlocker", !1), fovStretch: l("tp-fovStretch", 1), legacySkins: s("tp-legacySkins", !1), legacySounds: s("tp-legacySounds", !1) }, perf: { noBulletProjectiles: s("tp-noBulletProjectiles", !1), noParticles: s("tp-noParticles", !1), audioOptimized: !0 }, stats: { enabled: s("tp-statsEnabled", !0), hotkey: localStorage.getItem("tp-statsHotkey") || "\\", pinned: s("tp-statsPinned", !1) } }; window.__ssbSkinUnlocker = !!d.gameplay.skinUnlocker; function __ssbPatchSkinUnlockerRuntime() { window.__ssbSkinUnlocker = !!d.gameplay.skinUnlocker; if (document.pointerLockElement) return; try { let e = window.extern; if (e && !e.__ssbSkinUnlockerRuntime) { let t = e.isItemOwned && e.isItemOwned.bind(e); e.isItemOwned = function (e) { return window.__ssbSkinUnlocker ? !0 : t ? t(e) : !1 }, e.__ssbSkinUnlockerRuntime = !0 } let o = window.vueApp && window.vueApp.$refs && window.vueApp.$refs.equipScreen; if (o && !o.__ssbSkinUnlockerRuntime && "function" == typeof o.populateItemGrid) { let n = o.populateItemGrid; o.populateItemGrid = function (e) { if (window.__ssbSkinUnlocker && window.vueData && this.currentEquipMode === window.vueData.equipMode.inventory) { this.equip.showingItems = e || []; return } return n.call(this, e) }, o.__ssbSkinUnlockerRuntime = !0 } if (o && o.__ssbSkinUnlockerRuntime) { let i = !!window.__ssbSkinUnlocker; if (o.__ssbSkinLast !== i) { o.__ssbSkinLast = i; try { o.equip && void 0 !== o.equip.selectedItemType && o.populateItemGridWithType(o.equip.selectedItemType) } catch (a) { window.__ssbErr("core#4", a) } } } } catch (r) { window.__ssbErr("core#5", r) } } window.__ssbMenuPoll(__ssbPatchSkinUnlockerRuntime, 500), __ssbPatchSkinUnlockerRuntime(); !function e() { let t = String.prototype.replaceAll, o = "__ssbHideScopeLines"; window[o] = function () { return d.gameplay.hideScopeLines ? 0 : 536870912 }; let n = /,this\.(..)\.position\.z=2/; window.__ssbPatches.add("scope-lines", function (e) { let a = n.exec(e); if (!a || !a[1]) return e; let r = a[1], s = `this.${r}.applyFog=!1,this.${r}.layerMask=536870912,`, l = `this.${r}.applyFog=!1,this.${r}.layerMask=window.${o}(),this.${r}._ssbScopeMesh=1,`; return t.call(e, s, l) }), window.__ssbApplyScopeLines = function () { try { let e = window.P && window.P.scene; if (!e || !e.meshes) return; let t = d.gameplay.hideScopeLines ? 0 : 536870912; for (let o = 0; o < e.meshes.length; o++) { let n = e.meshes[o]; n && n._ssbScopeMesh && (n.layerMask = t) } } catch (i) { window.__ssbErr("core#6", i) } } }(); let c = new Set; function p(e) { if (!d.ping.preconnect || c.has(e)) return; c.add(e); let t = document.head || document.documentElement;[["dns-prefetch", "//" + e], ["preconnect", "https://" + e]].forEach(([e, o]) => { let n = document.createElement("link"); n.rel = e, n.href = o, "preconnect" === e && (n.crossOrigin = "anonymous"), t.appendChild(n) }) } function m(e) { let t = e.sprites.length, o = 1 === e.blendMode; return 300 === t && o ? "fire" : 300 === t ? "smoke" : 400 === t ? "shell" : 100 === t ? "yolk" : "other" } function h(e) { switch (e._ch2Kind) { case "fire": e._ch2Suppress = !!d.gameplay.noExplosionFire; break; case "smoke": e._ch2Suppress = !!d.gameplay.noExplosionSmoke; break; case "shell": e._ch2Suppress = !!d.gameplay.noShellBurst; break; case "yolk": e._ch2Suppress = !!d.gameplay.noYolk; break; default: e._ch2Suppress = !1 } } function u() { if (!window.P || !window.P.scene) return; let e = window.P.scene, t = e.spriteManagers; if (e === window._ssbUSc && t.length === window._ssbUCt && window._ssbUOk) return; let _p = 0; for (let o = 0, n = t.length; o < n; o++) { let i = t[o]; i.sprites && !i._ch2OrigRender && ("function" == typeof i.oldRender ? (i._ch2OrigRender = i.oldRender, i.oldRender = function () { i._ch2Suppress || i._ch2OrigRender.apply(this, arguments) }, i._ch2Kind = m(i), h(i)) : _p++) } window._ssbUSc = e, window._ssbUCt = t.length, window._ssbUOk = 0 === _p } !function e() { if (!d.ping.preconnect) return; p("shellshock.io"); let t; try { t = JSON.parse(localStorage.getItem("mod-server-hosts") || "{}") || {} } catch (o) { t = {} } Object.values(t).forEach(e => { e && e.host && p(e.host) }) }(); let f = null; function g() { u(), function e() { if (!window.P || !window.P.scene) return; let t = window.P.scene.spriteManagers; for (let o = 0, n = t.length; o < n; o++)t[o]._ch2OrigRender && h(t[o]) }() } function $() { return window.P && window.P.scene ? window.P.scene : null } function b() { let e = $(); return e ? e.getEngine() : null } /* Scene settings, re-applied when the scene changes. Render Scale, Disable
    Shadows, Disable Anti-Aliasing and post-processing were removed in v5.0.1;
    their branches here are gone too. Disable Anti-Aliasing came back in 5.4 as
-   a page-load setting, beside Block Ads. */ function y() { let e = $(), t = b(); applyFovStretch(t), e && t && (e.skipPointerMovePicking = !0, e.skipFrustumClipping = !1, function e(t) { try { t.particlesEnabled = !d.perf.noParticles } catch (o) { window.__ssbErr("core.particles", o) } }(e)) } function applyFovStretch() { window.__ssbFov.apply(d.gameplay.fovStretch || 1) } let _LSFX = ["ammo", "grenade", "grenade_beep", "grenade_pin", "gun_cluck9mm_fire", "gun_cluck9mm_insert_mag", "gun_cluck9mm_remove_mag", "gun_csg1_fire", "gun_csg1_pull_action", "gun_csg1_release_action", "gun_dozenGauge_close", "gun_dozenGauge_fire", "gun_dozenGauge_load", "gun_dozenGauge_open", "gun_eggk47_dry_fire", "gun_eggk47_fire", "gun_eggk47_full_cycle", "gun_eggk47_insert_mag", "gun_eggk47_remove_mag", "gun_m24_bolt_close", "gun_m24_bolt_open", "gun_m24_fire", "gun_rpegg_load", "gun_rpegg_rocket_fly", "gun_rpegg_rocket_hit", "gun_smg_cycle", "gun_smg_fire", "pickup", "weapon_swap"], /* Pinned to a MegaMod commit (2026-08-06) so a change on their main branch can't swap the files. */ _LSFXBASE = "https://raw.githubusercontent.com/InfiniteSmasher/The-MegaMod/3e0a59fb6fec64f1a91e8a23adff38ccea7eac41/sfx/legacy/", _lsfxLoad = null, _LSKIN = [3000, 3100, 3400, 3600, 3800, 4000, 4200]; function _sfxReady() { let B = window.BAWK; if (!B || !B.sounds) return !1; let v = Object.values(B.sounds); return !!(v.length && v[0] && v[0].buffer) } function loadLegacySounds() { if (_lsfxLoad) return _lsfxLoad; let B = window.BAWK; if (!B || !B.loadSound || !B.sounds) return Promise.reject(Error("BAWK not ready")); _lsfxLoad = Promise.all(_LSFX.map(s => { if (B.sounds[s] && !B.sounds[s + "_Default"]) B.sounds[s + "_Default"] = B.sounds[s]; return Promise.resolve(B.loadSound(_LSFXBASE + s + ".mp3", s + "_Legacy")).catch(() => { }) })); return _lsfxLoad } function applyLegacySounds(on) { let B = window.BAWK; if (!B || !B.sounds) return; _LSFX.forEach(s => { let t = on ? B.sounds[s + "_Legacy"] : B.sounds[s + "_Default"]; if (t) B.sounds[s] = t }) } function setLegacySounds(on) { if (!on) { applyLegacySounds(!1); return } let go = () => loadLegacySounds().then(() => applyLegacySounds(!0)).catch(() => { }); if (_sfxReady()) go(); else { let stop = window.__ssbMenuPoll(() => { _sfxReady() && (stop(), go()) }, 300, { inMatch: !0 }) } } function applyLegacySkins(on) { let ex = window.extern; if (!ex || !ex.catalog || !ex.catalog.findItemsByIds) return !1; let items = ex.catalog.findItemsByIds(_LSKIN); if (!items || !items.length) return !1; items.forEach(it => { if (!it || !it.item_data) return; let mn = it.item_data.meshName || ""; if (on) mn.includes("_Legacy") || (it.item_data.meshName = mn + "_Legacy"); else it.item_data.meshName = mn.replace("_Legacy", "") }); try { ex.loadAllMeshesOnDemand && ex.loadAllMeshesOnDemand() } catch (e) { window.__ssbErr("core#9", e) } try { let v = window.vueApp; v && v.$refs && v.$refs.equipScreen && v.$refs.equipScreen.poseEquippedItems && v.$refs.equipScreen.poseEquippedItems() } catch (e) { window.__ssbErr("core#10", e) } return !0 } function setLegacySkins(on) { if (applyLegacySkins(on)) return; let stop = window.__ssbMenuPoll(() => { applyLegacySkins(on) && stop() }, 500, { inMatch: !0 }) } (function () { if (!d.gameplay.legacySkins && !d.gameplay.legacySounds) return; let sd = !d.gameplay.legacySounds, kd = !d.gameplay.legacySkins; let stop = window.__ssbMenuPoll(() => { if (!sd && _sfxReady() && (setLegacySounds(!0), sd = !0), !kd && window.extern && window.extern.catalog && window.extern.catalog.findItemsByIds && (applyLegacySkins(!0), kd = !0), sd && kd) stop() }, 600, { inMatch: !0 }) })(); window.__ssbMenuPoll(function _ssbEffectsTick() { if (document.hidden || !window.P || !window.P.scene) return; if (!(d.gameplay.noExplosionSmoke || d.gameplay.noExplosionFire || d.gameplay.noYolk || d.gameplay.noShellBurst)) return; let e = window.P.scene; e !== f ? (f = e, setTimeout(u, 500)) : u() }, 1e3, { inMatch: !0 }); let _ = !1; function w(e) { if (!e) return; let t = !!d.perf.noBulletProjectiles; if (!t && !_) return; _ = t; let o = e.meshes; if (e._ch2PML !== o.length) { let c = []; for (let n = 0, i = o.length; n < i; n++) { let a = o[n]; void 0 !== a._sourceMesh && "" === a.name && c.push(a) } e._ch2PM = c, e._ch2PML = o.length } let s = e._ch2PM; for (let n = 0, i = s.length; n < i; n++)s[n].isVisible = !t } let E = null, C = null; /* FOV (Black Bars) follows the match: the box goes up when one starts and down when it ends. */ document.addEventListener("pointerlockchange", applyFovStretch), window.__ssbMenuPoll(applyFovStretch, 500, { inMatch: !0 }); /* Scene-change watcher: re-applies y() 2 s after the game builds a new scene. */ window.__ssbMenuPoll(function _ssbSceneWatch() { if (document.hidden) return; let e = $(); e && e !== E && (E = e, C && clearTimeout(C), C = setTimeout(() => { C = null, y() }, 2e3)) }, 2e3, { inMatch: !0 }); let P = String.prototype.replaceAll, L = () => Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(26 * Math.random()))).join(""); function I(t, o) { let n = L(); window[n] = function () { try { return o.apply(this, arguments) } catch (e) { return arguments[0] } }, e[t] = n } I("FakePing", function (e) { return d.ping.random ? Math.floor(Math.random() * (d.ping.max - d.ping.min + 1)) + d.ping.min : Date.now() - e }), I("FakeFps", function (e) { let t = d.hideFPS; if (!t.hide && !t.showMs && !t.random) return e; if (t.hide) return ""; if (t.showMs) { let o = parseFloat(e); if (o > 0) return (1e3 / o).toFixed(1) } return t.random ? Math.floor(Math.random() * (t.max - t.min + 1)) + t.min : e }), function () { let W = window.__ssbPatches; W.add("ping-display", i => { let a = /(case [A-Za-z$_]+\.[A-Za-z$_]+\:[A-Za-z$_]+\=)Date\.now\(\)-([A-Za-z$_]+),/.exec(i); return a ? P.call(i, a[0], `${a[1]}window.${e.FakePing}(${a[2]}),`) : i }); W.add("fps-display", i => { let r = /(document\.getElementById\("FPS"\)\.innerText=)(.*?)}/.exec(i); return r ? P.call(i, r[0], `${r[1]}window.${e.FakeFps}(${r[2]})}`) : i }); /* window.players = the game's player array. indexOf plus a backward identifier scan finds the same name as the old /([a-zA-Z_$][a-zA-Z0-9_$]*)\[this\.playerIdx\]/ in 0.7 ms instead of 28 ms (that regex retried at every position of the 3.3 MB source). */ W.add("players", i => { let k = i.indexOf("[this.playerIdx]"), j = k; for (; j > 0 && /[\w$]/.test(i[j - 1]);) j--; if (k < 1 || j === k) return i; let l = i.slice(j, k); return P.call(i, `${l}=[]`, `${l}=[],window.players=${l}`) }); W.add("my-player-idx", i => { let s = /gameJoined_ received"\),(\w+)=\w+\.unPackInt8U\(\)/.exec(i) || /([A-Z]{2})=[A-Za-z$_]+\.unPackInt8U\(\)/.exec(i); return s ? P.call(i, s[0], `${s[0]},window.myPlayerIdx=${s[1]}`) : i }); /* Skin Unlocker: owned-check override. Its two other source patches (the ownedItemIds inventory fill and extern's isItemOwned:MO) stopped matching when the game renamed its minified names (Ic->er, MO->QT) and are gone: extern.isItemOwned (now QT) only calls playerAccount.isItemOwned, which this patch covers, and the unlocked grid comes from __ssbPatchSkinUnlockerRuntime. */ W.add("inventory", i => P.call(i, "if(this.inventory[t]&&this.inventory[t].id===e.id)return!0;return!1", "if(this.inventory[t]&&this.inventory[t].id===e.id)return!0;if(window.__ssbSkinUnlocker)return!0;return!1")); /* The game watches the whole document with a MutationObserver that, for every record, reads target.outerText.length and target.textContent.length and discards the result. outerText forces a synchronous layout and <body> holds ~3.6 M characters (the bootstrap stays in the DOM), so each record on <body> cost ~18 ms: the 90-156 ms menu hitches, plus a forced layout on every HUD change in a match. The callback has no effect, so the whole observe(...) expression becomes void 0. Structural match, no minified names; measured 645 -> 4.3 ms per 40 s. */ W.add("menu-stutter", i => i.replace(/new\(window\[([\w$]+)\("0x0"\)\]\)\(\(?[\w$]+\)?=>\{[^{}]*\{[^{}]*>3e6[^{}]*\}\}\)\)\[\1\("0x5"\)\]\(document,\{childList:!0,subtree:!0\}\)/, "void 0")) }(); let A = { enabled: JSON.parse(localStorage.getItem("ch2-enabled") ?? "true"), hideCrosshair: JSON.parse(localStorage.getItem("ch2-hideCrosshair") ?? "false"), armColor: (localStorage.getItem("ch2-armColor") ?? "#ffffff").replace(/^"|"$/g, ""), armBorder: (localStorage.getItem("ch2-armBorder") ?? "#000000").replace(/^"|"$/g, ""), armLength: parseFloat(localStorage.getItem("ch2-armLength") ?? "0.75"), armWidth: parseFloat(localStorage.getItem("ch2-armWidth") ?? "0.3"), armOpacity: parseFloat(localStorage.getItem("ch2-armOpacity") ?? "1"), armRotation: parseInt(localStorage.getItem("ch2-armRotation") ?? "0"), armGap: parseInt(localStorage.getItem("ch2-armGap") ?? "0"), armScale: parseFloat(localStorage.getItem("ch2-armScale") ?? "1"), hideDot: JSON.parse(localStorage.getItem("ch2-hideDot") ?? "false"), dotShape: (localStorage.getItem("ch2-dotShape") ?? "dot").replace(/^"|"$/g, ""), dotColor: (localStorage.getItem("ch2-dotColor") ?? "#ffffff").replace(/^"|"$/g, ""), dotBorder: (localStorage.getItem("ch2-dotBorder") ?? localStorage.getItem("ch2-armBorder") ?? "#000000").replace(/^"|"$/g, ""), dotBorderWidth: parseFloat(localStorage.getItem("ch2-dotBorderWidth") ?? "0.05"), dotRound: JSON.parse(localStorage.getItem("ch2-dotRound") ?? "false"), dotOpacity: parseFloat(localStorage.getItem("ch2-dotOpacity") ?? "1"), dotPlusLen: parseInt(localStorage.getItem("ch2-dotPlusLen") ?? "8"), dotPlusWidth: parseInt(localStorage.getItem("ch2-dotPlusWidth") ?? "2"), dotScale: parseFloat(localStorage.getItem("ch2-dotScale") ?? "1"), plusScale: parseFloat(localStorage.getItem("ch2-plusScale") ?? "1"), staticColor: (localStorage.getItem("ch2-staticColor") ?? "#ffffff").replace(/^"|"$/g, ""), staticBorder: (localStorage.getItem("ch2-staticBorder") ?? "#000000").replace(/^"|"$/g, ""), staticOpacity: parseFloat(localStorage.getItem("ch2-staticOpacity") ?? "1"), staticLength: parseFloat(localStorage.getItem("ch2-staticLength") ?? "0.75"), staticWidth: parseFloat(localStorage.getItem("ch2-staticWidth") ?? "0.3"), staticGap: parseFloat(localStorage.getItem("ch2-staticGap") ?? "3"), staticOutlineEnabled: JSON.parse(localStorage.getItem("ch2-staticOutlineEnabled") ?? "true"), stillScale: parseFloat(localStorage.getItem("ch2-stillScale") ?? "1") }, B = { enabled: !1, hideCrosshair: !1, armColor: "#ffffff", armBorder: "#000000", dotBorder: "#000000", dotBorderWidth: .05, armLength: .75, armWidth: .3, armOpacity: 1, armRotation: 0, armGap: 0, armScale: 1, hideDot: !1, dotShape: "dot", dotColor: "#ffffff",dotRound: !1, dotOpacity: 1, dotPlusLen: 8, dotPlusWidth: 2, dotScale: 1, plusScale: 1, staticColor: "#ffffff", staticBorder: "#000000", staticOpacity: 1, staticLength: .75, staticWidth: .3, staticGap: 3, staticOutlineEnabled: !0, stillScale: 1 }; function F(e, t) { localStorage.setItem("ch2-" + e, "string" == typeof t ? t : JSON.stringify(t)), _chDirty = !0 } let _chDirty = !1, _updP = null, _updT = 0, _updPend = {}; function schedUpd(e, t) { _updPend[e] = t, _updP || (_updP = requestAnimationFrame(() => { _updP = null, G(), Y(), ef("ui_onchange") })), clearTimeout(_updT), _updT = setTimeout(() => { let o = _updPend; _updPend = {}, Object.keys(o).forEach(e => F(e, o[e])) }, 150) } function _sd(e, t) { e && e.style.display !== t && (e.style.display = t) } window.__ssbPerf = { tick: 0, mods: 0, harm: 0 }; let T = "ch2-profiles", H = "ch2-currentProfile"; function N() { try { return JSON.parse(localStorage.getItem(T)) || {} } catch (e) { return {} } } function M(e) { localStorage.setItem(T, JSON.stringify(e)) } function z() { return localStorage.getItem(H) || "" } function O(e) { localStorage.setItem(H, e || "") } /* Profile order for the gallery, the mini selector and the dropdown (ch2-profileOrder). Names missing from the saved order go last; deleted names drop out. */ function PO(e) { e = e || N(); let o; try { o = JSON.parse(localStorage.getItem("ch2-profileOrder")) } catch (x) { o = null } Array.isArray(o) || (o = []); let k = Object.keys(e), r = o.filter((n, i) => k.includes(n) && o.indexOf(n) === i); return k.forEach(n => r.includes(n) || r.push(n)), r } function PS(r) { localStorage.setItem("ch2-profileOrder", JSON.stringify(r)) } /* Center-dot outline. The game draws the dot border-box, so the size grows with the outline: the fill stays armWidth - 0.1em (what it always was) and the outline is drawn around it. At the default 0.05em the dot is unchanged. Profiles saved before this option existed use their arm border colour, as the dot always did. */ function _dbw(o) { let w = parseFloat(o.dotBorderWidth); return isFinite(w) ? Math.max(0, w) : .05 } function _dsz(o) { return +(Math.max(0, o.armWidth - .1) + 2 * _dbw(o)).toFixed(4) } function _dbc(o) { return o.dotBorder || o.armBorder || "#000000" } function _withDot(o) { return Object.assign({}, B, { dotBorder: o && o.armBorder || B.dotBorder }, o) } function D(e) { if (!e) return !1; let t = N(); return t[e] = Object.assign({}, A, { enabled: !0 }), M(t), O(e), !0 } function R() {
+   a page-load setting, beside Block Ads. */ function y() { let e = $(), t = b(); applyFovStretch(t), e && t && (e.skipPointerMovePicking = !0, e.skipFrustumClipping = !1, function e(t) { try { t.particlesEnabled = !d.perf.noParticles } catch (o) { window.__ssbErr("core.particles", o) } }(e)) } function applyFovStretch() { window.__ssbFov.apply(d.gameplay.fovStretch || 1) } let _LSFX = ["ammo", "grenade", "grenade_beep", "grenade_pin", "gun_cluck9mm_fire", "gun_cluck9mm_insert_mag", "gun_cluck9mm_remove_mag", "gun_csg1_fire", "gun_csg1_pull_action", "gun_csg1_release_action", "gun_dozenGauge_close", "gun_dozenGauge_fire", "gun_dozenGauge_load", "gun_dozenGauge_open", "gun_eggk47_dry_fire", "gun_eggk47_fire", "gun_eggk47_full_cycle", "gun_eggk47_insert_mag", "gun_eggk47_remove_mag", "gun_m24_bolt_close", "gun_m24_bolt_open", "gun_m24_fire", "gun_rpegg_load", "gun_rpegg_rocket_fly", "gun_rpegg_rocket_hit", "gun_smg_cycle", "gun_smg_fire", "pickup", "weapon_swap"], /* Pinned to a MegaMod commit (2026-08-06) so a change on their main branch can't swap the files. */ _LSFXBASE = "https://raw.githubusercontent.com/InfiniteSmasher/The-MegaMod/3e0a59fb6fec64f1a91e8a23adff38ccea7eac41/sfx/legacy/", _lsfxLoad = null, _LSKIN = [3000, 3100, 3400, 3600, 3800, 4000, 4200]; function _sfxReady() { let B = window.BAWK; if (!B || !B.sounds) return !1; let v = Object.values(B.sounds); return !!(v.length && v[0] && v[0].buffer) } function loadLegacySounds() { if (_lsfxLoad) return _lsfxLoad; let B = window.BAWK; if (!B || !B.loadSound || !B.sounds) return Promise.reject(Error("BAWK not ready")); _lsfxLoad = Promise.all(_LSFX.map(s => { if (B.sounds[s] && !B.sounds[s + "_Default"]) B.sounds[s + "_Default"] = B.sounds[s]; return Promise.resolve(B.loadSound(_LSFXBASE + s + ".mp3", s + "_Legacy")).catch(() => { }) })); return _lsfxLoad } function applyLegacySounds(on) { let B = window.BAWK; if (!B || !B.sounds) return; _LSFX.forEach(s => { let t = on ? B.sounds[s + "_Legacy"] : B.sounds[s + "_Default"]; if (t) B.sounds[s] = t }) } function setLegacySounds(on) { if (!on) { applyLegacySounds(!1); return } let go = () => loadLegacySounds().then(() => applyLegacySounds(!0)).catch(() => { }); if (_sfxReady()) go(); else { let stop = window.__ssbMenuPoll(() => { _sfxReady() && (stop(), go()) }, 300, { inMatch: !0 }) } } function applyLegacySkins(on) { let ex = window.extern; if (!ex || !ex.catalog || !ex.catalog.findItemsByIds) return !1; let items = ex.catalog.findItemsByIds(_LSKIN); if (!items || !items.length) return !1; items.forEach(it => { if (!it || !it.item_data) return; let mn = it.item_data.meshName || ""; if (on) mn.includes("_Legacy") || (it.item_data.meshName = mn + "_Legacy"); else it.item_data.meshName = mn.replace("_Legacy", "") }); try { ex.loadAllMeshesOnDemand && ex.loadAllMeshesOnDemand() } catch (e) { window.__ssbErr("core#9", e) } try { let v = window.vueApp; v && v.$refs && v.$refs.equipScreen && v.$refs.equipScreen.poseEquippedItems && v.$refs.equipScreen.poseEquippedItems() } catch (e) { window.__ssbErr("core#10", e) } return !0 } function setLegacySkins(on) { if (applyLegacySkins(on)) return; let stop = window.__ssbMenuPoll(() => { applyLegacySkins(on) && stop() }, 500, { inMatch: !0 }) } (function () { if (!d.gameplay.legacySkins && !d.gameplay.legacySounds) return; let sd = !d.gameplay.legacySounds, kd = !d.gameplay.legacySkins; let stop = window.__ssbMenuPoll(() => { if (!sd && _sfxReady() && (setLegacySounds(!0), sd = !0), !kd && window.extern && window.extern.catalog && window.extern.catalog.findItemsByIds && (applyLegacySkins(!0), kd = !0), sd && kd) stop() }, 600, { inMatch: !0 }) })(); window.__ssbMenuPoll(function _ssbEffectsTick() { if (document.hidden || !window.P || !window.P.scene) return; if (!(d.gameplay.noExplosionSmoke || d.gameplay.noExplosionFire || d.gameplay.noYolk || d.gameplay.noShellBurst)) return; let e = window.P.scene; e !== f ? (f = e, setTimeout(u, 500)) : u() }, 1e3, { inMatch: !0 }); let _ = !1; function w(e) { if (!e) return; let t = !!d.perf.noBulletProjectiles; if (!t && !_) return; _ = t; let o = e.meshes; if (e._ch2PML !== o.length) { let c = []; for (let n = 0, i = o.length; n < i; n++) { let a = o[n]; void 0 !== a._sourceMesh && "" === a.name && c.push(a) } e._ch2PM = c, e._ch2PML = o.length } let s = e._ch2PM; for (let n = 0, i = s.length; n < i; n++)s[n].isVisible = !t } let E = null, C = null; /* FOV (Black Bars) follows the match: the bars go up while it's on screen and down when it ends. */ document.addEventListener("pointerlockchange", applyFovStretch), window.__ssbMenuPoll(applyFovStretch, 500, { inMatch: !0 }); /* Scene-change watcher: re-applies y() 2 s after the game builds a new scene. */ window.__ssbMenuPoll(function _ssbSceneWatch() { if (document.hidden) return; let e = $(); e && e !== E && (E = e, C && clearTimeout(C), C = setTimeout(() => { C = null, y() }, 2e3)) }, 2e3, { inMatch: !0 }); let P = String.prototype.replaceAll, L = () => Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(26 * Math.random()))).join(""); function I(t, o) { let n = L(); window[n] = function () { try { return o.apply(this, arguments) } catch (e) { return arguments[0] } }, e[t] = n } I("FakePing", function (e) { return d.ping.random ? Math.floor(Math.random() * (d.ping.max - d.ping.min + 1)) + d.ping.min : Date.now() - e }), I("FakeFps", function (e) { let t = d.hideFPS; if (!t.hide && !t.showMs && !t.random) return e; if (t.hide) return ""; if (t.showMs) { let o = parseFloat(e); if (o > 0) return (1e3 / o).toFixed(1) } return t.random ? Math.floor(Math.random() * (t.max - t.min + 1)) + t.min : e }), function () { let W = window.__ssbPatches; W.add("ping-display", i => { let a = /(case [A-Za-z$_]+\.[A-Za-z$_]+\:[A-Za-z$_]+\=)Date\.now\(\)-([A-Za-z$_]+),/.exec(i); return a ? P.call(i, a[0], `${a[1]}window.${e.FakePing}(${a[2]}),`) : i }); W.add("fps-display", i => { let r = /(document\.getElementById\("FPS"\)\.innerText=)(.*?)}/.exec(i); return r ? P.call(i, r[0], `${r[1]}window.${e.FakeFps}(${r[2]})}`) : i }); /* window.players = the game's player array. indexOf plus a backward identifier scan finds the same name as the old /([a-zA-Z_$][a-zA-Z0-9_$]*)\[this\.playerIdx\]/ in 0.7 ms instead of 28 ms (that regex retried at every position of the 3.3 MB source). */ W.add("players", i => { let k = i.indexOf("[this.playerIdx]"), j = k; for (; j > 0 && /[\w$]/.test(i[j - 1]);) j--; if (k < 1 || j === k) return i; let l = i.slice(j, k); return P.call(i, `${l}=[]`, `${l}=[],window.players=${l}`) }); W.add("my-player-idx", i => { let s = /gameJoined_ received"\),(\w+)=\w+\.unPackInt8U\(\)/.exec(i) || /([A-Z]{2})=[A-Za-z$_]+\.unPackInt8U\(\)/.exec(i); return s ? P.call(i, s[0], `${s[0]},window.myPlayerIdx=${s[1]}`) : i }); /* Skin Unlocker: owned-check override. Its two other source patches (the ownedItemIds inventory fill and extern's isItemOwned:MO) stopped matching when the game renamed its minified names (Ic->er, MO->QT) and are gone: extern.isItemOwned (now QT) only calls playerAccount.isItemOwned, which this patch covers, and the unlocked grid comes from __ssbPatchSkinUnlockerRuntime. */ W.add("inventory", i => P.call(i, "if(this.inventory[t]&&this.inventory[t].id===e.id)return!0;return!1", "if(this.inventory[t]&&this.inventory[t].id===e.id)return!0;if(window.__ssbSkinUnlocker)return!0;return!1")); /* The game watches the whole document with a MutationObserver that, for every record, reads target.outerText.length and target.textContent.length and discards the result. outerText forces a synchronous layout and <body> holds ~3.6 M characters (the bootstrap stays in the DOM), so each record on <body> cost ~18 ms: the 90-156 ms menu hitches, plus a forced layout on every HUD change in a match. The callback has no effect, so the whole observe(...) expression becomes void 0. Structural match, no minified names; measured 645 -> 4.3 ms per 40 s. */ W.add("menu-stutter", i => i.replace(/new\(window\[([\w$]+)\("0x0"\)\]\)\(\(?[\w$]+\)?=>\{[^{}]*\{[^{}]*>3e6[^{}]*\}\}\)\)\[\1\("0x5"\)\]\(document,\{childList:!0,subtree:!0\}\)/, "void 0")) }(); let A = { enabled: JSON.parse(localStorage.getItem("ch2-enabled") ?? "true"), hideCrosshair: JSON.parse(localStorage.getItem("ch2-hideCrosshair") ?? "false"), armColor: (localStorage.getItem("ch2-armColor") ?? "#ffffff").replace(/^"|"$/g, ""), armBorder: (localStorage.getItem("ch2-armBorder") ?? "#000000").replace(/^"|"$/g, ""), armLength: parseFloat(localStorage.getItem("ch2-armLength") ?? "0.75"), armWidth: parseFloat(localStorage.getItem("ch2-armWidth") ?? "0.3"), armOpacity: parseFloat(localStorage.getItem("ch2-armOpacity") ?? "1"), armRotation: parseInt(localStorage.getItem("ch2-armRotation") ?? "0"), armGap: parseInt(localStorage.getItem("ch2-armGap") ?? "0"), armScale: parseFloat(localStorage.getItem("ch2-armScale") ?? "1"), hideDot: JSON.parse(localStorage.getItem("ch2-hideDot") ?? "false"), dotShape: (localStorage.getItem("ch2-dotShape") ?? "dot").replace(/^"|"$/g, ""), dotColor: (localStorage.getItem("ch2-dotColor") ?? "#ffffff").replace(/^"|"$/g, ""), dotBorder: (localStorage.getItem("ch2-dotBorder") ?? localStorage.getItem("ch2-armBorder") ?? "#000000").replace(/^"|"$/g, ""), dotBorderWidth: parseFloat(localStorage.getItem("ch2-dotBorderWidth") ?? "0.05"), dotRound: JSON.parse(localStorage.getItem("ch2-dotRound") ?? "false"), dotOpacity: parseFloat(localStorage.getItem("ch2-dotOpacity") ?? "1"), dotPlusLen: parseInt(localStorage.getItem("ch2-dotPlusLen") ?? "8"), dotPlusWidth: parseInt(localStorage.getItem("ch2-dotPlusWidth") ?? "2"), dotScale: parseFloat(localStorage.getItem("ch2-dotScale") ?? "1"), plusScale: parseFloat(localStorage.getItem("ch2-plusScale") ?? "1"), staticColor: (localStorage.getItem("ch2-staticColor") ?? "#ffffff").replace(/^"|"$/g, ""), staticBorder: (localStorage.getItem("ch2-staticBorder") ?? "#000000").replace(/^"|"$/g, ""), staticOpacity: parseFloat(localStorage.getItem("ch2-staticOpacity") ?? "1"), staticLength: parseFloat(localStorage.getItem("ch2-staticLength") ?? "0.75"), staticWidth: parseFloat(localStorage.getItem("ch2-staticWidth") ?? "0.3"), staticGap: parseFloat(localStorage.getItem("ch2-staticGap") ?? "3"), staticOutlineEnabled: JSON.parse(localStorage.getItem("ch2-staticOutlineEnabled") ?? "true"), stillScale: parseFloat(localStorage.getItem("ch2-stillScale") ?? "1") }, B = { enabled: !1, hideCrosshair: !1, armColor: "#ffffff", armBorder: "#000000", dotBorder: "#000000", dotBorderWidth: .05, armLength: .75, armWidth: .3, armOpacity: 1, armRotation: 0, armGap: 0, armScale: 1, hideDot: !1, dotShape: "dot", dotColor: "#ffffff",dotRound: !1, dotOpacity: 1, dotPlusLen: 8, dotPlusWidth: 2, dotScale: 1, plusScale: 1, staticColor: "#ffffff", staticBorder: "#000000", staticOpacity: 1, staticLength: .75, staticWidth: .3, staticGap: 3, staticOutlineEnabled: !0, stillScale: 1 }; function F(e, t) { localStorage.setItem("ch2-" + e, "string" == typeof t ? t : JSON.stringify(t)), _chDirty = !0 } let _chDirty = !1, _updP = null, _updT = 0, _updPend = {}; function schedUpd(e, t) { _updPend[e] = t, _updP || (_updP = requestAnimationFrame(() => { _updP = null, G(), Y(), ef("ui_onchange") })), clearTimeout(_updT), _updT = setTimeout(() => { let o = _updPend; _updPend = {}, Object.keys(o).forEach(e => F(e, o[e])) }, 150) } function _sd(e, t) { e && e.style.display !== t && (e.style.display = t) } window.__ssbPerf = { tick: 0, mods: 0, harm: 0 }; let T = "ch2-profiles", H = "ch2-currentProfile"; function N() { try { return JSON.parse(localStorage.getItem(T)) || {} } catch (e) { return {} } } function M(e) { localStorage.setItem(T, JSON.stringify(e)) } function z() { return localStorage.getItem(H) || "" } function O(e) { localStorage.setItem(H, e || "") } /* Profile order for the gallery, the mini selector and the dropdown (ch2-profileOrder). Names missing from the saved order go last; deleted names drop out. */ function PO(e) { e = e || N(); let o; try { o = JSON.parse(localStorage.getItem("ch2-profileOrder")) } catch (x) { o = null } Array.isArray(o) || (o = []); let k = Object.keys(e), r = o.filter((n, i) => k.includes(n) && o.indexOf(n) === i); return k.forEach(n => r.includes(n) || r.push(n)), r } function PS(r) { localStorage.setItem("ch2-profileOrder", JSON.stringify(r)) } /* Center-dot outline. The game draws the dot border-box, so the size grows with the outline: the fill stays armWidth - 0.1em (what it always was) and the outline is drawn around it. At the default 0.05em the dot is unchanged. Profiles saved before this option existed use their arm border colour, as the dot always did. */ function _dbw(o) { let w = parseFloat(o.dotBorderWidth); return isFinite(w) ? Math.max(0, w) : .05 } function _dsz(o) { return +(Math.max(0, o.armWidth - .1) + 2 * _dbw(o)).toFixed(4) } function _dbc(o) { return o.dotBorder || o.armBorder || "#000000" } function _withDot(o) { return Object.assign({}, B, { dotBorder: o && o.armBorder || B.dotBorder }, o) } function D(e) { if (!e) return !1; let t = N(); return t[e] = Object.assign({}, A, { enabled: !0 }), M(t), O(e), !0 } function R() {
         let e = a("ch2-arm-style", void 0); if (!A.enabled) { e.textContent && (e.textContent = ""); return } let t = document.getElementById("crosshairContainer"); t && (t.style.transform = `rotate(${A.armRotation}deg)`); let o = A.armLength * A.armScale, n = A.armWidth * A.armScale, i = Math.min(.05 * A.armScale, .3 * n); let fs = 40; if (t) { let _f = parseFloat(getComputedStyle(t).fontSize); _f > 0 && (fs = _f) } let Hpx = Math.max(1, Math.round(o * fs)), Wpx = Math.max(1, Math.round(n * fs)), Bpx = i * fs; Bpx = Bpx > .25 ? Math.max(1, Math.round(Bpx)) : 0; e.innerHTML = `
 			.crosshair {
 				position: absolute !important;
@@ -1214,7 +1666,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         if (!document.hidden && !document.pointerLockElement) {
             try {
                 !function e() {
-                    let t = document.getElementById("settings_misc"); if (!t || document.getElementById("mod-settings-section")) return; let o = { "Hide HP": "Hides the green health bar at the bottom center.", "Hide Ammo & Grenades": "Hides the bullet ammo counter and the grenade inventory.", "Hide Egg Count": "Hides your current egg count in the main account display.", "Hide Best Streak": "Hides the shell streak notifications/counters.", "Hide Game Stats": "Hides match versus headers, team scores, and spatula/capture status widgets.", "Hide Scoreboard & Kill Feed": "Hides the players list (scoreboard) and the kill feed.", "Hide Scope Lines": "Hides black overlay crosshair/lines when aiming down sniper scopes.", "Hide Chat": "Completely hides the in-game chat, including the chat box in the bottom-left corner.", "Hide Explosion Smoke": "Hides heavy grey smoke puffs generated by grenade explosions.", "Hide Explosion Fire": "Hides red/yellow flame sprite animations from grenade blasts.", "Hide Yolk Burst": "Stops yolk splatters from rendering when players take damage.", "Hide Shell Burst": "Disables the shell/casing burst particle effect when firing.", "Hide Bullets": "Hides the physical bullet tracer meshes to improve focus and frame rate.", "Disable All Particles": "Turns off all BabylonJS particle systems (blood, smoke, sparks).", "Uncap FPS": "Runs game frame callbacks between display refreshes while playing. May increase CPU/GPU usage. A higher FPS counter does not guarantee smoother displayed frames.", "Hide FPS": "Completely hides the FPS display from the in-game HUD.", "Hide Ping": "Completely hides the ping display from the in-game HUD.", "Show Frametime (ms)": "Swaps standard FPS into milliseconds per frame (frametime) readout.", "Show Session Time": "Displays a real-time count of how long you've been playing in this session.", "Hide Box Background": "Removes the dark backdrop behind the in-game FPS / ping box.", "Server Picker": "Adds a server region picker with live ping readouts to the home screen, beside Game Mode.", "Auto-pick Best Server": "When the game's region list shows ping times, switches once to the region with the lowest ping. Pick a region yourself afterwards and it stays until you reload.", "Pause-Menu Volume Slider": "Adds an extra master volume slider directly under the pause weapon selection.", "Stats Tracker": "Enables the local stats tracker which compiles kills/deaths/KDR/session history.", "Pin Stats on Pause Menu": "Shows a pinned compact kills/deaths/KDR overlay above the in-game pause menu's weapon select.", "Stats Hotkey": "The keyboard key used to toggle the match stats overlay panel.", "Legacy Skins": "Restores the classic/old gun models for the 7 default weapons (visual only). Toggles live without reload; in an active match your held gun updates on next equip/respawn.", "Legacy Sounds": "Restores the classic/old weapon & game sound effects (fire, reload, pickup, grenade, swap). Loads legacy audio on first enable, then toggles live without reload.", "Auto Fullscreen": "Automatically switches the game to fullscreen when pointer lock starts.", "Tab Out Key": "The keyboard key that releases pointer lock so you can tab away without snapping the camera.", "FOV (Black Bars)": "Widens your view by adding black bars at the top and bottom, like dragging your browser window shorter: the game view, the HUD and the menus all fit between the bars. Only in matches; 1 turns it off.", "Reset All Mod Settings": "Restore every MODS setting to its default, including Block Ads, Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected." }; if (!document.getElementById("mod-settings-style")) {
+                    let t = document.getElementById("settings_misc"); if (!t || document.getElementById("mod-settings-section")) return; let o = { "Hide HP": "Hides the green health bar at the bottom center.", "Hide Ammo & Grenades": "Hides the bullet ammo counter and the grenade inventory.", "Hide Egg Count": "Hides your current egg count in the main account display.", "Hide Best Streak": "Hides the shell streak notifications/counters.", "Hide Game Stats": "Hides match versus headers, team scores, and spatula/capture status widgets.", "Hide Scoreboard & Kill Feed": "Hides the players list (scoreboard) and the kill feed.", "Hide Scope Lines": "Hides black overlay crosshair/lines when aiming down sniper scopes.", "Hide Chat": "Completely hides the in-game chat, including the chat box in the bottom-left corner.", "Hide Explosion Smoke": "Hides heavy grey smoke puffs generated by grenade explosions.", "Hide Explosion Fire": "Hides red/yellow flame sprite animations from grenade blasts.", "Hide Yolk Burst": "Stops yolk splatters from rendering when players take damage.", "Hide Shell Burst": "Disables the shell/casing burst particle effect when firing.", "Hide Bullets": "Hides the physical bullet tracer meshes to improve focus and frame rate.", "Disable All Particles": "Turns off all BabylonJS particle systems (blood, smoke, sparks).", "Uncap FPS": "Runs game frame callbacks between display refreshes while playing. May increase CPU/GPU usage. A higher FPS counter does not guarantee smoother displayed frames.", "Hide FPS": "Completely hides the FPS display from the in-game HUD.", "Hide Ping": "Completely hides the ping display from the in-game HUD.", "Show Frametime (ms)": "Swaps standard FPS into milliseconds per frame (frametime) readout.", "Show Session Time": "Displays a real-time count of how long you've been playing in this session.", "Hide Box Background": "Removes the dark backdrop behind the in-game FPS / ping box.", "Server Picker": "Adds a server region picker with live ping readouts to the home screen, beside Game Mode.", "Auto-pick Best Server": "When the game's region list shows ping times, switches once to the region with the lowest ping. Pick a region yourself afterwards and it stays until you reload.", "Pause-Menu Volume Slider": "Adds an extra master volume slider directly under the pause weapon selection.", "Stats Tracker": "Enables the local stats tracker which compiles kills/deaths/KDR/session history.", "Pin Stats on Pause Menu": "Shows a pinned compact kills/deaths/KDR overlay above the in-game pause menu's weapon select.", "Stats Hotkey": "The keyboard key used to toggle the match stats overlay panel.", "Legacy Skins": "Restores the classic/old gun models for the 7 default weapons (visual only). Toggles live without reload; in an active match your held gun updates on next equip/respawn.", "Legacy Sounds": "Restores the classic/old weapon & game sound effects (fire, reload, pickup, grenade, swap). Loads legacy audio on first enable, then toggles live without reload.", "Auto Fullscreen": "Automatically switches the game to fullscreen when pointer lock starts.", "Tab Out Key": "The keyboard key that releases pointer lock so you can tab away without snapping the camera.", "FOV (Black Bars)": "Widens your view by adding black bars at the top and bottom. The HUD and menus keep their normal size unless Resize Everything is on. Only in matches; 1 turns it off.", "Reset All Mod Settings": "Restore every MODS setting to its default, including Block Ads, Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected." }; if (!document.getElementById("mod-settings-style")) {
                         let n = document.createElement("style"); n.id = "mod-settings-style", n.textContent = `
 
 
@@ -1436,7 +1888,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
 				#mod-settings-section.ssb-paged .mod-header[data-section="hud"]::after { content:"Choose which parts of the in-game HUD you see."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="chat"]::after { content:"Hide the chat, or keep its full history for the match."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="effects"]::after { content:"Turn off visual effects for a cleaner, faster game."; }
-				#mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Your frame rate and ping readout, and how it looks."; }
+				#mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Raise your frame rate, and set up the FPS and ping readout."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="menus"]::after { content:"Extras for the home screen, pause menu and inventory."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="stats"]::after { content:"Track your kills, deaths and KDR in every match."; }
 				#mod-settings-section.ssb-paged .mod-header[data-section="gameplay"]::after { content:"Classic skins and sounds, keys and field of view."; }
@@ -1834,7 +2286,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                         reloadNotice.classList.toggle("ssb-reload-pending", !!pending.length);
                     };
                     window.__ssbSettingsFeedback = showFeedback; showFeedback();
-                    let emp = document.createElement("div"); emp.className = "mod-search-empty", emp.style.display = "none", i.appendChild(emp); /* Active chip = the last section whose header has scrolled under the bar (the last one once the list is at its end). A chip click owns the highlight while its smooth scroll runs. */ function syncChips() { if (!k.value.trim()) { paintPage(); return } if (!i.offsetParent || Date.now() - _jmp < 800) return; let hs = i.querySelectorAll(".mod-header"), top = i.scrollTop + 12, cur = hs[0]; hs.forEach(h => { h.offsetParent && h.offsetTop <= top && (cur = h) }), hs.length && i.scrollTop + i.clientHeight >= i.scrollHeight - 2 && (cur = hs[hs.length - 1]); let id = cur && cur.getAttribute("data-section"); jb.querySelectorAll(".mod-jump-chip").forEach(b => b.classList.toggle("active", b.getAttribute("data-jump") === id)) } let _scT = 0; i.addEventListener("scroll", () => { _scT || (_scT = requestAnimationFrame(() => { _scT = 0, syncChips() })) }, { passive: !0 }); window.__ssbPaintModTop = null, window.__ssbSyncModChips = syncChips; /* Search matches every word against the label, tooltip, keywords (old names included) and the section name. */ function E() { let e = k.value.toLowerCase().trim(), w = e.split(/\s+/).filter(Boolean), n = 0; kx.style.visibility = e ? "visible" : "hidden", i.classList.toggle("mod-searching", !!e), i.querySelectorAll(".mod-grid").forEach(o => { let h = o.previousElementSibling, sec = h && h.classList.contains("mod-header") ? h.textContent : "", c = 0; Array.from(o.children).forEach(t => { let tt = t.getAttribute("data-tooltip") || (t.querySelector("[data-tooltip]") || t).getAttribute("data-tooltip") || "", hay = (t.textContent + " " + tt + " " + (t.getAttribute("data-keywords") || "") + " " + sec).toLowerCase(), hit = w.every(x => hay.includes(x)); if (hit && tt) { let host = t.classList.contains("mod-item") ? t.querySelector(".mod-label") : t.querySelector(".mod-slider-label"); if (host && !host.querySelector(".mod-search-tip")) { let tp = document.createElement("span"); tp.className = "mod-search-tip", tp.textContent = tt, host.appendChild(tp) } } t.style.display = hit ? "" : "none", hit && c++ }); let v = c > 0; o.style.display = v ? "" : "none", jb.querySelectorAll("[data-jump]").forEach(b => { if (b.dataset.jump === o.dataset.section) b.disabled = !v; }), h && h.classList.contains("mod-header") && (h.style.display = v ? "" : "none"), n += c }), emp.style.display = e && !n ? "" : "none", emp.textContent = e && !n ? "No settings match “" + k.value.trim() + "”" : "", resultCount.textContent = e ? n + (n === 1 ? " result" : " results") : "", e || syncChips(), window.__ssbRequestLayout && window.__ssbRequestLayout() } k.addEventListener("input", E), k.addEventListener("keydown", ev => { "Escape" === ev.key && k.value && (ev.preventDefault(), ev.stopPropagation(), k.value = "", E()) }), kx.addEventListener("click", () => { k.value = "", E(), k.focus() }); let C = a("HUD", "hud"); s(C, "Hide HP", d.ui, "hideHP", "tp-hideHP", ei), C.appendChild(r("Hide Ammo & Grenades", d.ui.hideAmmo || d.ui.hideGrenade, function (e) { let v = e.target.checked; d.ui.hideAmmo = v, localStorage.setItem("tp-hideAmmo", JSON.stringify(v)), d.ui.hideGrenade = v, localStorage.setItem("tp-hideGrenade", JSON.stringify(v)), ei() }, "tp-hideAmmo")), s(C, "Hide Egg Count", d.ui, "hideEggCount", "tp-hideEggCount", ei), s(C, "Hide Best Streak", d.ui, "hideBestStreak", "tp-hideBestStreak", ei), s(C, "Hide Game Stats", d.ui, "hideGameStats", "tp-hideGameStats", ei), C.appendChild(r("Hide Scoreboard & Kill Feed", d.ui.hidePlayerList || d.ui.hideKillFeed, function (e) { let v = e.target.checked; d.ui.hidePlayerList = v, localStorage.setItem("tp-hidePlayerList", JSON.stringify(v)), d.ui.hideKillFeed = v, localStorage.setItem("tp-hideKillFeed", JSON.stringify(v)), ei() }, "tp-hidePlayerList")), s(C, "Hide Scope Lines", d.gameplay, "hideScopeLines", "tp-hideScopeLines", () => { window.__ssbApplyScopeLines && window.__ssbApplyScopeLines() }); let Ch = a("Chat", "chat"); s(Ch, "Hide Chat", d.ui, "hideChat", "tp-hideChat", ei); let Ef = a("Effects", "effects"); s(Ef, "Hide Explosion Smoke", d.gameplay, "noExplosionSmoke", "tp-noExplosionSmoke", g), s(Ef, "Hide Explosion Fire", d.gameplay, "noExplosionFire", "tp-noExplosionFire", g), s(Ef, "Hide Yolk Burst", d.gameplay, "noYolk", "tp-noYolk", g), s(Ef, "Hide Shell Burst", d.gameplay, "noShellBurst", "tp-noShellBurst", g), s(Ef, "Hide Bullets", d.perf, "noBulletProjectiles", "tp-noBulletProjectiles", () => { let e = $(); e && w(e) }), s(Ef, "Disable All Particles", d.perf, "noParticles", "tp-noParticles", y); let T = a("FPS & Ping", "fps"); s(T, "Uncap FPS", d.hideFPS, "uncap", "tp-uncapFPS", () => { d.hideFPS.uncap && _installUncap() }), s(T, "Hide FPS", d.hideFPS, "hide", "tp-hideFPS", eo), s(T, "Hide Ping", d.ping, "hide", "tp-hidePing", eo), s(T, "Show Frametime (ms)", d.hideFPS, "showMs", "tp-showMs", eo), s(T, "Show Session Time", d.hideFPS, "showSessionTime", "tp-showSessionTime", eo), s(T, "Hide Box Background", d.hideFPS, "hideBox", "tp-hideBox", eo); let P = a("Menus", "menus"); s(P, "Server Picker", d.ui, "showServerList", "tp-showServerList", () => { if (!d.ui.showServerList) { let e = document.querySelector(".mod-server-clone"); e && e.remove() } }), s(P, "Auto-pick Best Server", d.ping, "autoPickBest", "tp-autoPickBest", () => { d.ping.autoPickBest && (ej = !1) }, "5.2"), s(P, "Pause-Menu Volume Slider", d.ui, "showVolumeSlider", "tp-showVolumeSlider", ei); let St = a("Stats", "stats"); s(St, "Stats Tracker", d.stats, "enabled", "tp-statsEnabled"), s(St, "Pin Stats on Pause Menu", d.stats, "pinned", "tp-statsPinned"), St.appendChild(hk("Stats Hotkey", d.stats.hotkey, function (e) { d.stats.hotkey = e || "", localStorage.setItem("tp-statsHotkey", d.stats.hotkey), document.dispatchEvent(new Event("ssb:settings-change")) }, "tp-statsHotkey", () => d.stats.hotkey)); let L = a("Gameplay", "gameplay"); s(L, "Legacy Skins", d.gameplay, "legacySkins", "tp-legacySkins", () => setLegacySkins(d.gameplay.legacySkins)), s(L, "Legacy Sounds", d.gameplay, "legacySounds", "tp-legacySounds", () => setLegacySounds(d.gameplay.legacySounds)), s(L, "Auto Fullscreen", d.ui, "autoFullscreen", "tp-autoFullscreen"), L.appendChild(hk("Tab Out Key", d.gameplay.tabOutKey, function (e) { d.gameplay.tabOutKey = e || "Tab", localStorage.setItem("tp-tabOutKey", d.gameplay.tabOutKey), document.dispatchEvent(new Event("ssb:settings-change")) }, "tp-tabOutKey", () => d.gameplay.tabOutKey)); let _fovC = document.createElement("div"); _fovC.className = "mod-slider-container", _fovC.setAttribute("data-setting", "tp-fovStretch"), _fovC.setAttribute("data-keywords", kw["FOV (Black Bars)"]); let _fovL = document.createElement("div"); _fovL.className = "mod-slider-label", _fovL.textContent = "FOV (Black Bars)"; let _fovTt = o["FOV (Black Bars)"]; _fovTt && (_fovL.setAttribute("data-tooltip", _fovTt), _fovL.style.cursor = "default"); let _fovIW = document.createElement("div"); _fovIW.className = "mod-slider-inner-wrap", _fovIW.style.cssText = "display: flex; align-items: center; flex: 1; gap: 8px;"; let _fovMn = document.createElement("span"); _fovMn.className = "mod-slider-limit", _fovMn.style.cssText = "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: right;", _fovMn.textContent = "1"; let _fovR = document.createElement("input"); Object.assign(_fovR, { type: "range", className: "mod-slider", min: "1", max: "1.8", step: "0.05", value: d.gameplay.fovStretch }); let _fovMx = document.createElement("span"); _fovMx.className = "mod-slider-limit", _fovMx.style.cssText = "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: left;", _fovMx.textContent = "1.8", _fovIW.appendChild(_fovMn), _fovIW.appendChild(_fovR), _fovIW.appendChild(_fovMx); let _fovN = document.createElement("input"); function _fovApply(v) { v = Math.max(1, Math.min(1.8, Math.round(20 * v) / 20)), _fovR.value = v, _fovN.value = v, d.gameplay.fovStretch = v, localStorage.setItem("tp-fovStretch", JSON.stringify(v)), document.dispatchEvent(new Event("ssb:settings-change")), ef("ui_onchange"), applyFovStretch() } Object.assign(_fovN, { type: "number", className: "mod-num-input", min: "1", max: "1.8", step: "0.05", value: d.gameplay.fovStretch }), _fovR.addEventListener("input", () => { _fovN.value = _fovR.value }), _fovR.addEventListener("change", () => _fovApply(parseFloat(_fovR.value))); let _fovNc = () => { let e = parseFloat(_fovN.value); isNaN(e) || _fovApply(e) }; _fovN.addEventListener("change", _fovNc), _fovN.addEventListener("keydown", e => { "Enter" === e.key && (_fovNc(), _fovN.blur()) }); _fovC.appendChild(_fovL), _fovC.appendChild(_fovIW), _fovC.appendChild(_fovN), L.appendChild(_fovC); let et = a("Manage", "manage"); window.__ssbSettings.mount(i);
+                    let emp = document.createElement("div"); emp.className = "mod-search-empty", emp.style.display = "none", i.appendChild(emp); /* Active chip = the last section whose header has scrolled under the bar (the last one once the list is at its end). A chip click owns the highlight while its smooth scroll runs. */ function syncChips() { if (!k.value.trim()) { paintPage(); return } if (!i.offsetParent || Date.now() - _jmp < 800) return; let hs = i.querySelectorAll(".mod-header"), top = i.scrollTop + 12, cur = hs[0]; hs.forEach(h => { h.offsetParent && h.offsetTop <= top && (cur = h) }), hs.length && i.scrollTop + i.clientHeight >= i.scrollHeight - 2 && (cur = hs[hs.length - 1]); let id = cur && cur.getAttribute("data-section"); jb.querySelectorAll(".mod-jump-chip").forEach(b => b.classList.toggle("active", b.getAttribute("data-jump") === id)) } let _scT = 0; i.addEventListener("scroll", () => { _scT || (_scT = requestAnimationFrame(() => { _scT = 0, syncChips() })) }, { passive: !0 }); window.__ssbPaintModTop = null, window.__ssbSyncModChips = syncChips; /* Search matches every word against the label, tooltip, keywords (old names included) and the section name. */ function E() { let e = k.value.toLowerCase().trim(), w = e.split(/\s+/).filter(Boolean), n = 0; kx.style.visibility = e ? "visible" : "hidden", i.classList.toggle("mod-searching", !!e), i.querySelectorAll(".mod-grid").forEach(o => { let h = o.previousElementSibling, sec = h && h.classList.contains("mod-header") ? h.textContent : "", c = 0; Array.from(o.children).forEach(t => { let tt = t.getAttribute("data-tooltip") || (t.querySelector("[data-tooltip]") || t).getAttribute("data-tooltip") || "", hay = (t.textContent + " " + tt + " " + (t.getAttribute("data-keywords") || "") + " " + sec).toLowerCase(), hit = w.every(x => hay.includes(x)); if (hit && tt) { let host = t.classList.contains("mod-item") ? t.querySelector(".mod-label") : t.querySelector(".mod-slider-label"); if (host && !host.querySelector(".mod-search-tip")) { let tp = document.createElement("span"); tp.className = "mod-search-tip", tp.textContent = tt, host.appendChild(tp) } } t.style.display = hit ? "" : "none", hit && c++ }); let v = c > 0; o.style.display = v ? "" : "none", jb.querySelectorAll("[data-jump]").forEach(b => { if (b.dataset.jump === o.dataset.section) b.disabled = !v; }), h && h.classList.contains("mod-header") && (h.style.display = v ? "" : "none"), n += c }), emp.style.display = e && !n ? "" : "none", emp.textContent = e && !n ? "No settings match “" + k.value.trim() + "”" : "", resultCount.textContent = e ? n + (n === 1 ? " result" : " results") : "", e || syncChips(), window.__ssbRequestLayout && window.__ssbRequestLayout() } k.addEventListener("input", E), k.addEventListener("keydown", ev => { "Escape" === ev.key && k.value && (ev.preventDefault(), ev.stopPropagation(), k.value = "", E()) }), kx.addEventListener("click", () => { k.value = "", E(), k.focus() }); let C = a("HUD", "hud"); s(C, "Hide HP", d.ui, "hideHP", "tp-hideHP", ei), C.appendChild(r("Hide Ammo & Grenades", d.ui.hideAmmo || d.ui.hideGrenade, function (e) { let v = e.target.checked; d.ui.hideAmmo = v, localStorage.setItem("tp-hideAmmo", JSON.stringify(v)), d.ui.hideGrenade = v, localStorage.setItem("tp-hideGrenade", JSON.stringify(v)), ei() }, "tp-hideAmmo")), s(C, "Hide Egg Count", d.ui, "hideEggCount", "tp-hideEggCount", ei), s(C, "Hide Best Streak", d.ui, "hideBestStreak", "tp-hideBestStreak", ei), s(C, "Hide Game Stats", d.ui, "hideGameStats", "tp-hideGameStats", ei), C.appendChild(r("Hide Scoreboard & Kill Feed", d.ui.hidePlayerList || d.ui.hideKillFeed, function (e) { let v = e.target.checked; d.ui.hidePlayerList = v, localStorage.setItem("tp-hidePlayerList", JSON.stringify(v)), d.ui.hideKillFeed = v, localStorage.setItem("tp-hideKillFeed", JSON.stringify(v)), ei() }, "tp-hidePlayerList")), s(C, "Hide Scope Lines", d.gameplay, "hideScopeLines", "tp-hideScopeLines", () => { window.__ssbApplyScopeLines && window.__ssbApplyScopeLines() }); let Ch = a("Chat", "chat"); s(Ch, "Hide Chat", d.ui, "hideChat", "tp-hideChat", ei); let Ef = a("Effects", "effects"); s(Ef, "Hide Explosion Smoke", d.gameplay, "noExplosionSmoke", "tp-noExplosionSmoke", g), s(Ef, "Hide Explosion Fire", d.gameplay, "noExplosionFire", "tp-noExplosionFire", g), s(Ef, "Hide Yolk Burst", d.gameplay, "noYolk", "tp-noYolk", g), s(Ef, "Hide Shell Burst", d.gameplay, "noShellBurst", "tp-noShellBurst", g), s(Ef, "Hide Bullets", d.perf, "noBulletProjectiles", "tp-noBulletProjectiles", () => { let e = $(); e && w(e) }), s(Ef, "Disable All Particles", d.perf, "noParticles", "tp-noParticles", y); let T = a("FPS & Ping", "fps"); s(T, "Uncap FPS", d.hideFPS, "uncap", "tp-uncapFPS", () => { d.hideFPS.uncap && _installUncap() }), s(T, "Hide FPS", d.hideFPS, "hide", "tp-hideFPS", eo), s(T, "Hide Ping", d.ping, "hide", "tp-hidePing", eo), s(T, "Show Frametime (ms)", d.hideFPS, "showMs", "tp-showMs", eo), s(T, "Show Session Time", d.hideFPS, "showSessionTime", "tp-showSessionTime", eo), s(T, "Hide Box Background", d.hideFPS, "hideBox", "tp-hideBox", eo); window.__ssbFpsCheck && T.appendChild(window.__ssbFpsCheck.row()); let P = a("Menus", "menus"); s(P, "Server Picker", d.ui, "showServerList", "tp-showServerList", () => { if (!d.ui.showServerList) { let e = document.querySelector(".mod-server-clone"); e && e.remove() } }), s(P, "Auto-pick Best Server", d.ping, "autoPickBest", "tp-autoPickBest", () => { d.ping.autoPickBest && (ej = !1) }, "5.2"), s(P, "Pause-Menu Volume Slider", d.ui, "showVolumeSlider", "tp-showVolumeSlider", ei); let St = a("Stats", "stats"); s(St, "Stats Tracker", d.stats, "enabled", "tp-statsEnabled"), s(St, "Pin Stats on Pause Menu", d.stats, "pinned", "tp-statsPinned"), St.appendChild(hk("Stats Hotkey", d.stats.hotkey, function (e) { d.stats.hotkey = e || "", localStorage.setItem("tp-statsHotkey", d.stats.hotkey), document.dispatchEvent(new Event("ssb:settings-change")) }, "tp-statsHotkey", () => d.stats.hotkey)); let L = a("Gameplay", "gameplay"); s(L, "Legacy Skins", d.gameplay, "legacySkins", "tp-legacySkins", () => setLegacySkins(d.gameplay.legacySkins)), s(L, "Legacy Sounds", d.gameplay, "legacySounds", "tp-legacySounds", () => setLegacySounds(d.gameplay.legacySounds)), s(L, "Auto Fullscreen", d.ui, "autoFullscreen", "tp-autoFullscreen"), L.appendChild(hk("Tab Out Key", d.gameplay.tabOutKey, function (e) { d.gameplay.tabOutKey = e || "Tab", localStorage.setItem("tp-tabOutKey", d.gameplay.tabOutKey), document.dispatchEvent(new Event("ssb:settings-change")) }, "tp-tabOutKey", () => d.gameplay.tabOutKey)); let _fovC = document.createElement("div"); _fovC.className = "mod-slider-container", _fovC.setAttribute("data-setting", "tp-fovStretch"), _fovC.setAttribute("data-keywords", kw["FOV (Black Bars)"]); let _fovL = document.createElement("div"); _fovL.className = "mod-slider-label", _fovL.textContent = "FOV (Black Bars)"; let _fovTt = o["FOV (Black Bars)"]; _fovTt && (_fovL.setAttribute("data-tooltip", _fovTt), _fovL.style.cursor = "default"); let _fovIW = document.createElement("div"); _fovIW.className = "mod-slider-inner-wrap", _fovIW.style.cssText = "display: flex; align-items: center; flex: 1; gap: 8px;"; let _fovMn = document.createElement("span"); _fovMn.className = "mod-slider-limit", _fovMn.style.cssText = "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: right;", _fovMn.textContent = "1"; let _fovR = document.createElement("input"); Object.assign(_fovR, { type: "range", className: "mod-slider", min: "1", max: "1.8", step: "0.05", value: d.gameplay.fovStretch }); let _fovMx = document.createElement("span"); _fovMx.className = "mod-slider-limit", _fovMx.style.cssText = "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: left;", _fovMx.textContent = "1.8", _fovIW.appendChild(_fovMn), _fovIW.appendChild(_fovR), _fovIW.appendChild(_fovMx); let _fovN = document.createElement("input"); function _fovApply(v) { v = Math.max(1, Math.min(1.8, Math.round(20 * v) / 20)), _fovR.value = v, _fovN.value = v, d.gameplay.fovStretch = v, localStorage.setItem("tp-fovStretch", JSON.stringify(v)), document.dispatchEvent(new Event("ssb:settings-change")), ef("ui_onchange"), applyFovStretch() } Object.assign(_fovN, { type: "number", className: "mod-num-input", min: "1", max: "1.8", step: "0.05", value: d.gameplay.fovStretch }), _fovR.addEventListener("input", () => { _fovN.value = _fovR.value }), _fovR.addEventListener("change", () => _fovApply(parseFloat(_fovR.value))); let _fovNc = () => { let e = parseFloat(_fovN.value); isNaN(e) || _fovApply(e) }; _fovN.addEventListener("change", _fovNc), _fovN.addEventListener("keydown", e => { "Enter" === e.key && (_fovNc(), _fovN.blur()) }); _fovC.appendChild(_fovL), _fovC.appendChild(_fovIW), _fovC.appendChild(_fovN), L.appendChild(_fovC); let et = a("Manage", "manage"); window.__ssbSettings.mount(i);
 
                     // Base36 encoding helpers for ultra-compact codes
                     function _ssbPackNum(val, scale = 100, offset = 0) {
@@ -3126,11 +3578,17 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     }
 
     (function installVersionChangelog() {
-        const displayVersion = "5.4";
-        // Keep the visible changelog on the v5.4 release notes even for patch
+        const displayVersion = "5.5";
+        // Keep the visible changelog on the v5.5 release notes even for patch
         // releases; the userscript @version still drives manager auto-updates.
-        const changelogVersion = "5.4";
+        const changelogVersion = "5.5";
         const changelogKey = "ssb-better-ui-changelog-seen";
+        const v55Items = [
+            { label: "Smart Auto Detail", text: "New under MODS ▸ FPS & Ping, on by default. When your FPS drops under 40, it lowers the resolution a step at a time (85%, 70%, 50%) instead of halving it, and keeps a step only if it helps. It raises the resolution again when your FPS recovers and never saves it, so every match starts sharp. It takes over from the game's Auto Detail, which needs to stay on.", group: "v5.5" },
+            { label: "FPS Check", text: "New under MODS ▸ FPS & Ping. It measures your frame rate and looks for common causes of low FPS: the browser not using your graphics card, a faster graphics card left unused, a battery saver holding you to 30 FPS, or the game stuck at half resolution. It tells you how to fix each one.", group: "v5.5" },
+            { label: "FOV Black Bars", text: "The HUD and menus keep their normal size again, like in v5.3: only the game view goes between the bars, and the scope lines up with it. The bars also wait for the match itself, so the loading screen and the inventory stay full-size.", group: "v5.5" },
+            { label: "Resize Everything", text: "New switch under MODS ▸ Gameplay, below FOV (Black Bars). Turn it on to fit the HUD and menus between the bars too, like a shorter browser window (the v5.4.0 look).", group: "v5.5" }
+        ];
         const v54Items = [
             { label: "FOV Black Bars", text: "FOV (Black Bars) now works like dragging your browser window shorter. In a match, the game view, the HUD and the pause menu all fit between the black bars, sized as they would be in a window that short. The HUD used to stay full-screen, on top of the bars.", group: "v5.4" },
             { label: "Scope Lines", text: "The scope now lines up with the black bars, so FOV no longer turns on Hide Scope Lines. If it turned that on for you, switch it off under MODS ▸ HUD.", group: "v5.4" },
@@ -3228,7 +3686,8 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             { label: "Settings Fixes", text: "Imported/reset settings save correctly, FOV black bars automatically enable the matching scope helpers when needed, and the server-picker arrow no longer sticks." }
         ];
         const changelogHistory = [
-            { version: displayVersion, intro: "Here's what's new in v5.4:", items: v54Items },
+            { version: displayVersion, intro: "Here's what's new in v5.5:", items: v55Items },
+            { version: "5.4", intro: "Previously in v5.4:", items: v54Items },
             { version: "5.3", intro: "Previously in v5.3:", items: v53Items },
             { version: "5.2", intro: "Previously in v5.2:", items: v52Items },
             { version: "5.1", intro: "Previously in v5.1:", items: v51Items },
