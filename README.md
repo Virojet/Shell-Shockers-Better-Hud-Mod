@@ -8,12 +8,12 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.5.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.6.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v55) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v56) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
 
 </div>
 
@@ -62,11 +62,12 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.5
+## What's new in v5.6
 
-- **Smart Auto Detail** (on by default, under **MODS ▸ FPS & Ping**): when your FPS drops under 40, it lowers the resolution a step at a time instead of halving it, keeps a step only if it helps, and raises it again when your FPS recovers. Every match starts sharp
-- **FPS Check:** press **Run Check** at the bottom of **MODS ▸ FPS & Ping**. It looks for common causes of low FPS and tells you how to fix each one
-- **FOV (Black Bars):** the HUD and menus keep their normal size again, and only the game view goes between the bars. Turn on **Resize Everything** under **MODS ▸ Gameplay** to fit them between the bars too, like in v5.4
+- **Lifetime Stats:** Match History shows lifetime games, kills, deaths and KDR above the list, including matches older than the last 40 kept. **Breakdown** lists them by mode and by map
+- **Crosshair Undo:** Undo, Redo and Revert sit under your profile toolbar in the **Crosshair** tab, and **Ctrl+Z** / **Ctrl+Y** work too
+- **Backup File:** **MODS ▸ Manage** saves your settings, crosshairs, favorites and match history to one file you can load in another browser
+- **Round Match History button** on the home screen, and a pause-menu **volume slider** that works in every language
 
 [Full changelog ↓](#changelog)
 
@@ -92,7 +93,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Server-region picker** integrated into the home screen with live ping
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
-- **Match History button** on the home screen, beside the Server selector
+- **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Volume slider** added directly to the pause menu
 - **Auto-fullscreen** on pointer lock
 - **Tab-out key**: release pointer lock without snapping the camera
@@ -103,18 +104,20 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - Color, length, width, gap, opacity, rotation, scale, outline, dot shape, dot outline color and width
 - Static (outer) lines, plus-shape dot, rounded dot, and more
 - Live preview with Sky, Grey, Dark and White backgrounds
+- **Undo / Redo / Revert**, with Ctrl+Z and Ctrl+Y
 
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
-- Hide bullet projectile meshes, explosion smoke / fire, yolk burst, shell-casing burst, or all particles
+- Hide bullet projectile meshes, explosion fire, yolk burst, shell-casing burst, or all particles
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
 - **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. The HUD and menus keep their normal size; **Resize Everything** fits them between the bars too, like in a shorter browser window
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
+- **Lifetime Stats**: games, kills, deaths and KDR across every match, with a breakdown by mode and map
 - **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them, and export JSON / CSV
 - Pinned compact stats above the pause weapon select
 - Configurable hotkey
@@ -127,6 +130,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Block Ads**: optional, off by default; hides in-game video and banner ads after a page reload (F5)
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings and inventory favorites as shareable codes
+- **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
 - In-game pop-ups for codes and confirmations instead of browser popups
 - **Check for updates** at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
@@ -210,15 +214,24 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.5 — current
+#### v5.6 — current
+
+- **Lifetime Stats:** a row above Match History shows your lifetime games, kills, deaths and KDR, with the date they started. It includes matches that are no longer in the last 40 kept: a match is added once when it drops off the list or when you use Clear History. **Breakdown** lists the totals by mode and by map, and **Reset** starts them over
+- **Crosshair Undo / Redo / Revert:** the second row of the profile toolbar in the **Crosshair** tab. **Ctrl+Z** and **Ctrl+Y** (or Ctrl+Shift+Z) work too, and a slider drag counts as one step. Undo keeps up to 40 steps until the page reloads. **Revert** puts the selected profile back the way you last saved it, and Undo can take a Revert back. Text and color fields keep their own Ctrl+Z
+- **Match History button:** now a round clock button, the height of the play row, beside Game Mode on the home screen. Hover it to see it rewind
+- **Save / Load Backup File:** new tiles under **MODS ▸ Manage**. Save writes your MODS settings, crosshairs, favorites, match history and lifetime stats to one file. Load shows what will change first, then merges crosshair profiles, favorites and history and reloads the page
+- **Volume slider:** the pause-menu slider now sets the game's sound directly, so it works in every game language and stays in step with Settings. The value is saved when you let go of the slider
+- **Shorter changelog:** the in-game changelog lists the last two versions, with a link to the full history here
+
+<details>
+<summary><b>v5.5 and older</b></summary>
+
+#### v5.5
 
 - **Smart Auto Detail:** new under **MODS ▸ FPS & Ping**, on by default. When your FPS dips under 40, the game's own Auto Detail turns shadows off, then halves the resolution and keeps it that way. Smart Auto Detail takes over from it: it lowers the resolution a step at a time (85%, 70%, then 50%), keeps a step only if your FPS goes up, and raises it again once your FPS recovers. It leaves shadows alone and saves nothing, so every match starts sharp. The game's Auto Detail setting needs to stay on
 - **FPS Check:** a **Run Check** button at the bottom of **MODS ▸ FPS & Ping**. It measures your frame rate and looks for common causes of low FPS: the browser not using your graphics card, a faster graphics card left unused, a battery saver holding you to 30 FPS, or the game stuck at half resolution. It tells you how to fix each one, and **Copy** puts the report on your clipboard
 - **FOV (Black Bars):** the HUD and menus keep their normal size again, like in v5.3. Only the game view goes between the bars, and the scope lines up with it. The bars also wait for the match itself, so the loading screen and the inventory stay full-size
 - **Resize Everything:** a new switch under **MODS ▸ Gameplay**, below FOV (Black Bars). Turn it on to fit the HUD and menus between the bars too, like a shorter browser window (the v5.4 look)
-
-<details>
-<summary><b>v5.4 and older</b></summary>
 
 #### v5.4
 
