@@ -8,12 +8,12 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.6.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.7.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v56) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v57) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
 
 </div>
 
@@ -62,12 +62,13 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.6
+## What's new in v5.7
 
-- **Lifetime Stats:** Match History shows lifetime games, kills, deaths and KDR above the list, including matches older than the last 40 kept. **Breakdown** lists them by mode and by map
-- **Crosshair Undo:** Undo, Redo and Revert sit under your profile toolbar in the **Crosshair** tab, and **Ctrl+Z** / **Ctrl+Y** work too
-- **Backup File:** **MODS ▸ Manage** saves your settings, crosshairs, favorites and match history to one file you can load in another browser
-- **Round Match History button** on the home screen, and a pause-menu **volume slider** that works in every language
+- **Match Stats redesign:** the stats window matches the MODS tab. The match you're playing is the first row of **Match History**, saved matches sit in columns with Game Mode and Map filters, and the team scoreboards are side by side
+- **Changed page:** the last MODS page lists only the settings you've changed, each with its own **Reset**
+- **Hide Damage Splats** under **MODS ▸ Effects**, and **Disable All Particles** now turns off everything on that page too
+- **Copy Support Info** under **MODS ▸ Manage**, and **FPS Check ▸ Copy** now copies a picture
+- **Menus sound like the game's**, and an Esc in a MODS field or dialog no longer closes Settings
 
 [Full changelog ↓](#changelog)
 
@@ -79,9 +80,9 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
 | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Effects & FPS** | Uncap FPS, Smart Auto Detail, FPS Check, disable anti-aliasing, hide bullets / explosions / particles, wider FOV with black bars |
+| **Effects & FPS** | Uncap FPS, Smart Auto Detail, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
-| **Stats tracker** | Session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
+| **Stats tracker** | Live scoreboards, session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
 | **Inventory favorites** | Star inventory items and share them with a code |
 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
@@ -95,7 +96,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Volume slider** added directly to the pause menu
-- **Auto-fullscreen** on pointer lock
+- **Auto Fullscreen**: clicking into a match goes fullscreen, and in Chrome and Edge Esc only pauses, like F11
 - **Tab-out key**: release pointer lock without snapping the camera
 
 #### Crosshair editor
@@ -109,16 +110,15 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
-- **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts the report on your clipboard
+- **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
-- Hide bullet projectile meshes, explosion fire, yolk burst, shell-casing burst, or all particles
+- Hide bullet projectile meshes, explosion fire, yolk burst, damage splats or shell-casing burst, or all of them plus every particle with **Disable All Particles**
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
 - **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. The HUD and menus keep their normal size; **Resize Everything** fits them between the bars too, like in a shorter browser window
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
-- **Lifetime Stats**: games, kills, deaths and KDR across every match, with a breakdown by mode and map
-- **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them, and export JSON / CSV
+- **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them by mode and map, and export JSON / CSV. The match you're playing is the first row
 - Pinned compact stats above the pause weapon select
 - Configurable hotkey
 
@@ -131,7 +131,9 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings and inventory favorites as shareable codes
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
-- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage)
+- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
+- **Changed** page: only the settings you've changed, each with its own Reset
+- **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - In-game pop-ups for codes and confirmations instead of browser popups
 - **Check for updates** at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
 - Settings persist via `localStorage`
@@ -182,7 +184,7 @@ It takes effect after a full page reload (**F5**). Leaving and rejoining a match
 
 <br>
 
-Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for common causes, like the browser not using your graphics card or a battery saver holding the game to 30 FPS, and tells you how to fix each one. Press **Copy** to share the report when you ask for help.
+Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for common causes, like the browser not using your graphics card or a battery saver holding the game to 30 FPS, and tells you how to fix each one. Press **Copy** to share a picture of the report when you ask for help.
 
 </details>
 
@@ -191,7 +193,7 @@ Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for
 
 <br>
 
-Press **F12**, open **Console**, and find the `[Better UI] Game patches:` line. If it ends with `NOT applied: …`, the game changed something the mod relies on. [Open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste that line.
+Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better UI] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
 
 </details>
 
@@ -214,7 +216,27 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.6 — current
+#### v5.7 — current
+
+- **Match Stats redesign:** the stats window uses the game's popup look with MODS-style cards, smaller and in the middle of the screen. The match you're playing is the first row of **Match History**, marked "Playing now" with a running time and your live K / D; click it for the scoreboards. Saved matches sit in columns (Match / Played / K / D) with **Game Mode** and **Map** filters, and **Rename** / **Delete** show when you hover a row. A match shows its code, time, map, server, mode and length as chips, with the two teams side by side and your own row highlighted. The **Stats Hotkey** opens the live scoreboards in a match and Match History on the home screen
+- **Lifetime totals removed:** Match History shows the totals of your saved matches instead, and backup files no longer include lifetime totals
+- **Changed page:** the last page in the MODS sidebar lists only the settings that differ from their defaults, with a **Reset** link for each
+- **Hide Damage Splats:** new under **MODS ▸ Effects**, off by default. Hides the yolk splats when an egg is hit or cracked. **Hide Yolk Burst** still hides only the burst
+- **Disable All Particles** now turns off everything on the Effects page: explosion fire, yolk bursts, damage splats, shell bursts and bullets too. While it's on, those switches show on and dimmed; turn it off and they're back the way you set them
+- **Copy Support Info:** new under **MODS ▸ Manage**. Copies a few lines for a bug report: the Better HUD version, browser, graphics card, screen size, which game patches applied, the names of the settings you've changed, and anything that failed to load. Nothing is sent anywhere
+- **FPS Check picture:** **Copy** in the FPS Check puts a picture of the results on your clipboard, ready to paste into Discord. Browsers that can't copy pictures get the text, as before
+- **Auto-pick Best Server:** waits until every region shows a ping, then switches only if another region is faster by at least 15 ms or 20 %. A region you pick yourself is kept
+- **Auto Fullscreen:** works like F11. In Chrome and Edge, Esc only pauses, and holding Esc leaves fullscreen until the next match. Turning the setting off leaves the fullscreen it started
+- **Menu sounds:** MODS and Crosshair toggles, sliders and key fields, the Server selector and the stats window make the same sounds as the game's own menus
+- **Esc fix:** an Esc that cancels a key field, clears the MODS search or closes a MODS dialog no longer closes Settings too
+- **Clear on a hotkey sticks:** clearing the **Stats Hotkey** or **Tab Out Key** stays cleared after a reload, and Space as the Tab Out Key is kept too
+- **Match History button** shows up together with the play row instead of popping in after it
+- **Old settings codes:** codes that start with `SSB-MODS-` (from much older versions) can't be imported anymore. `M-` and `M2-` codes still work
+
+<details>
+<summary><b>v5.6 and older</b></summary>
+
+#### v5.6
 
 - **Lifetime Stats:** a row above Match History shows your lifetime games, kills, deaths and KDR, with the date they started. It includes matches that are no longer in the last 40 kept: a match is added once when it drops off the list or when you use Clear History. **Breakdown** lists the totals by mode and by map, and **Reset** starts them over
 - **Crosshair Undo / Redo / Revert:** the second row of the profile toolbar in the **Crosshair** tab. **Ctrl+Z** and **Ctrl+Y** (or Ctrl+Shift+Z) work too, and a slider drag counts as one step. Undo keeps up to 40 steps until the page reloads. **Revert** puts the selected profile back the way you last saved it, and Undo can take a Revert back. Text and color fields keep their own Ctrl+Z
@@ -222,9 +244,6 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 - **Save / Load Backup File:** new tiles under **MODS ▸ Manage**. Save writes your MODS settings, crosshairs, favorites, match history and lifetime stats to one file. Load shows what will change first, then merges crosshair profiles, favorites and history and reloads the page
 - **Volume slider:** the pause-menu slider now sets the game's sound directly, so it works in every game language and stays in step with Settings. The value is saved when you let go of the slider
 - **Shorter changelog:** the in-game changelog lists the last two versions, with a link to the full history here
-
-<details>
-<summary><b>v5.5 and older</b></summary>
 
 #### v5.5
 
