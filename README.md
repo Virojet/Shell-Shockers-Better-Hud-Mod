@@ -8,12 +8,13 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.7.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.8.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+[![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v57) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v58) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n)
 
 </div>
 
@@ -62,13 +63,11 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 
 ---
 
-## What's new in v5.7
+## What's new in v5.8
 
-- **Match Stats redesign:** the stats window matches the MODS tab. The match you're playing is the first row of **Match History**, saved matches sit in columns with Game Mode and Map filters, and the team scoreboards are side by side
-- **Changed page:** the last MODS page lists only the settings you've changed, each with its own **Reset**
-- **Hide Damage Splats** under **MODS ▸ Effects**, and **Disable All Particles** now turns off everything on that page too
-- **Copy Support Info** under **MODS ▸ Manage**, and **FPS Check ▸ Copy** now copies a picture
-- **Menus sound like the game's**, and an Esc in a MODS field or dialog no longer closes Settings
+- **Tab Out fix:** pressing the Tab Out key around a death no longer freezes the screen on the death camera. The respawn menu comes up as usual, and Esc or leaving a match ends Tab Out too
+- **Hide Scoreboard** and **Hide Kill Feed** are now two separate switches under **MODS ▸ HUD**
+- **Discord:** join the Better HUD server from the MODS footer, the changelog window or [here](https://discord.com/invite/yWnDAYKA9n), for help, news and all the links
 
 [Full changelog ↓](#changelog)
 
@@ -193,7 +192,7 @@ Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for
 
 <br>
 
-Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better UI] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
+Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) or post in the [Discord](https://discord.com/invite/yWnDAYKA9n) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better UI] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
 
 </details>
 
@@ -216,7 +215,16 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.7 — current
+#### v5.8 — current
+
+- **Tab Out fix:** with Tab Out on, the game still thought the mouse was locked, so after a death it waited for an unlock that never came and the screen froze on the death camera with no respawn menu. Now when the game releases the mouse (a death, Esc, leaving a match) Tab Out ends and the game is told, so the respawn menu shows and the mouse works again. Tab Out also only starts while the mouse is really locked, so pressing it on the death screen does nothing
+- **Hide Scoreboard / Hide Kill Feed:** **Hide Scoreboard & Kill Feed** is split into two switches under **MODS ▸ HUD**, so you can hide one and keep the other. Your old setting carries over to both, and settings codes keep working
+- **Join Discord:** a button at the bottom of the MODS tab and a link in the changelog window open the Better HUD Discord server, with help, news and all the links
+
+<details>
+<summary><b>v5.7 and older</b></summary>
+
+#### v5.7
 
 - **Match Stats redesign:** the stats window uses the game's popup look with MODS-style cards, smaller and in the middle of the screen. The match you're playing is the first row of **Match History**, marked "Playing now" with a running time and your live K / D; click it for the scoreboards. Saved matches sit in columns (Match / Played / K / D) with **Game Mode** and **Map** filters, and **Rename** / **Delete** show when you hover a row. A match shows its code, time, map, server, mode and length as chips, with the two teams side by side and your own row highlighted. The **Stats Hotkey** opens the live scoreboards in a match and Match History on the home screen
 - **Lifetime totals removed:** Match History shows the totals of your saved matches instead, and backup files no longer include lifetime totals
@@ -232,9 +240,6 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 - **Clear on a hotkey sticks:** clearing the **Stats Hotkey** or **Tab Out Key** stays cleared after a reload, and Space as the Tab Out Key is kept too
 - **Match History button** shows up together with the play row instead of popping in after it
 - **Old settings codes:** codes that start with `SSB-MODS-` (from much older versions) can't be imported anymore. `M-` and `M2-` codes still work
-
-<details>
-<summary><b>v5.6 and older</b></summary>
 
 #### v5.6
 
@@ -447,6 +452,7 @@ The userscript is a single self-contained file.
 Shell Shockers gameplay, montages and mod content.
 
 [![Subscribe on YouTube](https://img.shields.io/badge/Subscribe-%40subtovirojet-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+[![Join the Discord](https://img.shields.io/badge/Join_the-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
 </div>
 
