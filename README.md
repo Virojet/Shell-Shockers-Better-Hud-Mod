@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.8.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.8.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
@@ -215,7 +215,14 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.8 — current
+#### v5.8.1 — current
+
+- **Match History saving:** a match where nothing changed after its first 20 seconds is saved too. It used to be left out of the history
+- **Leaving a match:** leaving ends the match right away. The **Stats Hotkey** opens Match History again instead of the scoreboards, the match no longer shows as "Playing now", and it keeps its real length if you close the tab later
+- **Rename / Delete:** the buttons on a saved match can be clicked when you hover the row. The hidden Played column was taking the clicks
+- **Esc:** closes a stats window you opened during a match, once the game lets go of the mouse
+
+#### v5.8
 
 - **Tab Out fix:** with Tab Out on, the game still thought the mouse was locked, so after a death it waited for an unlock that never came and the screen froze on the death camera with no respawn menu. Now when the game releases the mouse (a death, Esc, leaving a match) Tab Out ends and the game is told, so the respawn menu shows and the mouse works again. Tab Out also only starts while the mouse is really locked, so pressing it on the death screen does nothing
 - **Hide Scoreboard / Hide Kill Feed:** **Hide Scoreboard & Kill Feed** is split into two switches under **MODS ▸ HUD**, so you can hide one and keep the other. Your old setting carries over to both, and settings codes keep working
