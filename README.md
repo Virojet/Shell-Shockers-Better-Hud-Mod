@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.8.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.8.2-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
@@ -215,7 +215,12 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.8.1 — current
+#### v5.8.2 — current
+
+- **Trade kills:** match stats count every kill in the kill feed. When two players kill each other at the same moment, or a grenade lands after its thrower died, the game leaves that kill off its own scoreboard; Better HUD now counts it
+- **Last second:** kills and deaths in the last second are no longer lost when a player leaves, when you leave a match or close the tab, or when you press **Reset Live Stats**. A player who leaves during your first minute in a match keeps their row if they got a kill or died while you were there
+
+#### v5.8.1
 
 - **Match History saving:** a match where nothing changed after its first 20 seconds is saved too. It used to be left out of the history
 - **Leaving a match:** leaving ends the match right away. The **Stats Hotkey** opens Match History again instead of the scoreboards, the match no longer shows as "Playing now", and it keeps its real length if you close the tab later

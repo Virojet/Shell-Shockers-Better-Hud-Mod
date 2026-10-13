@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      5.8.1
+// @version      5.8.2
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
 // @license      MIT
+// @icon         https://www.google.com/s2/favicons?domain=shellshock.io
 // @homepageURL  https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod
 // @supportURL   https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues
 // @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
