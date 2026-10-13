@@ -8,13 +8,13 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.8.2-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-5.9.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
-[![YouTube](https://img.shields.io/badge/YouTube-%40subtovirojet-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/@subtovirojet)
+[![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v58) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v59) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -59,15 +59,15 @@
 
 You don't need to do anything. Tampermonkey picks up new versions by itself, and Better HUD reminds you once when a new version comes out. The bottom of the **MODS** tab always shows whether you're **Up to date**.
 
-Want it right now? Press **Update** (or **Check for updates**) at the bottom of the MODS tab, or install again from the button above. Your settings and crosshairs are kept.
+Want it right now? Press **Update** (or the **Check for updates** arrows button) at the bottom of the MODS tab, or install again from the button above. Your settings and crosshairs are kept.
 
 ---
 
-## What's new in v5.8
+## What's new in v5.9
 
-- **Tab Out fix:** pressing the Tab Out key around a death no longer freezes the screen on the death camera. The respawn menu comes up as usual, and Esc or leaving a match ends Tab Out too
-- **Hide Scoreboard** and **Hide Kill Feed** are now two separate switches under **MODS ▸ HUD**
-- **Discord:** join the Better HUD server from the MODS footer, the changelog window or [here](https://discord.com/invite/yWnDAYKA9n), for help, news and all the links
+- **YouTube:** Better HUD has an official [YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw). Open it from the new YouTube button at the bottom of the MODS tab or from the changelog window
+- **Footer buttons:** **Check for updates** and **Join Discord** are now small icon buttons at the bottom of the MODS tab, next to YouTube. Hover one to see what it does
+- From v5.8: **trade kills** count in match stats, and Match History saves quiet matches and ends a match when you leave
 
 [Full changelog ↓](#changelog)
 
@@ -134,7 +134,7 @@ Want it right now? Press **Update** (or **Check for updates**) at the bottom of 
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - In-game pop-ups for codes and confirmations instead of browser popups
-- **Check for updates** at the bottom of the MODS tab, with an **Up to date** / **Update** status beside it
+- **Check for updates** (the arrows button at the bottom of the MODS tab), with an **Up to date** / **Update** status beside it
 - Settings persist via `localStorage`
 
 </details>
@@ -165,7 +165,7 @@ Make sure Tampermonkey is on and **Allow User Scripts** is enabled ([how](#allow
 
 <br>
 
-Press **Check for updates** at the bottom of the MODS tab, or click the Tampermonkey icon → **Check for userscript updates**, or install again from the [button at the top](#install). Your settings are kept.
+Press the **Check for updates** arrows button at the bottom of the MODS tab, or click the Tampermonkey icon → **Check for userscript updates**, or install again from the [button at the top](#install). Your settings are kept.
 
 </details>
 
@@ -215,7 +215,15 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.8.2 — current
+#### v5.9.0 — current
+
+- **YouTube:** a new button at the bottom of the MODS tab and a link in the changelog window open the official [Better HUD YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+- **Footer buttons:** **Check for updates** is now a square button with update arrows, and **Join Discord** a square button with the Discord logo. Both keep their tooltips. The arrows turn on hover and spin while a check runs
+
+<details>
+<summary><b>v5.8 and older</b></summary>
+
+#### v5.8.2
 
 - **Trade kills:** match stats count every kill in the kill feed. When two players kill each other at the same moment, or a grenade lands after its thrower died, the game leaves that kill off its own scoreboard; Better HUD now counts it
 - **Last second:** kills and deaths in the last second are no longer lost when a player leaves, when you leave a match or close the tab, or when you press **Reset Live Stats**. A player who leaves during your first minute in a match keeps their row if they got a kill or died while you were there
@@ -232,9 +240,6 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 - **Tab Out fix:** with Tab Out on, the game still thought the mouse was locked, so after a death it waited for an unlock that never came and the screen froze on the death camera with no respawn menu. Now when the game releases the mouse (a death, Esc, leaving a match) Tab Out ends and the game is told, so the respawn menu shows and the mouse works again. Tab Out also only starts while the mouse is really locked, so pressing it on the death screen does nothing
 - **Hide Scoreboard / Hide Kill Feed:** **Hide Scoreboard & Kill Feed** is split into two switches under **MODS ▸ HUD**, so you can hide one and keep the other. Your old setting carries over to both, and settings codes keep working
 - **Join Discord:** a button at the bottom of the MODS tab and a link in the changelog window open the Better HUD Discord server, with help, news and all the links
-
-<details>
-<summary><b>v5.7 and older</b></summary>
 
 #### v5.7
 
