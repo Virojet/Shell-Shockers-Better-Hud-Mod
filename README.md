@@ -8,13 +8,13 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-5.9.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.0.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v59) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v60) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -63,11 +63,12 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v5.9
+## What's new in v6.0
 
-- **YouTube:** Better HUD has an official [YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw). Open it from the new YouTube button at the bottom of the MODS tab or from the changelog window
-- **Footer buttons:** **Check for updates** and **Join Discord** are now small icon buttons at the bottom of the MODS tab, next to YouTube. Hover one to see what it does
-- From v5.8: **trade kills** count in match stats, and Match History saves quiet matches and ends a match when you leave
+- **Welcome Guide:** a first install opens a short setup in three steps: a few popular switches, a starter crosshair, and where to find everything. Open it again any time from **MODS ▸ Manage ▸ Welcome Guide**
+- **Disable All Particles** now leaves smoke visible. It still hides everything else on the Effects page
+- Console messages are tagged `[Better HUD]`
+- From v5.9: the official [YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw) and the icon buttons at the bottom of the MODS tab
 
 [Full changelog ↓](#changelog)
 
@@ -111,7 +112,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
-- Hide bullet projectile meshes, explosion fire, yolk burst, damage splats or shell-casing burst, or all of them plus every particle with **Disable All Particles**
+- Hide bullet projectile meshes, explosion fire, yolk burst, damage splats or shell-casing burst, or all of them at once with **Disable All Particles** (smoke stays visible)
 - Audio thread optimization (reduces GC sweeps and audio-thread stutter)
 - **FOV (Black Bars)**: wider horizontal field of view via in-game letterboxing, no distortion. The HUD and menus keep their normal size; **Resize Everything** fits them between the bars too, like in a shorter browser window
 
@@ -133,6 +134,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
+- **Welcome Guide**: the three-step setup a new install opens with; open it again from **MODS ▸ Manage**
 - In-game pop-ups for codes and confirmations instead of browser popups
 - **Check for updates** (the arrows button at the bottom of the MODS tab), with an **Up to date** / **Update** status beside it
 - Settings persist via `localStorage`
@@ -192,7 +194,7 @@ Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for
 
 <br>
 
-Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) or post in the [Discord](https://discord.com/invite/yWnDAYKA9n) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better UI] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
+Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) or post in the [Discord](https://discord.com/invite/yWnDAYKA9n) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better HUD] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
 
 </details>
 
@@ -215,13 +217,19 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Changelog
 
-#### v5.9.0 — current
+#### v6.0.0 — current
+
+- **Welcome Guide:** a first install now opens a short setup in place of the "what's new" window. Step 1 has four popular switches (Smart Auto Detail, Server Picker, Infinite Chat History, Auto Fullscreen), step 2 the five starter crosshairs (or keep your own), step 3 shows where the MODS and CROSSHAIR tabs, the Stats Hotkey, Discord and YouTube are. Open it again from **MODS ▸ Manage ▸ Welcome Guide**
+- **Disable All Particles:** smoke now stays visible while it's on. It still hides explosion fire, yolk bursts, damage splats, shell-casing bursts and bullets
+- **Name:** messages in the browser console are now tagged `[Better HUD]` instead of `[Better UI]`. The script keeps its name in Tampermonkey, so it updates in place as usual
+
+<details>
+<summary><b>v5.9 and older</b></summary>
+
+#### v5.9.0
 
 - **YouTube:** a new button at the bottom of the MODS tab and a link in the changelog window open the official [Better HUD YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 - **Footer buttons:** **Check for updates** is now a square button with update arrows, and **Join Discord** a square button with the Discord logo. Both keep their tooltips. The arrows turn on hover and spin while a check runs
-
-<details>
-<summary><b>v5.8 and older</b></summary>
 
 #### v5.8.2
 
