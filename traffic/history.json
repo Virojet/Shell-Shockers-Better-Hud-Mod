@@ -1,0 +1,232 @@
+{
+  "clones": {
+    "2026-09-29": {
+      "count": 36,
+      "uniques": 14
+    },
+    "2026-09-30": {
+      "count": 13,
+      "uniques": 9
+    },
+    "2026-10-01": {
+      "count": 25,
+      "uniques": 15
+    },
+    "2026-10-02": {
+      "count": 3,
+      "uniques": 3
+    },
+    "2026-10-03": {
+      "count": 6,
+      "uniques": 6
+    },
+    "2026-10-04": {
+      "count": 3,
+      "uniques": 2
+    },
+    "2026-10-05": {
+      "count": 5,
+      "uniques": 3
+    },
+    "2026-10-06": {
+      "count": 28,
+      "uniques": 16
+    },
+    "2026-10-07": {
+      "count": 9,
+      "uniques": 7
+    },
+    "2026-10-08": {
+      "count": 1,
+      "uniques": 1
+    },
+    "2026-10-09": {
+      "count": 3,
+      "uniques": 3
+    },
+    "2026-10-10": {
+      "count": 3,
+      "uniques": 3
+    },
+    "2026-10-11": {
+      "count": 6,
+      "uniques": 4
+    },
+    "2026-10-12": {
+      "count": 21,
+      "uniques": 13
+    }
+  },
+  "popular_paths": [
+    {
+      "count": 138,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
+      "title": "Overview",
+      "uniques": 61
+    },
+    {
+      "count": 3,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.meta.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.meta.js",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Better Hud V4-4.0.user.js",
+      "title": "/blob/main/Better Hud V4-4.0.user.js",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "title": "/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
+      "title": "/issues",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
+      "title": "/blob/main/LICENSE",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/pulls",
+      "title": "/pulls",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/security",
+      "title": "/security",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/workflows",
+      "title": "/tree/main/.github/workflows",
+      "uniques": 1
+    }
+  ],
+  "referrers": [
+    {
+      "count": 10,
+      "referrer": "shellshock.io",
+      "uniques": 8
+    },
+    {
+      "count": 9,
+      "referrer": "youtube.com",
+      "uniques": 6
+    },
+    {
+      "count": 6,
+      "referrer": "github.com",
+      "uniques": 4
+    },
+    {
+      "count": 5,
+      "referrer": "search.brave.com",
+      "uniques": 3
+    },
+    {
+      "count": 3,
+      "referrer": "Bing",
+      "uniques": 2
+    },
+    {
+      "count": 3,
+      "referrer": "Yahoo",
+      "uniques": 1
+    },
+    {
+      "count": 2,
+      "referrer": "Google",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "referrer": "betterhud-6dd322.tiiny.site",
+      "uniques": 2
+    }
+  ],
+  "totals": {
+    "clones": {
+      "count": 162,
+      "uniques": 99
+    },
+    "views": {
+      "count": 154,
+      "uniques": 89
+    }
+  },
+  "views": {
+    "2026-09-29": {
+      "count": 14,
+      "uniques": 11
+    },
+    "2026-09-30": {
+      "count": 18,
+      "uniques": 7
+    },
+    "2026-10-01": {
+      "count": 7,
+      "uniques": 5
+    },
+    "2026-10-02": {
+      "count": 14,
+      "uniques": 5
+    },
+    "2026-10-03": {
+      "count": 10,
+      "uniques": 6
+    },
+    "2026-10-04": {
+      "count": 8,
+      "uniques": 3
+    },
+    "2026-10-05": {
+      "count": 9,
+      "uniques": 4
+    },
+    "2026-10-06": {
+      "count": 14,
+      "uniques": 9
+    },
+    "2026-10-07": {
+      "count": 9,
+      "uniques": 8
+    },
+    "2026-10-08": {
+      "count": 4,
+      "uniques": 3
+    },
+    "2026-10-09": {
+      "count": 2,
+      "uniques": 2
+    },
+    "2026-10-10": {
+      "count": 22,
+      "uniques": 9
+    },
+    "2026-10-11": {
+      "count": 13,
+      "uniques": 8
+    },
+    "2026-10-12": {
+      "count": 10,
+      "uniques": 9
+    }
+  }
+}
