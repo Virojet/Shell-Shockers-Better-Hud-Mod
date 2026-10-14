@@ -1,0 +1,28 @@
+name: Track traffic
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  traffic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and merge traffic stats
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+        run: python3 .github/scripts/traffic.py
+
+      - name: Commit stats if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add traffic
+          git diff --cached --quiet || git commit -m "chore: update traffic stats [skip ci]"
+          git push

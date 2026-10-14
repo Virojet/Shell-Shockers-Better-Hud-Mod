@@ -8,13 +8,15 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.0.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
+[![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
+[![Repo views](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/traffic/views-badge.json&style=flat-square)](./traffic/history.json)
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v60) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v61) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -63,12 +65,12 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.0
+## What's new in v6.1
 
-- **Welcome Guide:** a first install opens a short setup in three steps: a few popular switches, a starter crosshair, and where to find everything. Open it again any time from **MODS ▸ Manage ▸ Welcome Guide**
-- **Disable All Particles** now leaves smoke visible. It still hides everything else on the Effects page
-- Console messages are tagged `[Better HUD]`
-- From v5.9: the official [YouTube channel](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw) and the icon buttons at the bottom of the MODS tab
+- **Tab Out keeps your view:** tabbing out and back in no longer turns you toward the spawn direction. The mouse locks again with the game's own **Fix Mouse Glitch** setting, and the key can't drop you into the pause menu by mistake anymore
+- **Render Scale is back** in **MODS ▸ FPS & Ping**: raise it to draw the game at a lower resolution for more FPS. Smart Auto Detail still works on top of it
+- **Install count:** the installs badge above now counts players (see [Privacy](#privacy))
+- From v6.0: the **Welcome Guide** for first installs, and **Disable All Particles** leaves smoke visible
 
 [Full changelog ↓](#changelog)
 
@@ -80,7 +82,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
 | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
-| **Effects & FPS** | Uncap FPS, Smart Auto Detail, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
+| **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Live scoreboards, session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
 | **Inventory favorites** | Star inventory items and share them with a code |
@@ -110,6 +112,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
+- **Render Scale**: draws the game at a lower resolution for more FPS. 1 is the normal resolution, up to 4 for the most FPS. Smart Auto Detail can still step down from it
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
 - Hide bullet projectile meshes, explosion fire, yolk burst, damage splats or shell-casing burst, or all of them at once with **Disable All Particles** (smoke stays visible)
@@ -215,16 +218,28 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ---
 
+## Privacy
+
+The first time Better HUD runs, it sends one anonymous hit to a public counter ([Abacus](https://abacus.jasoncameron.dev)) so the installs badge above stays current. Nothing else is sent: no settings, stats, names or IDs. It's sent once per browser and never again. The browser remembers it with the `ssb-install-counted` key in site storage.
+
 ## Changelog
 
-#### v6.0.0 — current
+#### v6.1.0 — current
+
+- **Tab Out keeps your view:** tabbing out used to call the game's respawn step, so your aim snapped toward the spawn direction when you came back. Now you face the same way as before, and moving the free cursor while you're out doesn't turn you
+- **Tab Out locks like the game:** tabbing back in uses the game's own **Fix Mouse Glitch** setting. Before, that fix stayed off until your next respawn. If the browser refuses the lock, you stay out and the key tries again
+- **Tab Out key:** it now reaches Tab Out before the game, so it can't open the pause menu by mistake (this happened more often after using chat). Holding the key down no longer flips you out and back in
+- **Render Scale:** back in **MODS ▸ FPS & Ping**, above FPS Check. A slider from 1 to 4 that lowers the resolution for more FPS. Smart Auto Detail works on top of it, and FPS Check lists it and suggests it when FPS is low. Old settings codes with it still import
+- **Install count:** Better HUD now adds one to a public install counter the first time it runs (see [Privacy](#privacy)). Players who update count once too, so the total includes everyone already using it
+
+<details>
+<summary><b>v6.0 and older</b></summary>
+
+#### v6.0.0
 
 - **Welcome Guide:** a first install now opens a short setup in place of the "what's new" window. Step 1 has four popular switches (Smart Auto Detail, Server Picker, Infinite Chat History, Auto Fullscreen), step 2 the five starter crosshairs (or keep your own), step 3 shows where the MODS and CROSSHAIR tabs, the Stats Hotkey, Discord and YouTube are. Open it again from **MODS ▸ Manage ▸ Welcome Guide**
 - **Disable All Particles:** smoke now stays visible while it's on. It still hides explosion fire, yolk bursts, damage splats, shell-casing bursts and bullets
 - **Name:** messages in the browser console are now tagged `[Better HUD]` instead of `[Better UI]`. The script keeps its name in Tampermonkey, so it updates in place as usual
-
-<details>
-<summary><b>v5.9 and older</b></summary>
 
 #### v5.9.0
 
