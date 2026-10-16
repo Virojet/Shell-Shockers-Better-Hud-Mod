@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -224,7 +224,11 @@ The first time Better HUD runs, it sends one anonymous hit to a public counter (
 
 ## Changelog
 
-#### v6.1.0 — current
+#### v6.1.1 — current
+
+- **Legacy Skins:** turning it on could leave the game stuck on the loading screen, mostly when playing as a guest. Better HUD swapped in the classic gun models before the game had loaded them. Now it waits until the game is ready, loads them, then swaps, and the classic guns show on the home screen egg too
+
+#### v6.1.0
 
 - **Tab Out keeps your view:** tabbing out used to call the game's respawn step, so your aim snapped toward the spawn direction when you came back. Now you face the same way as before, and moving the free cursor while you're out doesn't turn you
 - **Tab Out locks like the game:** tabbing back in uses the game's own **Fix Mouse Glitch** setting. Before, that fix stayed off until your next respawn. If the browser refuses the lock, you stay out and the key tries again
