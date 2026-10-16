@@ -63,14 +63,18 @@
     "2026-10-14": {
       "count": 30,
       "uniques": 17
+    },
+    "2026-10-15": {
+      "count": 8,
+      "uniques": 6
     }
   },
   "popular_paths": [
     {
-      "count": 135,
+      "count": 136,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 57
+      "uniques": 55
     },
     {
       "count": 5,
@@ -97,6 +101,24 @@
       "uniques": 1
     },
     {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
+      "title": "/tree/main/.github",
+      "uniques": 1
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
+      "title": "/tree/main/.github/scripts",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/traffic.yml",
+      "title": "/actions/workflows/traffic.yml",
+      "uniques": 1
+    },
+    {
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blame/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blame/main/Shell-Shockers-Better-Hud.user.js",
@@ -106,24 +128,6 @@
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
       "title": "/blob/main/LICENSE",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commits",
-      "title": "/commits",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/pulls",
-      "title": "/pulls",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/security",
-      "title": "/security",
       "uniques": 1
     }
   ],
@@ -166,12 +170,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 234,
-      "uniques": 138
+      "count": 242,
+      "uniques": 144
     },
     "views": {
-      "count": 187,
-      "uniques": 103
+      "count": 200,
+      "uniques": 111
     }
   },
   "views": {
@@ -238,6 +242,10 @@
     "2026-10-14": {
       "count": 2,
       "uniques": 2
+    },
+    "2026-10-15": {
+      "count": 13,
+      "uniques": 8
     }
   }
 }
