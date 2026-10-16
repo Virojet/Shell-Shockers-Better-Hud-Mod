@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.2-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.3-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -229,7 +229,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.2 — current
+#### v6.1.3 — current
+
+- **GitHub button:** the MODS footer has a GitHub button next to Discord and YouTube, linking to the source code and releases
+
+#### v6.1.2
 
 - **Smart Auto Detail:** it no longer stutters while you play. Changing the resolution rebuilds the game view, which holds up a frame, so it now waits until the mouse is free (you die, pause or open a menu). It decides from the FPS over the whole stretch since the slow moment, so a single dip doesn't trigger it. Only after a full minute under 25 FPS does it step down mid-match. The next match starts at the step the last one kept, and it remembers what it learned
 - **Infinite Chat History:** turning it off now trims the chat back to the game's own small box right away. Before, the messages you had kept stayed in it for the whole match
