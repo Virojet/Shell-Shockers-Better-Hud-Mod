@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.1
+// @version      6.1.2
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -908,31 +908,44 @@ window.__ssbSettings = window.__ssbSettings || (function () {
    time, it halves the resolution, saves High Res as off and stops checking.
    One slow moment, or a cap that resolution can't lift (on battery, Chrome's
    Energy Saver holds pages to 30 FPS), leaves the game blurry from then on.
-   Smart Auto Detail makes that call instead, while the game's Auto Detail is on:
-   - Under 40 FPS for 4 seconds, the resolution goes down a step: 85%, 70%,
-     then 50% of the game view's width and height.
-   - The next 4 seconds show whether that helped. Under 10% more FPS means the
-     resolution wasn't what held the game back: it goes back up, and the next
-     try waits a minute, then 2, then 4.
-   - At 55 FPS or more for 20 seconds, it goes back up a step. If that drops
-     under 40 FPS within a minute, the next step up waits twice as long.
+   Smart Auto Detail makes that call instead, while the game's Auto Detail is
+   on. It counts only frames you play (pointer locked), 4 seconds at a time:
+   - Under 40 FPS, it picks a lower resolution: 85%, 70% or 50% of the game
+     view's width and height, the first that would reach 45 FPS if the frame
+     time were all pixels. Until the change is made, the FPS over all the play
+     since that slow moment keeps picking: lower, or none once it averages 40.
+   - A change rebuilds the game view, which holds up a frame (150-180 ms with
+     software rendering), so it waits until the pointer is free: when you die,
+     pause or open a menu. Only after a whole minute of play under 25 FPS
+     does a step down happen while you play.
+   - The next 4 seconds of play show whether it helped. Under 10% more FPS
+     for each step down means the resolution wasn't what held the game back:
+     it goes back up at the next pause, and the next try waits a minute of
+     play, then 2, then 4.
+   - At 55 FPS or more for 20 seconds of play, it goes back up a step at the
+     next pause. If that's under 40 FPS, it goes back down at the pause after,
+     and the next step up waits twice as long, as it does when a step up
+     doesn't last a minute.
    - Nothing is saved, and shadows are left alone (they cost this game very
-     little). When the match ends, the game's own resolution is back.
+     little). In the menus the game's own resolution is back. The next match
+     starts at the step this one kept, during its loading screen, and with
+     what this one learned; a page reload starts over.
    The engine's setHardwareScalingLevel is wrapped, so the game's own calls
-   (High Res, window resizes) keep the step. A game patch skips the game's
-   check while this one is in charge; if a game update moves that check, the
-   patch misses and the game's Auto Detail works as before.
+   (High Res, window resizes) keep the step on screen. A game patch skips the
+   game's check while this one is in charge; if a game update moves that
+   check, the patch misses and the game's Auto Detail works as before.
    Render Scale (MODS ▸ FPS & Ping) multiplies the level this picks, or the
    game's own: 2 draws half the width and height of that. 1 changes nothing.
    FPS Check measures the frame rate for a moment and looks for the usual
    causes of low FPS, each with its fix. */
 !function () {
-    var KEY = "tp-smartDetail", STEPS = [1, 0.85, 0.7, 0.5], WINDOW = 4000, UP_FPS = 55;
+    var KEY = "tp-smartDetail", STEPS = [1, 0.85, 0.7, 0.5], WINDOW = 4000, UP_FPS = 55, TARGET = 45, URGENT = 25;
     var low = 40, patched = false;   // the game's threshold, and whether its check was found
-    var engine = null, setLevel = null, base = 1, step = 0;
-    var frames = 0, time = 0, last = 0, quietUntil = 0, windowStart = 0, renders = 0;
-    var match = null, lastMatch = null, probe = null;
-    var downWait = 60000, downAfter = 0, upHold = 20000, goodSince = 0, upAt = -Infinity, toasted = false;
+    var engine = null, setLevel = null, base = 1;
+    var step = 0, why = null, whyFps = 0, shown = 0, kept = 0;   // the step wanted and why, the step on screen, the step the next match starts at
+    var frames = 0, time = 0, last = 0, quietUntil = 0, played = 0, renders = 0;
+    var match = null, lastMatch = null, probe = null, plan = null;
+    var downWait = 60000, downAfter = 0, upHold = 20000, good = 0, upAt = -Infinity, toasted = false;
 
     function isOn() {
         try { return JSON.parse(localStorage.getItem(KEY) || "true") !== false; } catch (e) { return true; }
@@ -955,13 +968,16 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     function scale() {
         try { var v = window.__ssbRenderScale ? +window.__ssbRenderScale() : 1; return v >= 1 && v <= 4 ? v : 1; } catch (e) { return 1; }
     }
-    function level() { return (active() ? 1 / STEPS[step] : base) * scale(); }
-    function apply() {
+    function level(s) { return (active() ? 1 / STEPS[s] : base) * scale(); }
+    // You're playing. A new level rebuilds the game view, which holds up a frame, so it waits for a death, a pause or a menu.
+    function held() { return !!document.pointerLockElement; }
+    function apply(force) {
         if (!engine) return;
-        var want = level();
-        if (Math.abs((+engine.getHardwareScalingLevel() || 1) - want) < 1e-6) return;
+        var want = level(step);
+        if (Math.abs((+engine.getHardwareScalingLevel() || 1) - want) < 1e-6) { took(); return; }
+        if (held() && !force) return;
         setLevel.call(engine, want);
-        quietUntil = Math.max(quietUntil, performance.now() + 500);   // frames right after the resize don't count
+        took();
         // The game fits its hit indicator to the render size when the window resizes.
         try { window.dispatchEvent(new Event("resize")); } catch (e) { window.__ssbErr("detail#1", e) }
     }
@@ -970,63 +986,82 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         engine = e;
         setLevel = e.setHardwareScalingLevel;
         base = +e.getHardwareScalingLevel() || 1;
+        shown = 0;
         e.setHardwareScalingLevel = function (l) {
             base = +l || 1;   // after a resize the game passes true, which means 1
-            return setLevel.call(this, level());
+            if (held()) return setLevel.call(this, level(shown));
+            var r = setLevel.call(this, level(step));
+            if (this === engine) took();
+            return r;
         };
         try {
             e.onEndFrameObservable.add(function () {
                 var now = performance.now(), dt = now - last;
                 last = now;
                 renders++;
-                if (dt > 0 && dt < 1000 && now >= quietUntil) { frames++; time += dt; }
+                if (dt > 0 && dt < 1000 && now >= quietUntil && held()) { frames++; time += dt; }
             });
         } catch (err) { window.__ssbErr("detail#2", err) }
     }
-    function note(n, why, fps) {
-        step = n;
-        match.steps.push({ at: performance.now() - match.start, pct: Math.round(STEPS[n] * 100), why: why, fps: Math.round(fps) });
+    function want(n, w, fps) { step = n; why = n === shown ? null : w; whyFps = fps; }
+    // The engine now draws at the step wanted: count frames afresh, and the next 4 seconds of play judge a step down or up.
+    function took() {
+        var n = active() ? step : 0, from = shown, w = why, fps = plan && plan.time ? plan.frames * 1000 / plan.time : whyFps;
+        if (n === shown) return;
+        shown = n; why = null; plan = null;
+        frames = 0; time = 0;
+        quietUntil = Math.max(quietUntil, performance.now() + 500);   // frames right after the change don't count
+        if (!match || !w) return;
+        if (w === "low" || w === "recovered") probe = { down: n > from, from: from, to: n, fps: fps };
+        match.steps.push({ at: performance.now() - match.start, pct: Math.round(STEPS[n] * 100), why: w, fps: Math.round(fps) });
         if (match.steps.length > 12) match.steps.shift();
-        apply();
-        if (why === "low" && !toasted) {
+        if (w === "low" && !toasted) {
             toasted = true;
             window.__ssbUI.toast("Smart Auto Detail lowered the resolution to " + Math.round(STEPS[n] * 100) + "% (FPS was " + Math.round(fps) + ").");
         }
     }
-    function decide(fps, now) {
-        var p = probe;
+    // The mildest lower step that would reach 45 FPS if the frame time were all pixels, so one change can do what took three.
+    function pick(fps) {
+        var n = shown + 1;
+        while (n < STEPS.length - 1 && fps * Math.pow(STEPS[shown] / STEPS[n], 2) < TARGET) n++;
+        return n;
+    }
+    function decide(n, t, now) {
+        var fps = n * 1000 / t, p = probe;
         probe = null;
-        if (p && p.down && fps < p.fps * 1.1) {   // under 10% more FPS: the resolution wasn't what held it back
-            note(p.from, "no help", fps);
+        if (step !== shown && why !== "low" && why !== "recovered") return;   // a way back waits for the next pause
+        if (p && p.down && fps < p.fps * (1 + (p.to - p.from) / 10)) {   // under 10% more FPS a step: the resolution wasn't what held it back
+            want(p.from, "no help", fps);
             downAfter = now + downWait;
             downWait = Math.min(downWait * 2, 240000);
             return;
         }
         if (p && !p.down) {
             if (fps < low) {   // that step up was one too many
-                note(p.from, "too low", fps);
+                want(p.from, "too low", fps);
                 upHold = Math.min(upHold * 2, 320000);
                 return;
             }
             upAt = now;
         }
         if (fps < low) {
-            goodSince = 0;
-            if (step < STEPS.length - 1 && now >= downAfter) {
+            good = 0;
+            if (why === "recovered") want(shown);   // a step up waiting for the next pause is off
+            if (!plan && shown < STEPS.length - 1 && now >= downAfter) {
                 if (now - upAt < 60000) upHold = Math.min(upHold * 2, 320000);   // the last step up didn't last a minute
-                probe = { down: true, from: step, fps: fps };
-                note(step + 1, "low", fps);
+                plan = { frames: 0, time: 0 };
             }
+        }
+        if (plan) {   // from the first slow 4 seconds until the pointer is free, the FPS over all of them picks the step
+            plan.frames += n; plan.time += t;
+            var avg = plan.frames * 1000 / plan.time;
+            want(avg < low ? pick(avg) : shown, "low", avg);
+            if (step > shown && plan.time >= 60000 && avg < URGENT) apply(true);   // a whole minute of play under 25 FPS: now
             return;
         }
-        if (step > 0 && fps >= UP_FPS) {
-            if (!goodSince) goodSince = now - WINDOW;
-            if (now - goodSince >= upHold) {
-                goodSince = 0;
-                probe = { down: false, from: step, fps: fps };
-                note(step - 1, "recovered", fps);
-            }
-        } else goodSince = 0;
+        if (shown > 0 && fps >= UP_FPS) {
+            if (++good * WINDOW >= upHold) { good = 0; want(shown - 1, "recovered", fps); }
+        } else good = 0;
     }
     function tick() {
         hook(sceneEngine());
@@ -1035,30 +1070,31 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         if (!inGame()) {
             if (match) {
                 if (match.time > 0) lastMatch = { fps: match.frames * 1000 / match.time, lowest: match.lowest, steps: match.steps };
+                kept = why === "no help" || why === "too low" ? step : probe ? probe.from : shown;   // the last step that held
                 match = null;
             }
-            step = 0; probe = null; frames = 0; time = 0;
+            step = 0; why = null; probe = null; plan = null; frames = 0; time = 0;
             apply();
             return;
         }
         if (!match) {
             match = { start: now, frames: 0, time: 0, lowest: Infinity, steps: [] };
-            step = 0; probe = null; downWait = 60000; downAfter = 0; upHold = 20000; goodSince = 0; upAt = -Infinity;
+            probe = null; plan = null; played = 0; good = 0; downAfter = 0; upAt = -Infinity;
+            want(kept, "kept", 0);   // made on the loading screen
             quietUntil = Math.max(quietUntil, now + 5000);
         }
-        if (!active()) { step = 0; probe = null; }
-        apply();   // follows this switch and the game's Auto Detail; nothing to do while the level is right
+        if (!active()) { step = 0; why = null; probe = null; plan = null; }
+        apply();   // follows this switch and the game's Auto Detail, and makes a waiting change once the pointer is free
+        if (!held()) plan = null;   // what a plan measured ends with a death or a pause
         // The first seconds on the match screen load textures and shaders, so they don't count.
         if (!onScreen()) quietUntil = Math.max(quietUntil, now + 5000);
-        if (now < quietUntil) { frames = 0; time = 0; windowStart = now; return; }
-        if (now - windowStart < WINDOW) return;
-        var n = frames, t = time;
-        frames = 0; time = 0; windowStart = now;
-        if (t < WINDOW / 2) return;   // mostly stalls: too little to go on
-        var fps = n * 1000 / t;
-        match.frames += n; match.time += t;
+        if (now < quietUntil) { frames = 0; time = 0; return; }
+        if (time < WINDOW) return;   // 4 seconds of play, which a death or a pause can split
+        var n = frames, t = time, fps = n * 1000 / t;
+        frames = 0; time = 0;
+        played += t; match.frames += n; match.time += t;
         if (fps < match.lowest) match.lowest = fps;
-        if (active()) decide(fps, now);
+        if (active()) decide(n, t, played);
     }
 
     window.__ssbAutoDetailOwns = function () { return patched && isOn() && !!engine; };
@@ -1075,12 +1111,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     });
     window.__ssbSettings.add({
         key: KEY, section: "fps", after: "tp-noAA", label: "Smart Auto Detail", code: "Fd", def: true,
-        tip: "Takes over from the game's Auto Detail, which needs to stay on. When your FPS drops under 40, it lowers the resolution a step at a time, keeps a step only if it helps, and raises it again when your FPS recovers. Nothing is saved, so every match starts sharp.",
+        tip: "Takes over from the game's Auto Detail, which needs to stay on. When your FPS drops under 40, it lowers the resolution, keeps it lower only if that helps, and raises it again when your FPS recovers. Changes wait until you die or pause, so the game doesn't stall mid-fight (unless you've been under 25 FPS for a whole minute). Nothing is saved: the next match starts where this one ended, and a reload starts sharp.",
         keywords: "auto detail resolution quality lag low fps performance blurry high res render scale adaptive dynamic",
         get: isOn,
         set: function (v) {
             try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr("detail#3", e) }
-            step = 0; probe = null;
+            step = 0; why = null; probe = null; plan = null; kept = 0;
             apply();
         }
     });
@@ -1090,8 +1126,8 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         refresh: function () { hook(sceneEngine()); apply(); },   // Render Scale changed
         state: function () {
             return {
-                on: isOn(), patched: patched, low: low, gameAutoDetail: gameAutoDetail(), active: active(), step: step,
-                pct: Math.round(100 / level()), base: base, scale: scale(), probe: probe, downAfter: downAfter, upHold: upHold,
+                on: isOn(), patched: patched, low: low, gameAutoDetail: gameAutoDetail(), active: active(), step: step, why: why, shown: shown, kept: kept,
+                pct: Math.round(100 / level(shown)), base: base, scale: scale(), probe: probe, plan: plan, played: played, downAfter: downAfter, downWait: downWait, upHold: upHold,
                 match: match && { fps: match.time ? match.frames * 1000 / match.time : 0, lowest: match.lowest, steps: match.steps.slice() },
                 lastMatch: lastMatch
             };
@@ -1182,7 +1218,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         });
     }
     function mmss(ms) { var t = Math.max(0, Math.round(ms / 1000)); return Math.floor(t / 60) + ":" + ("0" + t % 60).slice(-2); }
-    var WHY = { "low": "low FPS", "no help": "lower didn't help", "recovered": "FPS recovered", "too low": "too slow higher up" };
+    var WHY = { "low": "low FPS", "no help": "lower didn't help", "recovered": "FPS recovered", "too low": "too slow higher up", "kept": "from the last match" };
     function check() {
         var gl = glInfo();
         var r0 = renders, t0 = performance.now();
@@ -1204,7 +1240,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                     (/Windows/.test(navigator.userAgent) ? "In Windows Settings ▸ System ▸ Display ▸ Graphics, set your browser to High performance, then restart the browser." : "Set your browser to use it in your system's graphics settings, then restart the browser.") });
             if (frame && frame.steady30 && onBattery) fixes.push({ label: "Battery saver is holding you to 30 FPS",
                 text: "Your laptop is on battery and the browser is drawing 30 frames a second. Battery savers like Chrome's Energy Saver do this. Plug in, or turn Energy Saver off in Chrome Settings ▸ Performance." });
-            if (lvl / scale() > 1.99 && !(active() && step === STEPS.length - 1)) {
+            if (lvl / scale() > 1.99 && !(active() && shown === STEPS.length - 1)) {
                 if (!ad) fixes.push({ label: "The game is drawing at half resolution",
                     text: "High Res is off, so the game draws a quarter of the pixels and looks blurry. If your FPS allows it, turn High Res on in the game's Settings, on the monitor tab." });
                 else if (!on) fixes.push({ label: "The game is drawing at half resolution",
@@ -1212,7 +1248,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 else if (!patched) fixes.push({ label: "The game is drawing at half resolution",
                     text: "The game's Auto Detail halved it after a slow moment. Smart Auto Detail can't take over in this version of the game, so check for a Better HUD update." });
             }
-            if (slow && !on) tips.push({ label: "Turn on Smart Auto Detail", text: "It lowers the resolution a step at a time when your FPS drops, and raises it again when it recovers." });
+            if (slow && !on) tips.push({ label: "Turn on Smart Auto Detail", text: "When your FPS drops, it lowers the resolution the next time you die or pause, and raises it again when your FPS recovers." });
             if (slow && on && !ad) tips.push({ label: "Turn on the game's Auto Detail", text: "Smart Auto Detail only steps in while the game's Auto Detail is on (Settings, monitor tab)." });
             if (slow && scale() === 1) tips.push({ label: "Raise Render Scale", text: "It's above, in FPS & Ping. At 1.5 the game draws two-thirds of the width and height: a softer picture, but far fewer pixels to draw." });
             if (gl.aa && !soft && (slow || builtIn(gl.renderer))) tips.push({ label: "Turn on Disable Anti-Aliasing", text: "It's above, in FPS & Ping. Edges look a little more jagged, but weaker graphics can gain a lot of FPS. Press F5 after turning it on." });
@@ -1223,7 +1259,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             if (prev) facts.push({ label: prev === cur ? "This match" : "Last match", text: Math.round(avg) + " FPS on average, " + Math.round(prev.lowest) + " at the lowest" });
             if (e) facts.push({ label: "Game view", text: e.getRenderWidth() + " × " + e.getRenderHeight() + " pixels, " + Math.round(100 / lvl) + "% resolution" });
             if (scale() !== 1) facts.push({ label: "Render Scale", text: String(scale()) });
-            facts.push({ label: "Smart Auto Detail", text: !on ? "Off" : !patched ? "Not available in this game version" : !ad ? "Off until you turn on the game's Auto Detail" : active() ? "On, at " + Math.round(STEPS[step] * 100) + "% now" : "On" });
+            facts.push({ label: "Smart Auto Detail", text: !on ? "Off" : !patched ? "Not available in this game version" : !ad ? "Off until you turn on the game's Auto Detail" : active() ? "On, at " + Math.round(STEPS[shown] * 100) + "% now" : "On" });
             var steps = prev ? prev.steps : [];
             if (steps.length) facts.push({ label: "Resolution changes", text: steps.slice(-4).map(function (x) { return mmss(x.at) + " " + x.pct + "% (" + (WHY[x.why] || x.why) + ")"; }).join(", ") });
             if (gl.aa !== null) facts.push({ label: "Anti-aliasing", text: gl.aa ? "On" : "Off" });
@@ -2649,7 +2685,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
 				#ssb-update-status { display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 12px; box-sizing:border-box; border-radius:999px; font-size:13px; font-weight:800; line-height:1; white-space:nowrap; }
 				#ssb-update-status::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:currentColor; }
 				#ssb-update-status.is-latest { background:rgba(40,150,80,0.15); color:#17703b; }
-				#ssb-update-status.is-checking, #ssb-update-status.is-error { background:rgba(12,87,111,0.1); color:var(--ssb-ink); }
+				#ssb-update-status.is-checking, #ssb-update-status.is-error, #ssb-update-status.is-reload { background:rgba(12,87,111,0.1); color:var(--ssb-ink); }
 				#ssb-update-status.is-checking::before { animation:ssb-upd-pulse 0.9s ease-in-out infinite alternate; }
 				@keyframes ssb-upd-pulse { from { opacity:0.25; } to { opacity:1; } }
 				#ssb-update-status.is-available { padding:0; background:none; }
@@ -3567,7 +3603,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         ].map(([n, o]) => [n, Object.assign({}, B, o, { enabled: !0 })]);
         /* Step 1: [storage key, card label, description]. Core settings are found in _ssbCore, the rest in the registry. */
         const PICKS = [
-            ["tp-smartDetail", "Smart Auto Detail", "Lowers the resolution a step when your FPS drops under 40, and raises it again once it recovers."],
+            ["tp-smartDetail", "Smart Auto Detail", "Lowers the resolution when your FPS drops under 40, and raises it again once it recovers."],
             ["tp-showServerList", "Server Picker", "Adds a server region picker with live ping to the home screen, beside Game Mode."],
             ["tp-infiniteChat", "Infinite Chat History", "Keeps the whole match's chat, so you can scroll up and read it back."],
             ["tp-autoFullscreen", "Auto Fullscreen", "Goes fullscreen like F11 when you click into a match."]
@@ -4258,6 +4294,9 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Smart Auto Detail", text: "It no longer stutters while you play. The resolution only changes when you die, pause or open a menu (after a whole minute under 25 FPS it still steps down mid-match), and the next match starts at the step the last one kept.", group: "v6.1.2" },
+            { label: "Infinite Chat History", text: "Turning it off now puts the chat back to the game's own small box right away. Before, the old messages stayed in it for the whole match.", group: "v6.1.2" },
+            { label: "Update now", text: "After you press Update now, Better HUD tells you to reload the game (F5) to start using the new version. The MODS footer says the same until you do.", group: "v6.1.2" },
             { label: "Legacy Skins Fix", text: "Turning on Legacy Skins no longer leaves the game stuck on the loading screen. The classic guns now load once the game is ready, and they show on the home screen egg too.", group: "v6.1.1" },
             { label: "Tab Out", text: "Tabbing out and back in no longer turns your view. You face the same way as before, and the mouse locks again with your game's Fix Mouse Glitch setting, like it does after a respawn. The key also can't open the pause menu by mistake anymore.", group: "v6.1" },
             { label: "Render Scale", text: "It's back in MODS ▸ FPS & Ping. Raise it to draw the game at a lower resolution for more FPS; 1 is the normal resolution. Smart Auto Detail still works on top of it.", group: "v6.1" },
@@ -4673,6 +4712,20 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             #ssb-update-toast .ssb-upd-note { margin:10px 0 0; padding-top:8px; border-top:1px solid rgba(12,87,111,0.18); font-size:12px; font-weight:700; line-height:1.3; opacity:0.85; }
         `;
 
+        let installed_clicked = "";   // the version whose installer link was clicked in this page load
+        function afterInstallClick(remote, toast) {
+            installed_clicked = remote;
+            lsSet("ssb-update-dismissed", remote);
+            if (toast) {
+                const t = toast.querySelector(".ssb-upd-title"), x = toast.querySelector(".ssb-upd-text"), a = toast.querySelector(".ssb-upd-actions"), n = toast.querySelector(".ssb-upd-note");
+                if (t) t.textContent = "Reload to finish updating";
+                if (x) x.textContent = "Once Tampermonkey has installed v" + remote + ", reload the game (F5) to start using it. Your settings and crosshairs stay just as they are.";
+                if (a) a.remove();
+                if (n) n.remove();
+                toast.querySelector(".ssb-upd-close")?.addEventListener("click", () => toast.remove());
+            }
+            setStatus("reload", remote);
+        }
         function showToast(remote) {
             if (document.getElementById("ssb-update-toast") || !document.body) return;
             if (window.__ssbUI) window.__ssbUI.ensureCss();   // tokens + the slide-in animation
@@ -4695,7 +4748,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             btn.href = DOWNLOAD_URL;
             btn.target = "_blank";
             btn.rel = "noopener";
-            btn.addEventListener("click", dismiss);
+            btn.addEventListener("click", () => afterInstallClick(remote, el));
             const later = mk("button", "ssb-upd-btn ssb-upd-secondary", "Later");
             later.type = "button";
             later.onclick = dismiss;
@@ -4732,7 +4785,11 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 a.rel = "noopener";
                 a.textContent = "Update to v" + status.remote;
                 a.setAttribute("data-tooltip", "You have v" + installed + ". Opens the installer; your settings and crosshairs are kept.");
+                a.addEventListener("click", () => afterInstallClick(status.remote, document.getElementById("ssb-update-toast")));
                 el.appendChild(a);
+            } else if (st === "reload") {
+                el.textContent = "Reload to update";
+                el.setAttribute("data-tooltip", "After Tampermonkey installs v" + status.remote + ", reload the game (F5) to start using it.");
             } else if (st === "latest") {
                 el.textContent = "Up to date";
                 el.setAttribute("data-tooltip", "v" + installed + " is the newest version.");
@@ -4749,7 +4806,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             status = { state: state, remote: remote || status.remote };
             paintStatus();
         }
-        const statusFor = remote => isNewer(remote, installed) ? "available" : "latest";
+        const statusFor = remote => isNewer(remote, installed) ? (installed_clicked === remote ? "reload" : "available") : "latest";
         window.__ssbPaintUpdateStatus = paintStatus;
         // Shows the card (or the manual answer) for a known remote version.
         function consider(remote, manual) {
@@ -5756,6 +5813,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
  *       container; since #chatOut is the scroller in-play that no longer
  *       applies, so new messages would land below the visible rows.
  *       Skipped while paused so reading back through history isn't yanked.
+ *    4. Turning it off hands the game back a chat it can manage: the newest
+ *       5 lines (the game's own limit; a pinned line stays, as the game keeps
+ *       it). The game drops only one old line per new message, so the kept
+ *       history used to stay for the rest of the match, and with the in-play
+ *       bound gone it filled the left side of the screen as soon as you
+ *       pressed Play. (Verified: 31 lines, 866px tall on a 1000px window.)
  *
  *  In-play styling applies inside .game-screen (#app only carries it inside a
  *  match) to a chat that is NOT under any .is-paused element, so the paused
@@ -5773,6 +5836,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     const KEY = "tp-infiniteChat";
     const STYLE_ID = "ssb-infinite-chat-style";
     const MAX_KEEP = 500;               // memory sanity; effectively unlimited in practice
+    const GAME_KEEP = 5;                // the game's own chat holds 5 lines
 
     const isOn = () => { try { return JSON.parse(localStorage.getItem(KEY) || "false") === true; } catch (e) { return false; } };
     const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr("chat#1", e) } };
@@ -5982,7 +6046,16 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         frame = null; pendingMessages = false;
         hooked = null;
         const out = document.getElementById("chatOut");
-        if (out) out.style.removeProperty("max-height");
+        if (out) {
+            out.style.removeProperty("max-height");
+            // Oldest first, skipping a pinned line, as the game's own eviction does.
+            const items = out.querySelectorAll(".chat-item");
+            let extra = items.length - GAME_KEEP;
+            for (let k = 0; k < items.length && extra > 0; k++) {
+                if (items[k].classList.contains("chat-pinned-item")) continue;
+                items[k].remove(); extra--;
+            }
+        }
         const el = document.getElementById(STYLE_ID);
         if (el) el.remove();
     }

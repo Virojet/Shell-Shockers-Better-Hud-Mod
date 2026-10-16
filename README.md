@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.2-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -61,7 +61,7 @@
 
 You don't need to do anything. Tampermonkey picks up new versions by itself, and Better HUD reminds you once when a new version comes out. The bottom of the **MODS** tab always shows whether you're **Up to date**.
 
-Want it right now? Press **Update** (or the **Check for updates** arrows button) at the bottom of the MODS tab, or install again from the button above. Your settings and crosshairs are kept.
+Want it right now? Press **Update** (or the **Check for updates** arrows button) at the bottom of the MODS tab, or install again from the button above. Your settings and crosshairs are kept. After Tampermonkey installs it, **reload the game (F5)** to start using the new version; Better HUD reminds you.
 
 ---
 
@@ -131,7 +131,6 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Other
 - **Block Ads**: optional, off by default; hides in-game video and banner ads after a page reload (F5)
-- Telemetry blocking (Mixpanel, Google Analytics, Tag Manager, GameAnalytics)
 - Export / import settings and inventory favorites as shareable codes
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
@@ -220,11 +219,24 @@ Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tamp
 
 ## Privacy
 
-The first time Better HUD runs, it sends one anonymous hit to a public counter ([Abacus](https://abacus.jasoncameron.dev)) so the installs badge above stays current. Nothing else is sent: no settings, stats, names or IDs. It's sent once per browser and never again. The browser remembers it with the `ssb-install-counted` key in site storage.
+Better HUD makes three kinds of request, and sends nothing about you or your settings in any of them:
+
+- **Install count:** the first time it runs, one anonymous hit goes to a public counter ([Abacus](https://abacus.jasoncameron.dev)) so the installs badge above stays current. No settings, stats, names or IDs. It's sent once per browser; the `ssb-install-counted` key in site storage remembers it
+- **Update check:** it reads the small version file from this repo on GitHub, at most every 30 minutes, to tell you when a new version is out
+- **Pictures:** the first time you take a stats screenshot or an FPS Check picture, it loads the html-to-image library from cdnjs
+
+Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.1 — current
+#### v6.1.2 — current
+
+- **Smart Auto Detail:** it no longer stutters while you play. Changing the resolution rebuilds the game view, which holds up a frame, so it now waits until the mouse is free (you die, pause or open a menu). It decides from the FPS over the whole stretch since the slow moment, so a single dip doesn't trigger it. Only after a full minute under 25 FPS does it step down mid-match. The next match starts at the step the last one kept, and it remembers what it learned
+- **Infinite Chat History:** turning it off now trims the chat back to the game's own small box right away. Before, the messages you had kept stayed in it for the whole match
+- **Update now:** after you press it (the toast or the MODS footer), Better HUD tells you to reload the game with F5 to start using the new version, and the footer says **Reload to update** until you do
+- **README:** removed a line about blocking tracking scripts, which Better HUD doesn't do, and rewrote Privacy to list everything that's requested
+
+#### v6.1.1
 
 - **Legacy Skins:** turning it on could leave the game stuck on the loading screen, mostly when playing as a guest. Better HUD swapped in the classic gun models before the game had loaded them. Now it waits until the game is ready, loads them, then swaps, and the classic guns show on the home screen egg too
 
@@ -311,7 +323,7 @@ The first time Better HUD runs, it sends one anonymous hit to a public counter (
 #### v5.3.1
 
 - **Disable Chat Cooldown:** a new switch under **MODS ▸ Chat** lets you send chat messages back to back. Normally the game hides the chat box after 3 quick messages, then lets you send one more every 4 seconds. It's off by default and works as soon as you turn it on
-- **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. It has [its own repo](https://github.com/Virojet/Shell-Shockers-No-Chat-Cooldown)
+- **No Chat Cooldown script:** the same fix as a tiny separate script, for players who don't use Better HUD. That script is no longer available
 
 #### v5.3
 
