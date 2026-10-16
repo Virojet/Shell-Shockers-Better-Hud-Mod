@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.3-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.4-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -94,7 +94,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 #### HUD & widgets
 - **FPS / Ping display** with frametime mode, session timer, an optional see-through box, and customizable values
 - **Server-region picker** integrated into the home screen with live ping
-- **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters
+- **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters, challenges
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Volume slider** added directly to the pause menu
@@ -229,7 +229,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.3 — current
+#### v6.1.4 — current
+
+- **Hide Challenges:** a new switch under **MODS ▸ HUD** hides the Challenges list on the respawn screen and the Challenge Complete pop-up (and its sound) during matches. The respawn screen closes the gap, and the home screen keeps its Challenges tab, so you can still claim rewards there
+
+#### v6.1.3
 
 - **GitHub button:** the MODS footer has a GitHub button next to Discord and YouTube, linking to the source code and releases
 
