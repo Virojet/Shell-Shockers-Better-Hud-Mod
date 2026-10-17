@@ -67,31 +67,29 @@
     "2026-10-15": {
       "count": 8,
       "uniques": 6
+    },
+    "2026-10-16": {
+      "count": 29,
+      "uniques": 10
     }
   },
   "popular_paths": [
     {
-      "count": 136,
+      "count": 132,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 55
-    },
-    {
-      "count": 5,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.meta.js",
-      "title": "/blob/main/Shell-Shockers-Better-Hud.meta.js",
-      "uniques": 4
+      "uniques": 56
     },
     {
       "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
-      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.meta.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.meta.js",
       "uniques": 3
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
-      "title": "/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 2
     },
     {
@@ -129,18 +127,24 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
       "title": "/blob/main/LICENSE",
       "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "title": "/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 9,
+      "count": 10,
       "referrer": "shellshock.io",
       "uniques": 7
     },
     {
-      "count": 7,
+      "count": 6,
       "referrer": "youtube.com",
-      "uniques": 4
+      "uniques": 3
     },
     {
       "count": 6,
@@ -170,12 +174,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 242,
-      "uniques": 144
+      "count": 271,
+      "uniques": 154
     },
     "views": {
-      "count": 200,
-      "uniques": 111
+      "count": 206,
+      "uniques": 116
     }
   },
   "views": {
@@ -246,6 +250,10 @@
     "2026-10-15": {
       "count": 13,
       "uniques": 8
+    },
+    "2026-10-16": {
+      "count": 6,
+      "uniques": 5
     }
   }
 }
