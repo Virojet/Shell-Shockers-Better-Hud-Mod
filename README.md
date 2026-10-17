@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.4-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.6-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -229,7 +229,15 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.4 — current
+#### v6.1.6 — current
+
+- **Uncap FPS:** on a PC whose graphics can't keep up, the mouse no longer stalls and then turns the view all at once. The extra frames now wait for the graphics card, so mouse moves arrive on time
+
+#### v6.1.5
+
+- **Tooltips:** closing Settings with **Esc** while the mouse is on a MODS row no longer leaves that row's tip on the screen until the next click
+
+#### v6.1.4
 
 - **Hide Challenges:** a new switch under **MODS ▸ HUD** hides the Challenges list on the respawn screen and the Challenge Complete pop-up (and its sound) during matches. The respawn screen closes the gap, and the home screen keeps its Challenges tab, so you can still claim rewards there
 
