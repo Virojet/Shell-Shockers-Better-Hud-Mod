@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.7
+// @version      6.1.8
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.7");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.8");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4298,6 +4298,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Chick'n Winner Fix", text: "If clicking Chick'n Winner leaves it blank (or hides the menus), Better HUD now brings it back after a few seconds, so you don't have to reload. It's a switch in MODS ▸ Menus, on by default.", group: "v6.1.8" },
             { label: "Auto Fullscreen", text: "Asks for fullscreen in the same click that starts the match, the way video sites do, so the browser lets it through. Switching tabs no longer keeps it off for the rest of the match: only holding Esc does.", group: "v6.1.7" },
             { label: "Uncap FPS", text: "On a PC whose graphics can't keep up, the mouse no longer stalls and then turns the view all at once. The extra frames now wait for the graphics card.", group: "v6.1.6" },
             { label: "Tooltips", text: "Closing Settings with Esc while the mouse is on a MODS row no longer leaves that row's tip on the screen.", group: "v6.1.5" },
@@ -6261,6 +6262,58 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             clearTimeout(_rz);
             _rz = setTimeout(() => { if (!document.pointerLockElement) inject(); }, 120);
         });
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
+})();
+
+/* Chick'n Winner Fix. Clicking the free-eggs button makes the game set chw.onClick and hide the pause / respawn menu
+   while the ad and mini game run. Only the mini game finishing clears it (chwMiniGameCompleted). When the ad never
+   starts or the pop-up is closed early, chw.onClick stays true: the chicken goes blank, its button does nothing, and
+   in a match the respawn screen stays hidden, until a reload (opening the Inventory and going back repaints most of
+   it). This watches that flag and clears it the way the game does, when the Chick'n Winner pop-up isn't open. */
+(function () {
+    "use strict";
+    const KEY = "tp-fixChickenWinner";
+    const isOn = () => { try { const v = localStorage.getItem(KEY); return v === null ? true : JSON.parse(v) === true; } catch (e) { return true; } };
+    const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("chwfix#1", e); } };
+    const NO_POPUP_MS = 25000, AFTER_POPUP_MS = 4000;
+    let _since = 0, _sawPopup = false, _t = 0;
+
+    function popupOpen() {
+        const el = document.getElementById("chickenNugget");
+        return !!(el && (el.checkVisibility ? el.checkVisibility() : el.offsetParent));
+    }
+    function recover(v) {
+        v.chwOnClick(false);
+        const x = window.extern;
+        if (x && x.inGame) {
+            if (document.pointerLockElement) return;
+            if (typeof v.disableRespawnButton === "function") v.disableRespawnButton(false);
+            if (typeof v.showGameMenu === "function") v.showGameMenu();
+        } else if (typeof v.chwHomeForceReset === "function") v.chwHomeForceReset();
+    }
+    function tick() {
+        try {
+            const v = window.vueApp;
+            if (!isOn() || !v || !v.chw || typeof v.chwOnClick !== "function") { _since = 0; return; }
+            if (!v.chw.onClick) { _since = 0; _sawPopup = false; return; }
+            const now = Date.now();
+            if (!_since) _since = now;
+            if (popupOpen()) { _sawPopup = true; _since = now; return; }
+            if (now - _since < (_sawPopup ? AFTER_POPUP_MS : NO_POPUP_MS)) return;
+            _since = 0; _sawPopup = false;
+            recover(v);
+        } catch (e) { window.__ssbErr && window.__ssbErr("chwfix#2", e); }
+    }
+    function boot() {
+        window.__ssbSettings.add({
+            key: KEY, section: "menus", after: "tp-showServerList", label: "Chick'n Winner Fix", code: "Cw", def: true,
+            tip: "If clicking Chick'n Winner leaves it blank (or the menus hidden), brings it back on its own, so you don't have to reload.",
+            keywords: "chicken winner chickn blank stuck broken free eggs ad fix",
+            get: isOn, set: (v) => { setOn(v); _since = 0; }
+        });
+        _t = setInterval(tick, 1000);
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
     else boot();
