@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.8-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.9-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -244,7 +244,14 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.8 — current
+#### v6.1.9 — current
+
+- **Spectate Right Away:** the Spectate button shows as soon as you die, instead of after the respawn countdown. It's a switch under **MODS ▸ Menus**, on by default.
+- **Hide FPS + Hide Ping:** with both on, the small box where the readouts sat is hidden too, instead of staying on screen empty.
+- **Early Respawn Guard:** clicking Play too soon after you die used to restart the respawn countdown, so you waited the full 5 seconds again. The click now just shakes the button and the countdown keeps going. It's a switch under **MODS ▸ Menus**, on by default.
+- **Other Mods:** a new page in **MODS** lists the other mods by Virojet. Each card says whether it's installed, with a button to install it and a link to its page. Mod Menu opens from here too.
+
+#### v6.1.8
 
 - **Chick'n Winner Fix:** if clicking Chick'n Winner leaves it blank, or hides the menus until you reload, Better HUD now puts it back after a few seconds (right away once its pop-up is closed). It's a switch under **MODS ▸ Menus**, on by default.
 
