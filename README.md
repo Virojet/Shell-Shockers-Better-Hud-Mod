@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.6-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.7-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -153,6 +153,21 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
+## More mods by Virojet
+
+Each one is its own userscript. Install any of them next to Better HUD; they update themselves the same way.
+
+| Mod | What it does | |
+|---|---|---|
+| **[Gun Sounds](https://github.com/Virojet/Shell-Shockers-Gun-Sounds)** | Pick weapon, meme or your own sounds for shots, melee swings, reloads and the empty click | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Gun-Sounds/main/Shell-Shockers-Gun-Sounds.user.js) |
+| **[Valorant Kill Sounds](https://github.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds)** | Valorant-style kill sounds and banners that climb with your streak, from fifteen packs or your own files | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds/main/Shell-Shockers-Valorant-Kill-Sounds.user.js) |
+| **[Valorant Sensitivity](https://github.com/Virojet/Shell-Shockers-Valorant-Sensitivity)** | Use your Valorant sensitivity, typed in or read from Valorant's settings, from the hip and scoped | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Sensitivity/main/Shell-Shockers-Valorant-Sensitivity.user.js) |
+| **[Stats Mod](https://github.com/Virojet/Shell-Shockers-Stats-Mod)** | Better HUD's Match History on its own, for players who don't want the rest. Skip it if you use Better HUD | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Stats-Mod/main/Shell-Shockers-Stats-Mod.user.js) |
+| **[Blossom V4 Theme](https://github.com/Virojet/Shell-Shockers-Blossom-V4-Theme)** | Black and pink menus over cherry blossom art, a pink HUD and "You blossomed" kill messages | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Blossom-V4-Theme/main/Shell-Shockers-Blossom-V4.user.js) |
+| **[Cherry Blossom Theme](https://github.com/Virojet/Shell-Shockers-Cherry-Blossom-Theme)** | Pink menus, a plum background and falling petals | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Cherry-Blossom-Theme/main/Shell-Shockers-Cherry-Blossom.user.js) |
+
+---
+
 ## Troubleshooting
 
 <details>
@@ -229,7 +244,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.6 — current
+#### v6.1.7 — current
+
+- **Auto Fullscreen:** asks for fullscreen in the same click that starts the match, the way video sites do, so the browser lets it through. Switching tabs or leaving fullscreen some other way no longer keeps it off for the rest of the match: only holding Esc does
+
+#### v6.1.6
 
 - **Uncap FPS:** on a PC whose graphics can't keep up, the mouse no longer stalls and then turns the view all at once. The extra frames now wait for the graphics card, so mouse moves arrive on time
 
