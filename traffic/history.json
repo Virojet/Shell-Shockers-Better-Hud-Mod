@@ -75,14 +75,22 @@
     "2026-10-17": {
       "count": 51,
       "uniques": 25
+    },
+    "2026-10-18": {
+      "count": 1,
+      "uniques": 1
+    },
+    "2026-10-19": {
+      "count": 64,
+      "uniques": 33
     }
   },
   "popular_paths": [
     {
-      "count": 136,
+      "count": 147,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 62
+      "uniques": 70
     },
     {
       "count": 2,
@@ -95,12 +103,6 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 2
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
-      "title": "/issues",
-      "uniques": 1
     },
     {
       "count": 2,
@@ -134,16 +136,22 @@
     },
     {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
-      "title": "/commit/27a43c15d43bd71ab320b823a38c8a790b8a0df8",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commits",
+      "title": "/commits",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main",
+      "title": "/tree/main",
       "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 10,
+      "count": 12,
       "referrer": "shellshock.io",
-      "uniques": 7
+      "uniques": 9
     },
     {
       "count": 9,
@@ -151,9 +159,9 @@
       "uniques": 6
     },
     {
-      "count": 7,
+      "count": 8,
       "referrer": "github.com",
-      "uniques": 3
+      "uniques": 4
     },
     {
       "count": 6,
@@ -166,24 +174,19 @@
       "uniques": 3
     },
     {
-      "count": 2,
-      "referrer": "betterhud-6dd322.tiiny.site",
-      "uniques": 2
-    },
-    {
-      "count": 1,
+      "count": 3,
       "referrer": "Bing",
-      "uniques": 1
+      "uniques": 2
     }
   ],
   "totals": {
     "clones": {
-      "count": 322,
-      "uniques": 179
+      "count": 387,
+      "uniques": 213
     },
     "views": {
-      "count": 218,
-      "uniques": 125
+      "count": 243,
+      "uniques": 145
     }
   },
   "views": {
@@ -262,6 +265,14 @@
     "2026-10-17": {
       "count": 12,
       "uniques": 9
+    },
+    "2026-10-18": {
+      "count": 16,
+      "uniques": 12
+    },
+    "2026-10-19": {
+      "count": 9,
+      "uniques": 8
     }
   }
 }
