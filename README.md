@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.10-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.11-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -94,6 +94,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 #### HUD & widgets
 - **FPS / Ping display** with frametime mode, session timer, an optional see-through box, and customizable values
 - **Server-region picker** integrated into the home screen with live ping
+- **GUI Scale**: a slider for the size of the HUD, menus and chat, weighted toward making them smaller. The crosshair keeps its size
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters, challenges
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Match History button**: a round clock button on the home screen, beside Game Mode
@@ -244,7 +245,12 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.10 — current
+#### v6.1.11 — current
+
+- **GUI Scale:** a new slider under **MODS ▸ HUD** makes the HUD, the menus and the chat smaller (down to 0.4) or a little larger (up to 1.2). 1 is the normal size, and nothing changes until you move it. It applies when you let go of the slider. The crosshair keeps its size, and the crosshair preview in the editor still matches it. On a big monitor, around 0.55 gives the size the game has at 1080p
+- **Leaving a match:** pressing Leave twice quickly no longer leaves your egg on the home screen blank, with no hat or guns. The game's own Leave button stops its drawing loop each time you press it, so a second press froze the egg. Better HUD now ignores the second press and, if the egg did freeze, starts it again. 6.1.10 tried this but its fix cancelled itself
+
+#### v6.1.10
 
 - **Early Respawn Guard:** clicking Play while the respawn countdown runs no longer locks the mouse and starts the countdown over at 5. That mostly happened after you spectated or switched teams, and 6.1.9 only caught clicks in the first 3 seconds. Now every early click just shakes the button
 - **Leaving a match:** leaving right after a match opens no longer lets Play drop you into the next match before it's ready. Your egg on the home screen also no longer comes back blank, without its gun or with broken gun models
