@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.9
+// @version      6.1.10
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.9");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.10");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -2784,11 +2784,11 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                         ["Gun Sounds", "Pick weapon, meme or your own sounds for shots, melee swings, reloads and the empty click.", "Shell-Shockers-Gun-Sounds", "Shell-Shockers-Gun-Sounds.user.js", () => window.ssGunSounds && (window.ssGunSounds.version || !0)],
                         ["Valorant Kill Sounds", "Valorant-style kill sounds and banners that climb with your streak, from fifteen packs or your own files.", "Shell-Shockers-Valorant-Kill-Sounds", "Shell-Shockers-Valorant-Kill-Sounds.user.js", () => window.ssKillSounds && (window.ssKillSounds.version || !0)],
                         ["Valorant Sensitivity", "Use your Valorant sensitivity, typed in or read from Valorant's settings, from the hip and scoped.", "Shell-Shockers-Valorant-Sensitivity", "Shell-Shockers-Valorant-Sensitivity.user.js", () => window.ssValorantSens && (window.ssValorantSens.version || !0)],
-                        ["Mod Menu", "Switch your installed mods and themes on and off without reloading, or add any userscript.", "Shell-Shockers-Mod-Menu", "Shell-Shockers-Mod-Menu.user.js", () => !!window.ssModMenu || !!document.getElementById("ssmm-root")],
+                        ["Mod Menu", "Switch your installed mods and themes on and off without reloading, or add any userscript.", "Shell-Shockers-Mod-Menu", "Shell-Shockers-Mod-Menu.user.js", () => window.ssModMenu ? (window.ssModMenu.version || !0) : !!document.getElementById("ssmm-root")],
                         ["Stats Mod", "Better HUD's Match History on its own. You already have it in Better HUD.", "Shell-Shockers-Stats-Mod", "Shell-Shockers-Stats-Mod.user.js", () => !1, 1],
-                        ["Blossom V4 Theme", "Black and pink menus over cherry blossom art, a pink HUD and \"You blossomed\" kill messages.", "Shell-Shockers-Blossom-V4-Theme", "Shell-Shockers-Blossom-V4.user.js", () => !!document.getElementById("blossom-v4-style")],
-                        ["Cherry Blossom Theme", "Pink menus, a plum background and falling petals.", "Shell-Shockers-Cherry-Blossom-Theme", "Shell-Shockers-Cherry-Blossom.user.js", () => !!document.getElementById("ss-sakura-style")]
-                    ], cards = []; function link(cls, text, href) { let b = document.createElement("a"); b.className = "ssb-om-btn " + cls, b.textContent = text, b.href = href, b.target = "_blank", b.rel = "noopener noreferrer", b.addEventListener("click", () => ef("ui_click")); return b } MODS.forEach(m => { let c = document.createElement("div"); c.className = "ssb-om-card", c.setAttribute("data-keywords", "other mods install userscript sounds theme virojet"); let n = document.createElement("div"); n.className = "ssb-om-name", n.textContent = m[0]; let d = document.createElement("div"); d.className = "ssb-om-desc", d.textContent = m[1]; let meta = document.createElement("div"); meta.className = "ssb-om-meta"; let act = document.createElement("div"); act.className = "ssb-om-act"; c.append(n, d, meta, act); c._om = m, cards.push(c), _om.appendChild(c) }); function paintOthers() { cards.forEach(c => { let m = c._om, v; try { v = m[4]() } catch (x) { v = !1 } let on = !!v; c.classList.toggle("on", on), c.querySelector(".ssb-om-meta").textContent = m[5] ? "Built into Better HUD" : on ? "Installed" + ("string" == typeof v ? " · v" + v : "") : "Not installed"; let act = c.querySelector(".ssb-om-act"); act.textContent = ""; if (m[5]) act.appendChild(link("quiet", "GitHub", R + m[2])); else { if (on && "Mod Menu" === m[0] && window.ssModMenu && "function" == typeof window.ssModMenu.open) { let o = document.createElement("button"); o.type = "button", o.className = "ssb-om-btn", o.textContent = "Open", o.addEventListener("click", () => { ef("ui_click"); try { window.ssModMenu.open() } catch (x) { } }), act.appendChild(o) } on || act.appendChild(link("", "Install", W + m[2] + "/main/" + m[3])); act.appendChild(link(on ? "" : "quiet", "GitHub", R + m[2])) } }) } paintOthers(); window.__ssbPaintOthers = paintOthers })(); window.__ssbSettings.mount(i); /* Changed page: the cards whose value differs from its default (_ssbCore, or a registry item's def), each with a Reset link. Painted when the page opens and on every settings change. */ let _chH = document.createElement("div"); _chH.className = "mod-header", _chH.id = "mod-sec-changed", _chH.textContent = "Changed", _chH.setAttribute("data-section", "changed"); let _chE = document.createElement("div"); _chE.className = "mod-search-empty mod-changed-empty", _chE.setAttribute("data-section", "changed"), _chE.textContent = "Everything is at its default."; i.prepend(_chH, _chE); let _chgRows = id => { let r = _ssbCore.find(x => x[2] === id); return r ? r[6] ? _ssbCore.filter(x => x[6] === r[6]) : [r] : [] }, _chgDiff = r => { let v = d[r[0]][r[1]], df = r[4]; return "key" === r[5] ? String(v).toLowerCase() !== String(df).toLowerCase() : "b" === r[5] ? !!v !== !!df : Math.abs(v - df) > 1e-9 }, _chgItem = id => window.__ssbSettings.items.find(x => x.key === id), _chgIs = id => { let it = _chgItem(id); if (it) { try { return !!it.get() !== !!it.def } catch (x) { return !1 } } return _chgRows(id).some(_chgDiff) }; function _chgReset(card) { let id = card.getAttribute("data-setting"), it = _chgItem(id), cb = card.querySelector("input[type=checkbox]"), rows = _chgRows(id); if (it && cb) { cb.checked = !!it.get(), cb.checked !== !!it.def && cb.click() } else if (cb && rows.length) { let df = !!rows[0][4]; cb.checked = df ? rows.every(r => !!d[r[0]][r[1]]) : rows.some(r => !!d[r[0]][r[1]]), cb.checked !== df && cb.click() } else if (card.__ssbSet && rows.length) { "key" === rows[0][5] && ef("ui_click"), card.__ssbSet(rows[0][4]) } paintChanged() } function paintChanged() { if ("changed" !== i.dataset.page) return; let any = !1; i.querySelectorAll(".mod-grid[data-section]").forEach(g => { if ("manage" === g.dataset.section) return; let n = 0; Array.from(g.children).forEach(card => { let id = card.getAttribute("data-setting"); if (!id) return; let on = _chgIs(id); card.classList.toggle("ssb-changed", on), on && n++; if (on && !card.querySelector(":scope > .mod-reset-one")) { let lab = card.querySelector(".mod-label") || card.querySelector(".mod-slider-label"), name = lab ? (lab.firstChild && 3 === lab.firstChild.nodeType ? lab.firstChild.nodeValue : lab.textContent).trim() : id, b = document.createElement("button"); b.type = "button", b.className = "mod-reset-one", b.setAttribute("aria-label", "Reset " + name), b.addEventListener("click", ev => { ev.preventDefault(), ev.stopPropagation(); let had = document.activeElement === b; _chgReset(card); if (had) { let nx = i.querySelector(".ssb-changed > .mod-reset-one"); nx && nx.focus({ preventScroll: !0 }) } }), card.appendChild(b) } }); g.classList.toggle("ssb-has-changed", n > 0); let h = g.previousElementSibling; h && h.classList.contains("mod-header") && h.classList.toggle("ssb-has-changed", n > 0), n && (any = !0) }), i.classList.toggle("ssb-none-changed", !any) } window.__ssbPaintChanged = paintChanged, window.__ssbChangedHooked || (window.__ssbChangedHooked = !0, document.addEventListener("ssb:settings-change", () => { window.__ssbPaintChanged && window.__ssbPaintChanged() })), paintChanged();
+                        ["Blossom V4 Theme", "Black and pink menus over cherry blossom art, a pink HUD and \"You blossomed\" kill messages.", "Shell-Shockers-Blossom-V4-Theme", "Shell-Shockers-Blossom-V4.user.js", () => _omStyle("blossom-v4-style")],
+                        ["Cherry Blossom Theme", "Pink menus, a plum background and falling petals.", "Shell-Shockers-Cherry-Blossom-Theme", "Shell-Shockers-Cherry-Blossom.user.js", () => _omStyle("ss-sakura-style")]
+                    ], cards = []; /* A theme only leaves its style sheet. Its version comes from a data-version on it, or from Mod Menu when Mod Menu runs it; otherwise just "Installed". */ function _omStyle(id) { let s = document.getElementById(id); if (!s) return !1; if (s.dataset && s.dataset.version) return s.dataset.version; try { let mm = window.ssModMenu, re = "ss-sakura-style" === id ? /cherry/i : /blossom[\s-]*v?4/i, hit = mm && "function" == typeof mm.list && mm.list().find(x => x && x.version && re.test(x.name || "")); if (hit) return String(hit.version) } catch (x) { } return !0 } function link(cls, text, href) { let b = document.createElement("a"); b.className = "ssb-om-btn " + cls, b.textContent = text, b.href = href, b.target = "_blank", b.rel = "noopener noreferrer", b.addEventListener("click", () => ef("ui_click")); return b } MODS.forEach(m => { let c = document.createElement("div"); c.className = "ssb-om-card", c.setAttribute("data-keywords", "other mods install userscript sounds theme virojet"); let n = document.createElement("div"); n.className = "ssb-om-name", n.textContent = m[0]; let d = document.createElement("div"); d.className = "ssb-om-desc", d.textContent = m[1]; let meta = document.createElement("div"); meta.className = "ssb-om-meta"; let act = document.createElement("div"); act.className = "ssb-om-act"; c.append(n, d, meta, act); c._om = m, cards.push(c), _om.appendChild(c) }); function paintOthers() { cards.forEach(c => { let m = c._om, v; try { v = m[4]() } catch (x) { v = !1 } let on = !!v; c.classList.toggle("on", on), c.querySelector(".ssb-om-meta").textContent = m[5] ? "Built into Better HUD" : on ? "Installed" + ("string" == typeof v ? " · v" + v : "") : "Not installed"; let act = c.querySelector(".ssb-om-act"); act.textContent = ""; if (m[5]) act.appendChild(link("quiet", "GitHub", R + m[2])); else { if (on && "Mod Menu" === m[0] && window.ssModMenu && "function" == typeof window.ssModMenu.open) { let o = document.createElement("button"); o.type = "button", o.className = "ssb-om-btn", o.textContent = "Open", o.addEventListener("click", () => { ef("ui_click"); try { window.ssModMenu.open() } catch (x) { } }), act.appendChild(o) } on || act.appendChild(link("", "Install", W + m[2] + "/main/" + m[3])); act.appendChild(link(on ? "" : "quiet", "GitHub", R + m[2])) } }) } paintOthers(); window.__ssbPaintOthers = paintOthers })(); window.__ssbSettings.mount(i); /* Changed page: the cards whose value differs from its default (_ssbCore, or a registry item's def), each with a Reset link. Painted when the page opens and on every settings change. */ let _chH = document.createElement("div"); _chH.className = "mod-header", _chH.id = "mod-sec-changed", _chH.textContent = "Changed", _chH.setAttribute("data-section", "changed"); let _chE = document.createElement("div"); _chE.className = "mod-search-empty mod-changed-empty", _chE.setAttribute("data-section", "changed"), _chE.textContent = "Everything is at its default."; i.prepend(_chH, _chE); let _chgRows = id => { let r = _ssbCore.find(x => x[2] === id); return r ? r[6] ? _ssbCore.filter(x => x[6] === r[6]) : [r] : [] }, _chgDiff = r => { let v = d[r[0]][r[1]], df = r[4]; return "key" === r[5] ? String(v).toLowerCase() !== String(df).toLowerCase() : "b" === r[5] ? !!v !== !!df : Math.abs(v - df) > 1e-9 }, _chgItem = id => window.__ssbSettings.items.find(x => x.key === id), _chgIs = id => { let it = _chgItem(id); if (it) { try { return !!it.get() !== !!it.def } catch (x) { return !1 } } return _chgRows(id).some(_chgDiff) }; function _chgReset(card) { let id = card.getAttribute("data-setting"), it = _chgItem(id), cb = card.querySelector("input[type=checkbox]"), rows = _chgRows(id); if (it && cb) { cb.checked = !!it.get(), cb.checked !== !!it.def && cb.click() } else if (cb && rows.length) { let df = !!rows[0][4]; cb.checked = df ? rows.every(r => !!d[r[0]][r[1]]) : rows.some(r => !!d[r[0]][r[1]]), cb.checked !== df && cb.click() } else if (card.__ssbSet && rows.length) { "key" === rows[0][5] && ef("ui_click"), card.__ssbSet(rows[0][4]) } paintChanged() } function paintChanged() { if ("changed" !== i.dataset.page) return; let any = !1; i.querySelectorAll(".mod-grid[data-section]").forEach(g => { if ("manage" === g.dataset.section) return; let n = 0; Array.from(g.children).forEach(card => { let id = card.getAttribute("data-setting"); if (!id) return; let on = _chgIs(id); card.classList.toggle("ssb-changed", on), on && n++; if (on && !card.querySelector(":scope > .mod-reset-one")) { let lab = card.querySelector(".mod-label") || card.querySelector(".mod-slider-label"), name = lab ? (lab.firstChild && 3 === lab.firstChild.nodeType ? lab.firstChild.nodeValue : lab.textContent).trim() : id, b = document.createElement("button"); b.type = "button", b.className = "mod-reset-one", b.setAttribute("aria-label", "Reset " + name), b.addEventListener("click", ev => { ev.preventDefault(), ev.stopPropagation(); let had = document.activeElement === b; _chgReset(card); if (had) { let nx = i.querySelector(".ssb-changed > .mod-reset-one"); nx && nx.focus({ preventScroll: !0 }) } }), card.appendChild(b) } }); g.classList.toggle("ssb-has-changed", n > 0); let h = g.previousElementSibling; h && h.classList.contains("mod-header") && h.classList.toggle("ssb-has-changed", n > 0), n && (any = !0) }), i.classList.toggle("ssb-none-changed", !any) } window.__ssbPaintChanged = paintChanged, window.__ssbChangedHooked || (window.__ssbChangedHooked = !0, document.addEventListener("ssb:settings-change", () => { window.__ssbPaintChanged && window.__ssbPaintChanged() })), paintChanged();
 
                     // Base36 encoding helpers for ultra-compact codes
                     function _ssbPackNum(val, scale = 100, offset = 0) {
@@ -3591,7 +3591,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             window._modObs?.observe(document.body, { childList:true, subtree:true });
             eW();
         }
-    }); /* Uncap FPS: while the pointer is locked, the game's frames also run between screen refreshes, back to back from a MessageChannel. Chrome hands the page its mouse moves at a refresh, and it only refreshes once the GPU has caught up. Extra frames queued faster than the GPU can draw them used to hold the mouse back, then turn the view all at once. So a real requestAnimationFrame is always asked for too, and whichever comes first runs the frame. An extra frame only starts while the GPU is behind by fewer frames than allowed (WebGL fences, polled back to back for 3 ms, then every 1 ms or so): 2 when the GPU takes under 1.5 ms a frame (_ucGpu), else 1, and never more than _ucLvl. _ucLvl starts at 2, drops one when a real frame comes late (over 24 ms after it was asked for) and to 0 when a mouse move comes in late (40 ms), and goes back up one at a time after a quiet spell (2 s, longer when it drops again soon). No extra frame starts while a real one is late. */ let eK = window.requestAnimationFrame.bind(window), eU = window.cancelAnimationFrame.bind(window), eY = 0, eV = new Map; window._msgPending = !1; let _ssbMC = new MessageChannel; let _ssbFB = []; let _ucN = 0, _ucAsk = 0, _ucLvl = 2, _ucUp = 0, _ucUpAt = -1e4, _ucBack = 2e3, _ucGl = null, _ucQ = [], _ucGpu = 0, _ucDone = 0, _ucT = 0; let _ucPost = () => { window._msgPending || (window._msgPending = !0, _ssbMC.port2.postMessage(0)) }, _ucPoll = () => { _ucT = 0, _ucPost() }; let _ucDown = (now, to) => { to < _ucLvl && (_ucBack = now - _ucUpAt < 3e3 ? Math.min(16e3, 2 * _ucBack) : 2e3, _ucLvl = to); _ucUp = now + _ucBack }; let _ucFence = () => { try { let sc = window.P && window.P.scene, en = sc && sc.getEngine && sc.getEngine(), gl = en && en._gl; gl !== _ucGl && (_ucQ = [], _ucGl = gl && gl.fenceSync ? gl : null); if (!_ucGl || _ucGl.isContextLost()) return; _ucQ.length > 1 && _ucGl.deleteSync(_ucQ.shift()[0]); _ucQ.push([_ucGl.fenceSync(_ucGl.SYNC_GPU_COMMANDS_COMPLETE, 0), performance.now()]); _ucGl.flush() } catch (e) { _ucQ = [] } }; let _ucBehind = now => { try { if (!_ucGl || _ucGl.isContextLost()) return 0; while (_ucQ.length && _ucGl.getSyncParameter(_ucQ[0][0], _ucGl.SYNC_STATUS) === _ucGl.SIGNALED) _ucGpu += (now - Math.max(_ucQ[0][1], _ucDone) - _ucGpu) / 4, _ucDone = now, _ucGl.deleteSync(_ucQ.shift()[0]); return _ucQ.length } catch (e) { return 0 } }; let _ucRun = () => { if (eV.size === 0) return; let now = performance.now(), fns = _ssbFB, i = 0; for (let v of eV.values()) fns[i++] = v; eV.clear(); for (let n = 0; n < i; n++) { try { fns[n](now) } catch (e) { window.__ssbErr("frame#1", e) } } fns.length = 0; _ucFence() }; let _ucNat = () => { let now = performance.now(); _ucN = 0; now - _ucAsk > 24 ? _ucDown(now, Math.max(0, _ucLvl - 1)) : _ucLvl < 2 && now > _ucUp && (_ucLvl++, _ucUpAt = now, _ucUp = now + _ucBack); _ucRun() }; let _ssbFlush = () => { window._msgPending = !1; if (eV.size === 0) return; let now = performance.now(); if (!_ucLvl || _ucN && now - _ucAsk > 24) return; if (_ucBehind(now) >= Math.min(_ucLvl, _ucGpu < 1.5 ? 2 : 1)) { let age = now - _ucQ[0][1]; age < 3 ? _ucPost() : age < 100 && !_ucT && (_ucT = setTimeout(_ucPoll, 1)); return } _ucRun() }; _ssbMC.port1.onmessage = _ssbFlush; function _installUncap() { if (window._ssbUncapInst) return; window._ssbUncapInst = 1; window.requestAnimationFrame = function (e) { if (d.hideFPS.uncap && !document.hidden && document.pointerLockElement) { let t = ++eY; eV.set(t, e); _ucN || (_ucN = eK(_ucNat), _ucAsk = performance.now()); _ucLvl && _ucPost(); return t } return eK(e) }, window.cancelAnimationFrame = function (e) { if (eV.has(e)) { eV.delete(e); return } return eU(e) }; window.addEventListener("mousemove", e => { if (e.isTrusted && d.hideFPS.uncap && document.pointerLockElement) { let now = performance.now(); now - e.timeStamp > 40 && _ucDown(now, 0) } }, !0) } d.hideFPS.uncap && _installUncap(); let initTooltip = () => { let tooltipEl = document.createElement("div"); tooltipEl.id = "ssb-global-tooltip"; tooltipEl.style.cssText = "position:fixed;display:none;z-index:2147483647;background:#ffffff;color:#0C576F;padding:8px 12px;border-radius:8px;border:2px solid #2db8d4;font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:700;max-width:250px;box-shadow:0 4px 15px rgba(0,0,0,0.25);pointer-events:none;line-height:1.3;opacity:0;transition:opacity 0.12s cubic-bezier(0.4,0,0.2,1);"; document.body.appendChild(tooltipEl); /* Kept as the body's last child so it draws above the stats panel and dialogs (same top z-index); shown for the mouse and for keyboard focus; any click hides it so a button that rebuilds its panel can't leave it stuck. */ /* It also goes on Esc, and at the next mouse move once the mouse is off its target: Esc can close the Settings popup under a hovered row, and a row that's gone sends no mouseout. The move check is only listened for while a tooltip shows. */ let tipFor = null, tipMove = e => { let t = tipFor; t && (t.contains(e.target) || t.isConnected && t.matches(":focus-visible") && t.getClientRects().length || hide()) }; let show = target => { let text = target.getAttribute("data-tooltip"); if (!text) return; tipFor = target, document.addEventListener("mousemove", tipMove, !0); document.body.lastElementChild !== tooltipEl && document.body.appendChild(tooltipEl); tooltipEl.textContent = text; tooltipEl.style.display = "block"; let rect = target.getBoundingClientRect(); let tooltipRect = tooltipEl.getBoundingClientRect(); /* Kept inside __ssbViewBox(), and placed in its coordinates: with FOV (Black Bars) up, the body is the box this fixed tooltip is placed in. */ let vb = window.__ssbViewBox(); let left = rect.left + (rect.width - tooltipRect.width) / 2; let top = rect.top - tooltipRect.height - 8; if (left < vb.left + 10) left = vb.left + 10; if (left + tooltipRect.width > vb.left + vb.width - 10) left = vb.left + vb.width - tooltipRect.width - 10; if (top < vb.top + 10) top = rect.bottom + 8; top = Math.max(vb.top + 10, Math.min(top, vb.top + vb.height - tooltipRect.height - 10)); tooltipEl.style.left = left - vb.left + "px"; tooltipEl.style.top = top - vb.top + "px"; tooltipEl.style.opacity = "1" }, hide = () => { tipFor = null, document.removeEventListener("mousemove", tipMove, !0); if ("0" === tooltipEl.style.opacity) return; tooltipEl.style.opacity = "0"; let onTransitionEnd = () => { tooltipEl.style.opacity === "0" && (tooltipEl.style.display = "none"), tooltipEl.removeEventListener("transitionend", onTransitionEnd) }; tooltipEl.addEventListener("transitionend", onTransitionEnd) }; document.body.addEventListener("mouseover", e => { let target = e.target.closest("[data-tooltip]"); target && show(target) }); document.body.addEventListener("mouseout", e => { e.target.closest("[data-tooltip]") && hide() }); document.addEventListener("mousedown", hide, !0); window.addEventListener("keydown", e => { "Escape" === e.key && hide() }, !0); document.addEventListener("focusin", e => { let t = e.target; t && t.matches && t.matches("[data-tooltip]:focus-visible") && show(t) }); document.addEventListener("focusout", e => { let t = e.target; t && t.matches && t.matches("[data-tooltip]") && hide() }) }; document.body ? initTooltip() : document.addEventListener("DOMContentLoaded", initTooltip);
+    }); /* Uncap FPS: while the pointer is locked, the game's frames also run between screen refreshes, back to back from a MessageChannel. Chrome hands the page its mouse moves at a refresh, and it only refreshes once the GPU has caught up. Extra frames queued faster than the GPU can draw them used to hold the mouse back, then turn the view all at once. So a real requestAnimationFrame is always asked for too, and whichever comes first runs the frame. An extra frame only starts while the GPU is behind by fewer frames than allowed (WebGL fences, polled back to back for 3 ms, then every 1 ms or so): 2 when the GPU takes under 1.5 ms a frame (_ucGpu), else 1, and never more than _ucLvl. _ucLvl starts at 2, drops one when a real frame comes late (over 24 ms after it was asked for) and to 0 when a mouse move comes in late (40 ms), and goes back up one at a time after a quiet spell (2 s, longer when it drops again soon). No extra frame starts while a real one is late. */ let eK = window.requestAnimationFrame.bind(window), eU = window.cancelAnimationFrame.bind(window), eY = 0, eV = new Map; window._msgPending = !1; let _ssbMC = new MessageChannel; let _ssbFB = []; let _ucN = 0, _ucAsk = 0, _ucLvl = 2, _ucUp = 0, _ucUpAt = -1e4, _ucBack = 2e3, _ucGl = null, _ucQ = [], _ucGpu = 0, _ucDone = 0, _ucT = 0; let _ucPost = () => { window._msgPending || (window._msgPending = !0, _ssbMC.port2.postMessage(0)) }, _ucPoll = () => { _ucT = 0, _ucPost() }; let _ucDown = (now, to) => { to < _ucLvl && (_ucBack = now - _ucUpAt < 3e3 ? Math.min(16e3, 2 * _ucBack) : 2e3, _ucLvl = to); _ucUp = now + _ucBack }; let _ucFence = () => { try { let sc = window.P && window.P.scene, en = sc && sc.getEngine && sc.getEngine(), gl = en && en._gl; gl !== _ucGl && (_ucQ = [], _ucGl = gl && gl.fenceSync ? gl : null); if (!_ucGl || _ucGl.isContextLost()) return; _ucQ.length > 1 && _ucGl.deleteSync(_ucQ.shift()[0]); _ucQ.push([_ucGl.fenceSync(_ucGl.SYNC_GPU_COMMANDS_COMPLETE, 0), performance.now()]); _ucGl.flush() } catch (e) { _ucQ = [] } }; let _ucBehind = now => { try { if (!_ucGl || _ucGl.isContextLost()) return 0; while (_ucQ.length && _ucGl.getSyncParameter(_ucQ[0][0], _ucGl.SYNC_STATUS) === _ucGl.SIGNALED) _ucGpu += (now - Math.max(_ucQ[0][1], _ucDone) - _ucGpu) / 4, _ucDone = now, _ucGl.deleteSync(_ucQ.shift()[0]); return _ucQ.length } catch (e) { return 0 } }; let _ucRun = () => { if (eV.size === 0) return; let now = performance.now(), fns = _ssbFB, i = 0; for (let v of eV.values()) fns[i++] = v; eV.clear(); for (let n = 0; n < i; n++) { try { fns[n](now) } catch (e) { window.__ssbErr("frame#1", e) } } fns.length = 0; _ucFence() }; let _ucNat = () => { let now = performance.now(); _ucN = 0; now - _ucAsk > 24 ? _ucDown(now, Math.max(0, _ucLvl - 1)) : _ucLvl < 2 && now > _ucUp && (_ucLvl++, _ucUpAt = now, _ucUp = now + _ucBack); _ucRun() }; let _ssbFlush = () => { window._msgPending = !1; if (eV.size === 0) return; let now = performance.now(); if (!_ucLvl || _ucN && now - _ucAsk > 24) return; if (_ucBehind(now) >= Math.min(_ucLvl, _ucGpu < 1.5 ? 2 : 1)) { let age = now - _ucQ[0][1]; age < 3 ? _ucPost() : age < 100 && !_ucT && (_ucT = setTimeout(_ucPoll, 1)); return } _ucRun() }; _ssbMC.port1.onmessage = _ssbFlush; function _installUncap() { if (window._ssbUncapInst) return; window._ssbUncapInst = 1; window.requestAnimationFrame = function (e) { if (d.hideFPS.uncap && !document.hidden && document.pointerLockElement) { let t = ++eY; eV.set(t, e); _ucN || (_ucN = eK(_ucNat), _ucAsk = performance.now()); _ucLvl && _ucPost(); return t } return eK(e) }, window.cancelAnimationFrame = function (e) { if (eV.has(e)) { eV.delete(e); return } return eU(e) }; window.addEventListener("mousemove", e => { if (e.isTrusted && d.hideFPS.uncap && document.pointerLockElement) { let now = performance.now(); now - e.timeStamp > 40 && _ucDown(now, 0) } }, !0) } d.hideFPS.uncap && _installUncap(); let initTooltip = () => { let tooltipEl = document.createElement("div"); tooltipEl.id = "ssb-global-tooltip"; tooltipEl.style.cssText = "position:fixed;display:none;z-index:2147483647;background:#ffffff;color:#0C576F;padding:8px 12px;border-radius:8px;border:2px solid #2db8d4;font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:700;max-width:250px;box-shadow:0 4px 15px rgba(0,0,0,0.25);pointer-events:none;line-height:1.3;opacity:0;transition:opacity 0.12s cubic-bezier(0.4,0,0.2,1);"; document.body.appendChild(tooltipEl); /* Kept as the body's last child so it draws above the stats panel and dialogs (same top z-index); shown for the mouse and for keyboard focus; any click hides it so a button that rebuilds its panel can't leave it stuck. */ /* It also goes on Esc, and at the next mouse move once the mouse is off its target: Esc can close the Settings popup under a hovered row, and a row that's gone sends no mouseout. The move check is only listened for while a tooltip shows. */ let tipFor = null, tipMove = e => { let t = tipFor; t && (t.contains(e.target) || t.isConnected && t.matches(":focus-visible") && t.getClientRects().length || hide()) }; let show = target => { let text = target.getAttribute("data-tooltip"); if (!text) return; tipFor = target, document.addEventListener("mousemove", tipMove, !0); document.body.lastElementChild !== tooltipEl && document.body.appendChild(tooltipEl); tooltipEl.textContent = text; tooltipEl.style.display = "block"; let rect = target.getBoundingClientRect(); let tooltipRect = tooltipEl.getBoundingClientRect(); /* Kept inside __ssbViewBox(), and placed in its coordinates: with FOV (Black Bars) up, the body is the box this fixed tooltip is placed in. */ let vb = window.__ssbViewBox(); let left = rect.left + (rect.width - tooltipRect.width) / 2; let top = rect.top - tooltipRect.height - 8; if (left < vb.left + 10) left = vb.left + 10; if (left + tooltipRect.width > vb.left + vb.width - 10) left = vb.left + vb.width - tooltipRect.width - 10; if (top < vb.top + 10) top = rect.bottom + 8; top = Math.max(vb.top + 10, Math.min(top, vb.top + vb.height - tooltipRect.height - 10)); /* The UI scale zooms the tooltip (the rect above is its zoomed size), and its own left/top are zoomed too. */ let tz = parseFloat(getComputedStyle(tooltipEl).zoom) || 1; tooltipEl.style.left = (left - vb.left) / tz + "px"; tooltipEl.style.top = (top - vb.top) / tz + "px"; tooltipEl.style.opacity = "1" }, hide = () => { tipFor = null, document.removeEventListener("mousemove", tipMove, !0); if ("0" === tooltipEl.style.opacity) return; tooltipEl.style.opacity = "0"; let onTransitionEnd = () => { tooltipEl.style.opacity === "0" && (tooltipEl.style.display = "none"), tooltipEl.removeEventListener("transitionend", onTransitionEnd) }; tooltipEl.addEventListener("transitionend", onTransitionEnd) }; document.body.addEventListener("mouseover", e => { let target = e.target.closest("[data-tooltip]"); target && show(target) }); document.body.addEventListener("mouseout", e => { e.target.closest("[data-tooltip]") && hide() }); document.addEventListener("mousedown", hide, !0); window.addEventListener("keydown", e => { "Escape" === e.key && hide() }, !0); document.addEventListener("focusin", e => { let t = e.target; t && t.matches && t.matches("[data-tooltip]:focus-visible") && show(t) }); document.addEventListener("focusout", e => { let t = e.target; t && t.matches && t.matches("[data-tooltip]") && hide() }) }; document.body ? initTooltip() : document.addEventListener("DOMContentLoaded", initTooltip);
     /* Small, self-fitting preview of a saved profile (gallery cards, the mini selector and the Welcome Guide). budget = px the crosshair may span. */
     function xhMini(o, budget) {
             o = _withDot(o);
@@ -4337,6 +4337,11 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Early Respawn Guard", text: "Clicking Play while the respawn countdown runs no longer locks the mouse and starts the countdown over at 5. That mostly happened after you spectated or switched teams. Now the button just shakes.", group: "v6.1.10" },
+            { label: "Leaving a Match", text: "Leaving right after a match opens no longer lets Play drop you into the next match before it's ready, and your egg on the home screen no longer comes back blank, without its gun.", group: "v6.1.10" },
+            { label: "Spectate Right Away", text: "Clicking Spectate during the respawn countdown now really spectates. Before, it hid the menu and left you on the death camera. The countdown keeps going while you watch.", group: "v6.1.10" },
+            { label: "Tooltips", text: "MODS tips now grow with the rest of the menus on big screens instead of staying small, and they stay next to the row you point at.", group: "v6.1.10" },
+            { label: "Other Mods", text: "The Gun Sounds, Valorant Kill Sounds, Valorant Sensitivity and Mod Menu cards now show the version you have installed.", group: "v6.1.10" },
             { label: "Spectate Right Away", text: "The Spectate button shows up as soon as you die, so you don't have to wait out the respawn countdown first. It's a switch in MODS ▸ Menus, on by default.", group: "v6.1.9" },
             { label: "Hide FPS + Hide Ping", text: "With both on, the small box where the FPS and ping readouts sat is gone too, instead of staying on screen empty.", group: "v6.1.9" },
             { label: "Early Respawn Guard", text: "Clicking Play too soon after you die no longer restarts the respawn countdown, so you don't wait the full 5 seconds again. It's a switch in MODS ▸ Menus, on by default.", group: "v6.1.9" },
@@ -5615,6 +5620,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         "#ssb-toast-stack",        // toasts
         "#ssb-update-toast",       // "update available" card
         "#mod-top-bar",            // MODS search + section buttons (above the list)
+        "#ssb-global-tooltip",     // setting tooltips (placed in its own zoom, see show() in initTooltip)
     ];
 
     function ensureStyle() {
@@ -5677,7 +5683,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 #mod-crosshair-section .ch2-control-row, #mod-crosshair-section .ch2-control-right { flex-wrap:wrap; }
                 #mod-crosshair-section .ch2-label { white-space:normal; }
                 #mod-crosshair-section .ch2-check-label { position:relative; }
-                #ssb-global-tooltip { max-width:min(250px,calc(100vw - 24px))!important; box-sizing:border-box; overflow-wrap:anywhere; }
+                #ssb-global-tooltip { max-width:min(250px,calc((100vw - 24px) / var(${VAR_NAME}, 1)))!important; box-sizing:border-box; overflow-wrap:anywhere; }
                 @container (max-width:520px) {
                     #mod-settings-section .mod-grid { grid-template-columns:minmax(0,1fr); }
                     #mod-crosshair-section .ch2-top { flex-direction:column; gap:16px; }
@@ -5812,8 +5818,14 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         document.addEventListener("visibilitychange", reconcile);
         document.addEventListener("pointerlockchange", reconcile);
         window.addEventListener("pagehide", cancelLayout);
-        // Node identity fallback only: no periodic fit or layout measurements.
-        window.__ssbMenuPoll(bindRoots, 2000);
+        // Once everything (style sheets included) is in, measure again.
+        if (document.readyState !== "complete") window.addEventListener("load", requestLayout, { once: true });
+        // Node identity fallback only: no periodic fit or layout measurements. It also puts the scale back if
+        // something rewrote the page's root style, which drops it and leaves every mod pop-up at its 1080p size.
+        window.__ssbMenuPoll(() => {
+            bindRoots();
+            if (_last && !document.documentElement.style.getPropertyValue(VAR_NAME)) { _last = 0; requestLayout(); }
+        }, 2000);
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
     else boot();
@@ -6362,11 +6374,15 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     else boot();
 })();
 
-/* Early Respawn Guard. After you die the game shows a Play button that works for the first 3 s even though the respawn
-   countdown (game.respawnTime) is already running: onPlayClicked only turns the click away when the countdown is running
-   AND the 3 s delay has passed, or when neither is true. A click in that window calls extern.respawn() early, and the
-   countdown starts over, so you wait the full 5 s again. This turns such a click into the game's own "not yet" shake
-   instead, and leaves the countdown alone. Clicks once the countdown is over go through untouched. */
+/* Early Respawn Guard. When the respawn countdown ends, the game hooks a one-time "lock the mouse" handler onto the Play
+   button (prepRespawnButton), and a click on Play uses it up. If you get back in another way (Spectate, or a countdown that
+   starts again after a team switch), the handler stays on the button. The next Play click during a countdown then locks
+   the mouse while you're still dead (the game itself only shakes the button), and as soon as the mouse is let go the game
+   counts that as a pause and starts the countdown over at 5. The same goes for a click in the first 3 s after joining,
+   when the game isn't letting you in yet (delayTheCracking) but a handler is left over. This takes every Play click the
+   game would only answer with its "not yet" shake (the countdown (game.respawnTime) is running, or those first 3 s)
+   before the game sees it, and shakes the button the same way. 6.1.9 only did this in the first 3 s, so it missed
+   almost every case. A click that would put you in goes through untouched. */
 (function () {
     "use strict";
     const KEY = "tp-earlyRespawnGuard";
@@ -6374,22 +6390,25 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("respawnguard#1", e); } };
     function onClick(ev) {
         try {
-            if (!isOn()) return;
             const t = ev.target;
             const btn = t && t.closest && t.closest(".btn-respawn.btn_big");
             if (!btn || btn.classList.contains("btn_team_switch")) return;
             const v = window.vueApp, gs = v && v.$refs && v.$refs.gameScreen;
-            if (!v || !v.game || !gs || !(v.game.respawnTime > 0) || gs.delayTheCracking) return;
+            if (!v || !v.game || !isOn()) return;
+            // The game's onPlayClicked puts you in only when delayTheCracking is set, the countdown is over and the
+            // button isn't disabled; otherwise it shakes. The 3 s rule is skipped if a game update renames that flag.
+            const ready = !gs || typeof gs.delayTheCracking !== "boolean" || gs.delayTheCracking;
+            if (!(v.game.respawnTime > 0) && ready && !v.game.disableRespawnButton) return;
             ev.stopImmediatePropagation();
             ev.preventDefault();
-            if (typeof gs.jiggleRespawnButton === "function") gs.jiggleRespawnButton();
+            if (gs && typeof gs.jiggleRespawnButton === "function") gs.jiggleRespawnButton();
         } catch (e) { window.__ssbErr && window.__ssbErr("respawnguard#2", e); }
     }
     function boot() {
         window.__ssbSettings.add({
             key: KEY, section: "menus", after: "tp-fixChickenWinner", label: "Early Respawn Guard", code: "Rw", def: true,
-            tip: "Clicking Play too early after you die no longer restarts the respawn countdown, so you don't wait the full time again.",
-            keywords: "respawn countdown timer reset play button too fast wait 5 seconds glitch",
+            tip: "Clicking Play before the respawn countdown is over no longer restarts it (the game could start it over at 5, mostly after you spectated or switched teams). The button just shakes.",
+            keywords: "respawn countdown timer reset play button too fast wait 5 seconds glitch spectate team switch",
             get: isOn, set: setOn
         });
         document.addEventListener("click", onClick, true);
@@ -6398,22 +6417,118 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     else boot();
 })();
 
-/* Spectate Right Away. After you die the game keeps the eye (Spectate) button hidden and disabled until the respawn
-   countdown (game.respawnTime) is over. This shows and enables it while the countdown runs, and its normal click
-   handler does the rest (onSpectateClicked: hides the menu and calls extern.enterSpectatorMode). Vue only touches the
-   button when its own values change, so the countdown ending puts it back under the game's control. */
+/* Clean Leave. 3 s after a match opens, a game timer lets the Play button put you in (delayTheCracking) and hooks the
+   "lock the mouse" handler onto it (prepRespawnButton). Leave before then and the timer still went off, on the home
+   screen: the next match let Play through the moment it opened, before it was ready, which is one way to get the Play
+   glitch. Now a timer from a match you've left sets the flag back. Leaving also redraws the home-screen egg the way the
+   game does (resetPaperDoll), with only its render loop running (openEquipInGame, the game's own call when its start-up
+   loading ends). It does that again in the next 7 s if the egg stops updating, so the egg doesn't stay blank, without
+   its gun. Always on: it only makes the game's own calls, and only on the home screen. */
+(function () {
+    "use strict";
+    let leaves = 0;   // a timer set before the last Leave belongs to a match that's over
+    const homeShown = () => {
+        const v = window.vueApp, ex = window.extern;
+        return !!(v && ex && !ex.inGame && v.screens && v.showScreen === v.screens.home);
+    };
+    const engine = () => {   // the last match's scene still points at the page's one engine
+        try { const sc = window.P && window.P.scene; return sc && sc.getEngine ? sc.getEngine() : null; } catch (e) { return null; }
+    };
+    function redrawEgg() {
+        try {
+            const ex = window.extern;
+            if (typeof ex.resetPaperDoll === "function") ex.resetPaperDoll();
+            if (typeof ex.openEquipInGame === "function") ex.openEquipInGame();   // stops every render loop, then runs the egg's
+        } catch (e) { window.__ssbErr && window.__ssbErr("cleanleave#1", e); }
+    }
+    function afterLeave(n) {
+        const at = [300, 1500, 3300, 5000, 7000];
+        let i = 0, lastFrame = -1;
+        const check = () => {
+            if (n !== leaves) return;
+            const en = engine(), frame = en && typeof en.frameId === "number" ? en.frameId : -1;
+            if (homeShown() && !document.hidden) {
+                const loops = en && en._activeRenderLoops;
+                // The first check always redraws. Later ones only when the egg's loop isn't the one running, or no frame came.
+                if (i === 0 || (loops && loops.length !== 1) || (frame >= 0 && frame === lastFrame)) redrawEgg();
+            }
+            lastFrame = document.hidden ? -1 : frame;
+            if (++i < at.length) setTimeout(check, at[i] - at[i - 1]);
+        };
+        setTimeout(check, at[0]);
+    }
+    function install() {
+        const ex = window.extern, v = window.vueApp, gs = v && v.$refs && v.$refs.gameScreen;
+        if (!ex || !gs || typeof ex.leaveGame !== "function" || typeof gs.delayGameMenuPlayButtons !== "function") return false;
+        if (ex.__ssbCleanLeave) return true;
+        ex.__ssbCleanLeave = true;
+        const leave = ex.leaveGame;
+        ex.leaveGame = function () {
+            const was = !!ex.inGame;
+            try { return leave.apply(this, arguments); }
+            finally { leaves++; if (was) afterLeave(leaves); }
+        };
+        const delay = gs.delayGameMenuPlayButtons;
+        gs.delayGameMenuPlayButtons = function () {
+            const n = leaves, out = delay.apply(this, arguments);
+            setTimeout(() => {   // just after the game's own 3 s timer
+                try { if (n !== leaves || !ex.inGame) this.delayTheCracking = false; }
+                catch (e) { window.__ssbErr && window.__ssbErr("cleanleave#2", e); }
+            }, 3050);
+            return out;
+        };
+        const prep = ex.prepRespawnButton;
+        if (typeof prep === "function") ex.prepRespawnButton = function () { if (ex.inGame) return prep.apply(this, arguments); };
+        return true;
+    }
+    function boot() {
+        if (install()) return;
+        const stop = window.__ssbMenuPoll(() => { try { if (install()) stop(); } catch (e) { stop(); window.__ssbErr && window.__ssbErr("cleanleave#3", e); } }, 500);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
+})();
+
+/* Spectate Right Away. After you die the game keeps the Spectate (eye) button hidden until the respawn countdown
+   (game.respawnTime) is over, and its enterSpectatorMode does nothing before then. 6.1.9 only showed the button, so an
+   early click hid the menu and left you on the death camera with no menu at all. Two small game patches fix that:
+   enterSpectatorMode may now start during the countdown after a death (never after a pause), and the end of the
+   countdown no longer swings the camera back to the map overview while you spectate. The countdown keeps running
+   underneath; leaving spectate works as it always does (Esc, then Play once the countdown is over). If a game update
+   breaks either patch, the button stays hidden, as in the plain game. */
 (function () {
     "use strict";
     const KEY = "tp-earlySpectate";
     const isOn = () => { try { const v = localStorage.getItem(KEY); return v === null ? true : JSON.parse(v) === true; } catch (e) { return true; } };
     const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("earlyspec#1", e); } };
+    let patched = false;
+    const meDead = () => {
+        const ps = window.players, i = window.myPlayerIdx, me = ps && i != null ? ps[i] : null;
+        return !!(me && typeof me.isDead === "function" && me.isDead());
+    };
+    window.__ssbSpecEarly = () => { try { return patched && isOn() && meDead(); } catch (e) { return false; } };
+    // enterSpectatorMode:function(){bR||(bR=!0,setTimeout((()=>bR=!1),1e3),Xx<0&&(uw=!1,pw=!0,...
+    // and in the countdown (Qw): ...,Xx<=0&&tM&&(Xx=-1,xP.clear(sw),Zw(),AR())  ->  ...,Zw(),pw||AR())
+    window.__ssbPatches.add("early-spectate", (src) => {
+        const m = /enterSpectatorMode:function\(\)\{([\w$]+)\|\|\(\1=!0,setTimeout\(\(\(\)=>\1=!1\),1e3\),([\w$]+)<0&&\(([\w$]+)=!1,([\w$]+)=!0,/.exec(src);
+        if (!m) return src;
+        const xx = m[2], pw = m[4], re = (n) => n.replace(/\$/g, "\\$");
+        const end = new RegExp("(" + re(xx) + "<=0&&[\\w$]+&&\\(" + re(xx) + "=-1,[\\w$]+\\.clear\\([\\w$]+\\),[\\w$]+\\(\\),)([\\w$]+\\(\\)\\))").exec(src);
+        if (!end) return src;
+        const gate = xx + "<0&&(", at = m.index + m[0].indexOf(gate);
+        let out = src.slice(0, at) + "(" + xx + "<0||window.__ssbSpecEarly&&window.__ssbSpecEarly())&&(" + src.slice(at + gate.length);
+        const shift = out.length - src.length, e0 = end.index + end[1].length + (end.index > at ? shift : 0);
+        out = out.slice(0, e0) + pw + "||" + out.slice(e0);
+        patched = true;
+        return out;
+    });
     function tick() {
         try {
-            if (!isOn() || document.hidden) return;
+            if (!patched || document.hidden || !isOn()) return;
             const v = window.vueApp;
             if (!v || !v.game || !v.screens || v.showScreen !== v.screens.game) return;
             if (!(v.game.respawnTime > 0) || !v.game.isPaused || (v.ui && v.ui.game && v.ui.game.spectate)) return;
-            if (window.extern && window.extern.observingGame) return;
+            if ((window.extern && window.extern.observingGame) || !meDead()) return;
             const b = document.querySelector(".pause-screen-btn-spectate");
             if (!b) return;
             if (b.disabled) b.disabled = false;
@@ -6423,11 +6538,11 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     function boot() {
         window.__ssbSettings.add({
             key: KEY, section: "menus", after: "tp-fixChickenWinner", label: "Spectate Right Away", code: "Sa", def: true,
-            tip: "Shows the Spectate button as soon as you die, instead of after the respawn countdown.",
+            tip: "Shows the Spectate button as soon as you die, instead of after the respawn countdown. The countdown keeps going while you watch.",
             keywords: "spectate eye watch dead death respawn countdown wait early",
             get: isOn, set: setOn
         });
-        setInterval(tick, 150);
+        window.__ssbMenuPoll(tick, 150);
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
     else boot();

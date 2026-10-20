@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.9-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.10-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -244,7 +244,15 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.9 — current
+#### v6.1.10 — current
+
+- **Early Respawn Guard:** clicking Play while the respawn countdown runs no longer locks the mouse and starts the countdown over at 5. That mostly happened after you spectated or switched teams, and 6.1.9 only caught clicks in the first 3 seconds. Now every early click just shakes the button
+- **Leaving a match:** leaving right after a match opens no longer lets Play drop you into the next match before it's ready. Your egg on the home screen also no longer comes back blank, without its gun or with broken gun models
+- **Spectate Right Away:** clicking Spectate during the respawn countdown now really spectates. Before, it hid the menu and left you on the death camera with no menu. The countdown keeps going while you watch, and the camera no longer jumps to the map view when it ends
+- **Tooltips:** the tips on MODS rows now grow with the rest of the menus on big screens instead of staying at their 1080p size, and they stay next to the row you point at. Pop-ups also check their size again once the page has finished loading
+- **Other Mods:** the Gun Sounds, Valorant Kill Sounds, Valorant Sensitivity and Mod Menu cards now show the version you have installed
+
+#### v6.1.9
 
 - **Spectate Right Away:** the Spectate button shows as soon as you die, instead of after the respawn countdown. It's a switch under **MODS ▸ Menus**, on by default.
 - **Hide FPS + Hide Ping:** with both on, the small box where the readouts sat is hidden too, instead of staying on screen empty.
