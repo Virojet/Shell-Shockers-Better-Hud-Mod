@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.11-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.12-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -245,7 +245,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.11 — current
+#### v6.1.12 — current
+
+- **Crosshair:** a crosshair with a gap between its arms and the center (it comes in with a crosshair code; the editor has no slider for it) was drawn below the middle of the screen, with its four arms starting at one point and no gap at all. The arms now open up around the center dot, which stays in the middle, and the preview in the editor shows the gap too
+
+#### v6.1.11
 
 - **GUI Scale:** a new slider under **MODS ▸ HUD** makes the HUD, the menus and the chat smaller (down to 0.4) or a little larger (up to 1.2). 1 is the normal size, and nothing changes until you move it. It applies when you let go of the slider. The crosshair keeps its size, and the crosshair preview in the editor still matches it. On a big monitor, around 0.55 gives the size the game has at 1080p
 - **Leaving a match:** pressing Leave twice quickly no longer leaves your egg on the home screen blank, with no hat or guns. The game's own Leave button stops its drawing loop each time you press it, so a second press froze the egg. Better HUD now ignores the second press and, if the egg did freeze, starts it again. 6.1.10 tried this but its fix cancelled itself
