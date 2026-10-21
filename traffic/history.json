@@ -83,14 +83,30 @@
     "2026-10-19": {
       "count": 64,
       "uniques": 33
+    },
+    "2026-10-20": {
+      "count": 24,
+      "uniques": 13
     }
   },
   "popular_paths": [
     {
-      "count": 147,
+      "count": 136,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 70
+      "uniques": 68
+    },
+    {
+      "count": 3,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
+      "title": "/tree/main/.github",
+      "uniques": 2
+    },
+    {
+      "count": 3,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
+      "title": "/tree/main/.github/scripts",
+      "uniques": 2
     },
     {
       "count": 2,
@@ -103,18 +119,6 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 2
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
-      "title": "/tree/main/.github",
-      "uniques": 1
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
-      "title": "/tree/main/.github/scripts",
-      "uniques": 1
     },
     {
       "count": 1,
@@ -130,20 +134,20 @@
     },
     {
       "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.gitattributes",
+      "title": "/blob/main/.gitattributes",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
+      "title": "/blob/main/.github/scripts/traffic.py",
+      "uniques": 1
+    },
+    {
+      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
       "title": "/blob/main/LICENSE",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commits",
-      "title": "/commits",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main",
-      "title": "/tree/main",
       "uniques": 1
     }
   ],
@@ -159,34 +163,34 @@
       "uniques": 6
     },
     {
-      "count": 8,
+      "count": 6,
       "referrer": "github.com",
       "uniques": 4
-    },
-    {
-      "count": 6,
-      "referrer": "youtube.com",
-      "uniques": 3
-    },
-    {
-      "count": 5,
-      "referrer": "search.brave.com",
-      "uniques": 3
     },
     {
       "count": 3,
       "referrer": "Bing",
       "uniques": 2
+    },
+    {
+      "count": 3,
+      "referrer": "search.brave.com",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "referrer": "youtube.com",
+      "uniques": 1
     }
   ],
   "totals": {
     "clones": {
-      "count": 387,
-      "uniques": 213
+      "count": 411,
+      "uniques": 226
     },
     "views": {
-      "count": 243,
-      "uniques": 145
+      "count": 251,
+      "uniques": 149
     }
   },
   "views": {
@@ -273,6 +277,10 @@
     "2026-10-19": {
       "count": 9,
       "uniques": 8
+    },
+    "2026-10-20": {
+      "count": 8,
+      "uniques": 4
     }
   }
 }
