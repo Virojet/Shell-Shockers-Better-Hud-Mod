@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.12
+// @version      6.1.13
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.12");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.13");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4340,6 +4340,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Join From Chat", text: "A game code said in chat (like cask-zips-vent) is now underlined. Pause, click it and confirm, and you leave the match and join that game. It's a switch in MODS ▸ Chat, on by default.", group: "v6.1.13" },
             { label: "Crosshair", text: "A crosshair with a gap between its arms and the center (it comes in with a crosshair code) is no longer drawn below the middle of the screen. The arms now open up around the center dot, and the preview in the editor shows the gap too.", group: "v6.1.12" },
             { label: "GUI Scale", text: "A new slider in MODS ▸ HUD makes the HUD, menus and chat smaller (down to 0.4) or a little larger (up to 1.2). 1 is the normal size, so it only changes when you move it. The crosshair keeps its size.", group: "v6.1.11" },
             { label: "Leaving a Match", text: "Pressing Leave twice quickly no longer leaves your egg on the home screen blank. That is a bug in the game's own Leave button; Better HUD now ignores the second press and brings the egg back.", group: "v6.1.11" },
@@ -6619,6 +6620,169 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             get: isOn, set: setOn
         });
         window.__ssbMenuPoll(tick, 150);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
+})();
+
+/* Join From Chat. A game code said in chat (like cask-zips-vent) is underlined; click it, confirm, and you leave this match and
+   join that game, the same as typing it into Join Game on the home screen. The join itself is the game's own
+   (showJoinPrivateGamePopup, then onJoinConfirmed), so the name check, ads and its errors (game not found, full) are the
+   game's. Only the message part of a chat line is touched, never the player name, and each line is scanned as it arrives.
+   Chat can only be clicked while the mouse is free (paused, dead, between rounds). Codes are four lowercase letters three
+   times (parseJoinGameCode reads the last three four-letter groups of whatever it is given). */
+(function () {
+    "use strict";
+    const KEY = "tp-chatJoin";
+    const STYLE_ID = "ssb-chat-join-style";
+    const CODE = /(?<![\w-])[a-z]{4}-[a-z]{4}-[a-z]{4}(?![\w-])/gi;
+    const isOn = () => { try { const v = localStorage.getItem(KEY); return v === null ? true : JSON.parse(v) === true; } catch (e) { return true; } };
+    const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("chatjoin#1", e); } };
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const roomCode = () => { try { return String(window.vueData.game.shareLinkPopup.code || "").toLowerCase(); } catch (e) { return ""; } };
+
+    function applyCSS() {
+        let el = document.getElementById(STYLE_ID);
+        if (!el) { el = document.createElement("style"); el.id = STYLE_ID; (document.head || document.documentElement).appendChild(el); }
+        el.textContent =
+            ".ssb-chat-code{white-space:nowrap;text-decoration:underline!important;text-decoration-thickness:.08em;text-underline-offset:.14em;cursor:pointer;pointer-events:auto!important;}" +
+            ".ssb-chat-code:hover,.ssb-chat-code:focus-visible{text-decoration-thickness:.16em;outline:none;}";
+    }
+
+    // Wrap each code in the message text of a chat line in a button-like span. The name part (a direct child div of the line)
+    // is skipped. The line remembers its text, so Better HUD's own edits and the chat history module re-adding a line
+    // don't scan it again.
+    let scanned = new WeakMap();
+    function wrapLine(item) {
+        const text = item.textContent;
+        if (scanned.get(item) === text) return;
+        scanned.set(item, text);
+        if (text.indexOf("-") < 0) return;
+        const walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT), nodes = [];
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+            const p = n.parentElement;
+            if (p && !p.closest(".ssb-chat-code, .chat-item > div") && n.nodeValue.indexOf("-") >= 0) nodes.push(n);
+        }
+        for (const n of nodes) {
+            const s = n.nodeValue, parts = [];
+            let last = 0, m;
+            CODE.lastIndex = 0;
+            while ((m = CODE.exec(s))) {
+                if (m.index > last) parts.push(document.createTextNode(s.slice(last, m.index)));
+                const a = document.createElement("span");
+                a.className = "ssb-chat-code"; a.textContent = m[0];
+                a.setAttribute("role", "button"); a.tabIndex = 0;
+                a.setAttribute("data-code", m[0].toLowerCase());
+                a.title = "Click to join " + m[0].toLowerCase();
+                parts.push(a); last = m.index + m[0].length;
+            }
+            if (!parts.length) continue;
+            if (last < s.length) parts.push(document.createTextNode(s.slice(last)));
+            n.replaceWith(...parts);
+        }
+    }
+
+    function unwrapAll() {
+        const out = document.getElementById("chatOut");
+        if (!out) return;
+        const hosts = new Set();
+        out.querySelectorAll(".ssb-chat-code").forEach((a) => { hosts.add(a.parentNode); a.replaceWith(document.createTextNode(a.textContent)); });
+        hosts.forEach((h) => h.normalize());
+    }
+
+    let busy = false;
+    async function join(code) {
+        const ui = window.__ssbUI, v = window.vueApp, ex = window.extern;
+        if (busy || !ui || !v || !ex) return;
+        const inGame = !!ex.inGame;
+        if (inGame && roomCode() === code) { ui.toast("You're already in " + code + "."); return; }
+        busy = true;
+        try {
+            const go = await ui.confirm({ title: "Join Game", text: (inGame ? "Leave this match and join " : "Join ") + code + "?", ok: "Join", cancelLabel: "Stay" });
+            if (!go) return;
+            if (inGame) {
+                v.onLeaveGameConfirm();   // what the Leave button's popup runs
+                for (let t = 0; t < 80 && (ex.inGame || v.showScreen !== v.screens.home); t++) await sleep(100);
+                if (ex.inGame || v.showScreen !== v.screens.home) throw new Error("never reached the home screen");
+                await sleep(400);         // let the home screen finish drawing
+            }
+            const play = v.$refs.homeScreen.$refs.playPanel;
+            play.showJoinPrivateGamePopup(code, true);
+            play.onJoinConfirmed();
+        } catch (e) {
+            window.__ssbErr && window.__ssbErr("chatjoin#2", e);
+            ui.toast("Couldn't join " + code + ". Type it into Join Game on the home screen.", { type: "error" });
+        } finally { busy = false; }
+    }
+
+    const codeEl = (e) => e.target && e.target.closest ? e.target.closest(".ssb-chat-code") : null;
+    function onClick(e) {
+        const a = codeEl(e);
+        if (!a || e.button) return;
+        e.preventDefault();
+        join(a.getAttribute("data-code"));
+    }
+    function onKey(e) {
+        const a = codeEl(e);
+        if (!a || (e.key !== "Enter" && e.key !== " ")) return;
+        e.preventDefault(); e.stopPropagation();   // keep the game's own Enter / Space hotkeys out of it
+        join(a.getAttribute("data-code"));
+    }
+
+    let obs = null, hooked = null, stopPoll = null, listening = false;
+    function hook() {
+        const out = document.getElementById("chatOut");
+        if (!out || hooked === out) return;
+        if (obs) obs.disconnect();
+        hooked = out;
+        obs = new MutationObserver((records) => {
+            const lines = new Set();
+            for (const rec of records) {
+                if (rec.type === "childList") rec.addedNodes.forEach((n) => { if (n.nodeType === 1) { const l = n.closest(".chat-item") || n.querySelector(".chat-item"); if (l) lines.add(l); } });
+                const t = rec.target.nodeType === 1 ? rec.target : rec.target.parentElement, l = t && t.closest(".chat-item");
+                if (l) lines.add(l);
+            }
+            lines.forEach((l) => { try { wrapLine(l); } catch (e) { window.__ssbErr && window.__ssbErr("chatjoin#3", e); } });
+            obs.takeRecords();   // drop the records our own edits just made
+        });
+        obs.observe(out, { childList: true, subtree: true, characterData: true });
+        out.querySelectorAll(".chat-item").forEach(wrapLine);
+    }
+
+    function enable() {
+        applyCSS();
+        hook();
+        if (!stopPoll) stopPoll = window.__ssbMenuPoll(hook, 2000, { inMatch: true });   // the chat is rebuilt between matches
+        if (!listening) {
+            listening = true;
+            document.addEventListener("click", onClick, true);
+            document.addEventListener("keydown", onKey, true);
+        }
+    }
+    function disable() {
+        if (stopPoll) { stopPoll(); stopPoll = null; }
+        if (listening) {
+            listening = false;
+            document.removeEventListener("click", onClick, true);
+            document.removeEventListener("keydown", onKey, true);
+        }
+        if (obs) obs.disconnect();
+        obs = hooked = null;
+        unwrapAll();
+        scanned = new WeakMap();   // the lines are plain text again, so a later enable must scan them again
+        const el = document.getElementById(STYLE_ID);
+        if (el) el.remove();
+    }
+    function sync() { isOn() ? enable() : disable(); }
+
+    function boot() {
+        sync();
+        window.__ssbSettings.add({
+            key: KEY, section: "chat", after: "tp-infiniteChat", label: "Join From Chat", code: "Cj", def: true,
+            tip: "Underlines a game code said in chat (like cask-zips-vent). Click it, confirm, and you leave the match and join that game. Chat can only be clicked while the mouse is free, so pause first.",
+            keywords: "chat code join game private link click friend invite",
+            get: isOn, set: (v) => { setOn(v); sync(); }
+        });
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
     else boot();
