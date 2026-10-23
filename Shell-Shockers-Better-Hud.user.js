@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.13
+// @version      6.1.14
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.13");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.14");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -1605,7 +1605,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         ["gameplay", "noYolk", "tp-noYolk", "Gy", false, "b", "Hide Yolk Burst"],
         ["gameplay", "noSplats", "tp-noSplats", "Gd", false, "b", "Hide Damage Splats"],
         ["gameplay", "noShellBurst", "tp-noShellBurst", "Gb", true, "b", "Hide Shell Burst"],
-        ["gameplay", "hideScopeLines", "tp-hideScopeLines", "Gl", true, "b", "Hide Scope Lines"],
+        ["gameplay", "hideScopeLines", "tp-hideScopeLines", "Gl", false, "b", "Hide Scope Lines"],
         ["gameplay", "skinUnlocker", "tp-skinUnlocker", "Gu", false, "b"],
         ["gameplay", "fovStretch", "tp-fovStretch", "Gv", 1, "n", "FOV (Black Bars)"],
         ["gameplay", "legacySkins", "tp-legacySkins", "Gk", false, "b", "Legacy Skins"],
@@ -4340,16 +4340,17 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Spectate Right Away", text: "Removed. The Spectate button shows when the game shows it, after the respawn countdown. Early Respawn Guard stays.", group: "v6.1.14" },
+            { label: "Hide Scope Lines", text: "Now off by default, so the lines inside a scope show as in the game. It is still a switch in MODS ▸ HUD, and a choice you already saved stays.", group: "v6.1.14" },
+            { label: "GUI Scale", text: "The crosshair's centre dot keeps its size with the slider now, like the arms. It used to shrink and grow with it.", group: "v6.1.14" },
             { label: "Join From Chat", text: "A game code said in chat (like cask-zips-vent) is now underlined. Pause, click it and confirm, and you leave the match and join that game. It's a switch in MODS ▸ Chat, on by default.", group: "v6.1.13" },
             { label: "Crosshair", text: "A crosshair with a gap between its arms and the center (it comes in with a crosshair code) is no longer drawn below the middle of the screen. The arms now open up around the center dot, and the preview in the editor shows the gap too.", group: "v6.1.12" },
             { label: "GUI Scale", text: "A new slider in MODS ▸ HUD makes the HUD, menus and chat smaller (down to 0.4) or a little larger (up to 1.2). 1 is the normal size, so it only changes when you move it. The crosshair keeps its size.", group: "v6.1.11" },
             { label: "Leaving a Match", text: "Pressing Leave twice quickly no longer leaves your egg on the home screen blank. That is a bug in the game's own Leave button; Better HUD now ignores the second press and brings the egg back.", group: "v6.1.11" },
             { label: "Early Respawn Guard", text: "Clicking Play while the respawn countdown runs no longer locks the mouse and starts the countdown over at 5. That mostly happened after you spectated or switched teams. Now the button just shakes.", group: "v6.1.10" },
             { label: "Leaving a Match", text: "Leaving right after a match opens no longer lets Play drop you into the next match before it's ready, and your egg on the home screen no longer comes back blank, without its gun.", group: "v6.1.10" },
-            { label: "Spectate Right Away", text: "Clicking Spectate during the respawn countdown now really spectates. Before, it hid the menu and left you on the death camera. The countdown keeps going while you watch.", group: "v6.1.10" },
             { label: "Tooltips", text: "MODS tips now grow with the rest of the menus on big screens instead of staying small, and they stay next to the row you point at.", group: "v6.1.10" },
             { label: "Other Mods", text: "The Gun Sounds, Valorant Kill Sounds, Valorant Sensitivity and Mod Menu cards now show the version you have installed.", group: "v6.1.10" },
-            { label: "Spectate Right Away", text: "The Spectate button shows up as soon as you die, so you don't have to wait out the respawn countdown first. It's a switch in MODS ▸ Menus, on by default.", group: "v6.1.9" },
             { label: "Hide FPS + Hide Ping", text: "With both on, the small box where the FPS and ping readouts sat is gone too, instead of staying on screen empty.", group: "v6.1.9" },
             { label: "Early Respawn Guard", text: "Clicking Play too soon after you die no longer restarts the respawn countdown, so you don't wait the full 5 seconds again. It's a switch in MODS ▸ Menus, on by default.", group: "v6.1.9" },
             { label: "Other Mods", text: "A new page in MODS lists the other mods by Virojet: whether each one is installed, a button to install it, and a link to its page. Mod Menu opens from here too.", group: "v6.1.9" },
@@ -5621,7 +5622,8 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     // it out in em, so changing that font-size scales the HUD and the menus together. This rule is the same
     // thing with a factor in it. It sits just above the game's `*` (one type selector) and below every class
     // rule, so the game's own font-size rules (the team letters, anything in em) keep working. The crosshair is
-    // left out because its arms and dot are sized from its font-size, and the mod's own panels follow this
+    // left out because its arms and dot are sized from its font-size (the arms sit inside #reticleContainer, the dot,
+    // #reticleDot, beside it, so both are named), and the mod's own panels follow this
     // factor through --ssb-ui-scale (computed from the page's font-size below). At 1 nothing is added at all.
     // --ssb-vh is the FOV "Resize Everything" box height; unset, it is 1vh as before.
     let _guiNow = null;
@@ -5651,7 +5653,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             (document.head || root).appendChild(el);
         }
         el.textContent =
-            "html, html *:where(:not(#reticleContainer):not(#reticleContainer *)) { font-size: calc(1.95 * var(--ssb-vh, 1vh) * var(" + GUI_VAR + ", 1)); }\n" +
+            "html, html *:where(:not(#reticleContainer):not(#reticleContainer *):not(#reticleDot):not(#reticleDot *)) { font-size: calc(1.95 * var(--ssb-vh, 1vh) * var(" + GUI_VAR + ", 1)); }\n" +
             "html .teamLetter.red, html .teamLetter.blue { font-size: calc(3 * var(--ssb-vh, 1vh) * var(" + GUI_VAR + ", 1)); }";
         if (root) root.style.setProperty(GUI_VAR, String(g));
     }
@@ -6561,65 +6563,6 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     function boot() {
         if (install()) return;
         const stop = window.__ssbMenuPoll(() => { try { if (install()) stop(); } catch (e) { stop(); window.__ssbErr && window.__ssbErr("cleanleave#3", e); } }, 500);
-    }
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-    else boot();
-})();
-
-/* Spectate Right Away. After you die the game keeps the Spectate (eye) button hidden until the respawn countdown
-   (game.respawnTime) is over, and its enterSpectatorMode does nothing before then. 6.1.9 only showed the button, so an
-   early click hid the menu and left you on the death camera with no menu at all. Two small game patches fix that:
-   enterSpectatorMode may now start during the countdown after a death (never after a pause), and the end of the
-   countdown no longer swings the camera back to the map overview while you spectate. The countdown keeps running
-   underneath; leaving spectate works as it always does (Esc, then Play once the countdown is over). If a game update
-   breaks either patch, the button stays hidden, as in the plain game. */
-(function () {
-    "use strict";
-    const KEY = "tp-earlySpectate";
-    const isOn = () => { try { const v = localStorage.getItem(KEY); return v === null ? true : JSON.parse(v) === true; } catch (e) { return true; } };
-    const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("earlyspec#1", e); } };
-    let patched = false;
-    const meDead = () => {
-        const ps = window.players, i = window.myPlayerIdx, me = ps && i != null ? ps[i] : null;
-        return !!(me && typeof me.isDead === "function" && me.isDead());
-    };
-    window.__ssbSpecEarly = () => { try { return patched && isOn() && meDead(); } catch (e) { return false; } };
-    // enterSpectatorMode:function(){bR||(bR=!0,setTimeout((()=>bR=!1),1e3),Xx<0&&(uw=!1,pw=!0,...
-    // and in the countdown (Qw): ...,Xx<=0&&tM&&(Xx=-1,xP.clear(sw),Zw(),AR())  ->  ...,Zw(),pw||AR())
-    window.__ssbPatches.add("early-spectate", (src) => {
-        const m = /enterSpectatorMode:function\(\)\{([\w$]+)\|\|\(\1=!0,setTimeout\(\(\(\)=>\1=!1\),1e3\),([\w$]+)<0&&\(([\w$]+)=!1,([\w$]+)=!0,/.exec(src);
-        if (!m) return src;
-        const xx = m[2], pw = m[4], re = (n) => n.replace(/\$/g, "\\$");
-        const end = new RegExp("(" + re(xx) + "<=0&&[\\w$]+&&\\(" + re(xx) + "=-1,[\\w$]+\\.clear\\([\\w$]+\\),[\\w$]+\\(\\),)([\\w$]+\\(\\)\\))").exec(src);
-        if (!end) return src;
-        const gate = xx + "<0&&(", at = m.index + m[0].indexOf(gate);
-        let out = src.slice(0, at) + "(" + xx + "<0||window.__ssbSpecEarly&&window.__ssbSpecEarly())&&(" + src.slice(at + gate.length);
-        const shift = out.length - src.length, e0 = end.index + end[1].length + (end.index > at ? shift : 0);
-        out = out.slice(0, e0) + pw + "||" + out.slice(e0);
-        patched = true;
-        return out;
-    });
-    function tick() {
-        try {
-            if (!patched || document.hidden || !isOn()) return;
-            const v = window.vueApp;
-            if (!v || !v.game || !v.screens || v.showScreen !== v.screens.game) return;
-            if (!(v.game.respawnTime > 0) || !v.game.isPaused || (v.ui && v.ui.game && v.ui.game.spectate)) return;
-            if ((window.extern && window.extern.observingGame) || !meDead()) return;
-            const b = document.querySelector(".pause-screen-btn-spectate");
-            if (!b) return;
-            if (b.disabled) b.disabled = false;
-            if (b.style.display === "none") b.style.display = b._vod || "";
-        } catch (e) { window.__ssbErr && window.__ssbErr("earlyspec#2", e); }
-    }
-    function boot() {
-        window.__ssbSettings.add({
-            key: KEY, section: "menus", after: "tp-fixChickenWinner", label: "Spectate Right Away", code: "Sa", def: true,
-            tip: "Shows the Spectate button as soon as you die, instead of after the respawn countdown. The countdown keeps going while you watch.",
-            keywords: "spectate eye watch dead death respawn countdown wait early",
-            get: isOn, set: setOn
-        });
-        window.__ssbMenuPoll(tick, 150);
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
     else boot();

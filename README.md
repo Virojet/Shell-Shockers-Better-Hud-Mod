@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.13-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.14-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -246,7 +246,13 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.13 — current
+#### v6.1.14 — current
+
+- **Spectate Right Away:** removed. The Spectate button shows when the game shows it, after the respawn countdown, and spectating works the way the game has it. **Early Respawn Guard** stays
+- **Hide Scope Lines:** off by default now, so the lines inside a scope show as in the game. It's still a switch under **MODS ▸ HUD**, and if you already have it saved, your choice stays
+- **GUI Scale:** the crosshair's centre dot keeps its size with the slider now, like the arms do. It used to shrink and grow with it
+
+#### v6.1.13
 
 - **Join From Chat:** a game code said in chat (like `cask-zips-vent`) is now underlined. Pause, click it and confirm, and you leave the match and join that game, the same as typing the code into Join Game on the home screen. The game does the joining, so it still checks your name and tells you if the game is full or gone. Chat can only be clicked while the mouse is free, so pause first. It's a switch under **MODS ▸ Chat**, on by default
 
