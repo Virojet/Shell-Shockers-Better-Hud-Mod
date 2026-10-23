@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.14-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.15-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -161,6 +161,7 @@ Each one is its own userscript. Install any of them next to Better HUD; they upd
 
 | Mod | What it does | |
 |---|---|---|
+| **[Mod Menu](https://github.com/Virojet/Shell-Shockers-Mod-Menu)** | One menu to switch your mods and themes on or off, with game sounds on every control | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Mod-Menu/main/Shell-Shockers-Mod-Menu.user.js) |
 | **[Gun Sounds](https://github.com/Virojet/Shell-Shockers-Gun-Sounds)** | Pick weapon, meme or your own sounds for shots, melee swings, reloads and the empty click | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Gun-Sounds/main/Shell-Shockers-Gun-Sounds.user.js) |
 | **[Valorant Kill Sounds](https://github.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds)** | Valorant-style kill sounds and banners that climb with your streak, from fifteen packs or your own files | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds/main/Shell-Shockers-Valorant-Kill-Sounds.user.js) |
 | **[Valorant Sensitivity](https://github.com/Virojet/Shell-Shockers-Valorant-Sensitivity)** | Use your Valorant sensitivity, typed in or read from Valorant's settings, from the hip and scoped | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Sensitivity/main/Shell-Shockers-Valorant-Sensitivity.user.js) |
@@ -246,7 +247,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.14 — current
+#### v6.1.15 — current
+
+- **Hide Scope Lines:** if you still had it switched on from before 6.1.14, it's switched off once, so the lines inside a scope show as in the game. It's still a switch under **MODS ▸ HUD**, and a choice you make from here on stays
+
+#### v6.1.14
 
 - **Spectate Right Away:** removed. The Spectate button shows when the game shows it, after the respawn countdown, and spectating works the way the game has it. **Early Respawn Guard** stays
 - **Hide Scope Lines:** off by default now, so the lines inside a scope show as in the game. It's still a switch under **MODS ▸ HUD**, and if you already have it saved, your choice stays
