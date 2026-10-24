@@ -95,6 +95,10 @@
     "2026-10-22": {
       "count": 12,
       "uniques": 7
+    },
+    "2026-10-23": {
+      "count": 15,
+      "uniques": 6
     }
   },
   "popular_paths": [
@@ -129,6 +133,12 @@
       "uniques": 2
     },
     {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
+      "title": "/issues",
+      "uniques": 2
+    },
+    {
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/traffic.yml",
       "title": "/actions/workflows/traffic.yml",
@@ -151,12 +161,6 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
       "title": "/blob/main/.github/scripts/traffic.py",
       "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
-      "title": "/blob/main/LICENSE",
-      "uniques": 1
     }
   ],
   "referrers": [
@@ -166,7 +170,7 @@
       "uniques": 8
     },
     {
-      "count": 9,
+      "count": 8,
       "referrer": "Google",
       "uniques": 6
     },
@@ -188,12 +192,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 454,
-      "uniques": 249
+      "count": 469,
+      "uniques": 255
     },
     "views": {
-      "count": 253,
-      "uniques": 151
+      "count": 256,
+      "uniques": 153
     }
   },
   "views": {
@@ -292,6 +296,10 @@
     "2026-10-22": {
       "count": 1,
       "uniques": 1
+    },
+    "2026-10-23": {
+      "count": 3,
+      "uniques": 2
     }
   }
 }
