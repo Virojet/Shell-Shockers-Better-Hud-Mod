@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.15-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.16-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -105,6 +105,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Crosshair editor
 - **Profiles**: save / load / duplicate / export / import, with a visual **gallery** you can reorder by dragging
+- **Valorant codes**: Import also takes a crosshair code copied from Valorant and turns the shape and color of your main crosshair into a profile
 - **Starter crosshairs** to try, and a **quick picker** of small previews under GALLERY
 - Color, length, width, gap, opacity, rotation, scale, outline, dot shape, dot outline color and width
 - Static (outer) lines, plus-shape dot, rounded dot, and more
@@ -214,7 +215,7 @@ Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for
 
 <br>
 
-Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) or post in the [Discord](https://discord.com/invite/yWnDAYKA9n) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better HUD] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on.
+Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues) or post in the [Discord](https://discord.com/invite/yWnDAYKA9n) and paste it. It lists which game patches didn't apply and anything else that failed to load. You can also press **F12**, open **Console**, and look for the `[Better HUD] Game patches:` line: if it ends with `NOT applied: …`, the game changed something the mod relies on. If part of Better HUD can't attach to the updated game, it also shows a short message once per game update, naming the feature.
 
 </details>
 
@@ -247,7 +248,13 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.15 — current
+#### v6.1.16 — current
+
+- **Valorant crosshair codes:** **Import** in the **Crosshair** tab now also takes a crosshair code copied from Valorant (it starts with `0;`). It brings in the shape and color of your main crosshair as a new profile you can keep editing: the lines, their outline, the center dot and the outer lines. Anything that changes while you run or shoot is left out, and so are the aim-down-sights and sniper crosshairs. Valorant measures in pixels of a 1080p screen, so sizes follow the game's own crosshair size, and the gap follows your window height
+- **Game updates:** when a Shell Shockers update changes something Better HUD hooks into, you now see one short message naming the feature that stopped (like Match History or the FPS display), once per game update, with how to report it. Before, it only showed in **Copy Support Info** and the console
+- **Crosshair:** a thin line with an outline in its own color is no longer drawn a pixel wider than its width setting
+
+#### v6.1.15
 
 - **Hide Scope Lines:** if you still had it switched on from before 6.1.14, it's switched off once, so the lines inside a scope show as in the game. It's still a switch under **MODS ▸ HUD**, and a choice you make from here on stays
 
