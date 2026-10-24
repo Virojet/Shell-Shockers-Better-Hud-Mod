@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.16-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.17-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -248,7 +248,11 @@ Your settings, crosshairs and match history stay in your browser.
 
 ## Changelog
 
-#### v6.1.16 — current
+#### v6.1.17 — current
+
+- **Join From Chat:** clicking a game code in chat no longer also opens the game's own Mute / Report / Boot menu for the player who said it
+
+#### v6.1.16
 
 - **Valorant crosshair codes:** **Import** in the **Crosshair** tab now also takes a crosshair code copied from Valorant (it starts with `0;`). It brings in the shape and color of your main crosshair as a new profile you can keep editing: the lines, their outline, the center dot and the outer lines. Anything that changes while you run or shoot is left out, and so are the aim-down-sights and sniper crosshairs. Valorant measures in pixels of a 1080p screen, so sizes follow the game's own crosshair size, and the gap follows your window height
 - **Game updates:** when a Shell Shockers update changes something Better HUD hooks into, you now see one short message naming the feature that stopped (like Match History or the FPS display), once per game update, with how to report it. Before, it only showed in **Copy Support Info** and the console

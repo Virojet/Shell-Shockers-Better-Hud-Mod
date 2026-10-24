@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.16
+// @version      6.1.17
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.16");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.17");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4459,6 +4459,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Join From Chat", text: "Clicking a game code in chat no longer also opens the game's Mute / Report / Boot menu for the player who said it.", group: "v6.1.17" },
             { label: "Crosshair", text: "Import now also takes a crosshair code from Valorant. It brings in the shape and color of your main crosshair: the lines, their outline, the center dot and the outer lines. Anything that moves while you run or shoot is left out.", group: "v6.1.16" },
             { label: "Game Updates", text: "If a Shell Shockers update stops part of Better HUD from attaching, you now get a short message naming the feature, once per game update, and how to report it.", group: "v6.1.16" },
             { label: "Crosshair", text: "A thin line with an outline in its own color is no longer drawn a pixel wider than its width setting.", group: "v6.1.16" },
@@ -6785,7 +6786,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     function onClick(e) {
         const a = codeEl(e);
         if (!a || e.button) return;
-        e.preventDefault();
+        e.preventDefault(); e.stopPropagation();   // the click is ours alone: the game's chat line would also open its Mute / Report / Boot menu for the speaker
         join(a.getAttribute("data-code"));
     }
     function onKey(e) {
