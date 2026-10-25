@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.17-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.18-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -136,6 +136,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Block Ads**: optional, off by default; hides in-game video and banner ads after a page reload (F5)
 - Export / import settings and inventory favorites as shareable codes
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
+- **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
@@ -244,11 +245,15 @@ Better HUD makes three kinds of request, and sends nothing about you or your set
 - **Update check:** it reads the small version file from this repo on GitHub, at most every 30 minutes, to tell you when a new version is out
 - **Pictures:** the first time you take a stats screenshot or an FPS Check picture, it loads the html-to-image library from cdnjs
 
-Your settings, crosshairs and match history stay in your browser.
+Your settings, crosshairs and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (everything saved under the `tp-`, `ch2-` and `ssb-` names, and the server list) and reloads the page. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
 
 ## Changelog
 
-#### v6.1.17 — current
+#### v6.1.18 — current
+
+- **Remove All Mod Data:** a new tile under **MODS ▸ Manage** deletes everything Better HUD saved in this browser (settings, crosshairs, favorites, match history, hotkeys) and reloads the page, for a fresh start. Save a backup file first if you want to keep any of it
+
+#### v6.1.17
 
 - **Join From Chat:** clicking a game code in chat no longer also opens the game's own Mute / Report / Boot menu for the player who said it
 
