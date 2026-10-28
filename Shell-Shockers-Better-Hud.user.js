@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.22
+// @version      6.1.23
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -70,6 +70,27 @@
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
+
+/* Keep the respawn Challenges card at its content height instead of stretching
+   to the taller stats and weapon column. The home-screen card is unaffected. */
+(function () {
+    "use strict";
+    function install() {
+        if (document.getElementById("ssb-respawn-challenges-size")) return true;
+        var parent = document.head || document.documentElement;
+        if (!parent) return false;
+        var style = document.createElement("style");
+        style.id = "ssb-respawn-challenges-size";
+        style.textContent = "#respawn-menu > .display-grid > .player-challenges-aside{align-self:start}" +
+            "#ssb-pinned-stats > .title{font-family:'Sigmar One',cursive!important;font-size:24px!important;font-weight:400!important;line-height:1.2!important;letter-spacing:0!important}" +
+            "#ssb-pinned-stats-content{background:linear-gradient(rgb(75,166,197),rgb(110,190,215),rgb(171,227,246),rgb(171,227,246))}" +
+            "#ssb-pinned-stats-content > div > span:first-child{font-family:'Nunito',sans-serif!important;font-size:16px!important;font-weight:900!important;line-height:1.2!important}" +
+            "#ssb-pinned-stats-content > div > span:last-child{font-family:'Nunito',sans-serif!important;font-size:28px!important;font-weight:900!important;line-height:1.2!important}";
+        parent.appendChild(style);
+        return true;
+    }
+    if (!install()) document.addEventListener("DOMContentLoaded", install, { once: true });
+})();
 /* Better HUD — copies. Each copy of this script lists its version in window.__ssbCopies as it starts, so a second copy
    (an older test build, the Greasy Fork edition beside the GitHub one, a copy added through Mod Menu) can be named in the
    warning below. The first copy to start also lists the version an earlier copy without this list left in SSB_VERSION. */
@@ -93,7 +114,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.22");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.23");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4513,6 +4534,8 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Challenges Box", text: "The respawn Challenges box now fits its challenge rows instead of stretching beneath them.", group: "v6.1.23" },
+            { label: "Match Stats", text: "The respawn Match Stats heading, labels and values are larger and use the game fonts, with a lighter blue gradient.", group: "v6.1.23" },
             { label: "Hide Center Dot With Shotgun", text: "A new switch in the Crosshair tab, under Hide Center Dot: the dot goes away while the Scrambler's shotgun is out and comes back when you switch to the pistol. Off by default.", group: "v6.1.22" },
             { label: "Two Copies Warning", text: "If Better HUD is installed twice (an older test build beside the release, say), one short message names the versions and says to turn one off in your script manager. It shows once per browser session, and MODS ▸ Manage ▸ Copy Support Info lists the copies.", group: "v6.1.21" },
             { label: "Favorites Import / Export", text: "Export Favorites and Import Favorites are now two tiles in MODS ▸ Manage. The two buttons beside the egg colors in the inventory are gone. Your favorites and the codes are the same as before.", group: "v6.1.20" },
