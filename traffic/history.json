@@ -111,14 +111,18 @@
     "2026-10-26": {
       "count": 5,
       "uniques": 3
+    },
+    "2026-10-27": {
+      "count": 5,
+      "uniques": 3
     }
   },
   "popular_paths": [
     {
-      "count": 89,
+      "count": 65,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 53
+      "uniques": 43
     },
     {
       "count": 3,
@@ -139,27 +143,9 @@
       "uniques": 2
     },
     {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.meta.js",
-      "title": "/blob/main/Shell-Shockers-Better-Hud.meta.js",
-      "uniques": 2
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
-      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
-      "uniques": 2
-    },
-    {
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/traffic.yml",
       "title": "/actions/workflows/traffic.yml",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blame/main/Shell-Shockers-Better-Hud.user.js",
-      "title": "/blame/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 1
     },
     {
@@ -173,18 +159,36 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
       "title": "/blob/main/.github/scripts/traffic.py",
       "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/compare/main",
+      "title": "/compare/main",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/upload",
+      "title": "/upload",
+      "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 8,
+      "count": 6,
       "referrer": "github.com",
-      "uniques": 6
+      "uniques": 5
     },
     {
-      "count": 7,
+      "count": 6,
       "referrer": "Google",
-      "uniques": 5
+      "uniques": 4
     },
     {
       "count": 5,
@@ -199,8 +203,8 @@
   ],
   "totals": {
     "clones": {
-      "count": 553,
-      "uniques": 298
+      "count": 558,
+      "uniques": 301
     },
     "views": {
       "count": 266,
@@ -319,6 +323,10 @@
     "2026-10-26": {
       "count": 1,
       "uniques": 1
+    },
+    "2026-10-27": {
+      "count": 0,
+      "uniques": 0
     }
   }
 }
