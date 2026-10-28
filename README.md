@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.22-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.23-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -251,7 +251,12 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.22 — current
+#### v6.1.23 — current
+
+- **Challenges box:** the respawn panel now fits its challenge rows without the empty space underneath.
+- **Match Stats:** larger heading, labels and values use the game's fonts, with a lighter blue gradient.
+
+#### v6.1.22
 
 - **Hide Center Dot With Shotgun:** a new switch in the Crosshair tab, under Hide Center Dot. The dot goes away while the Scrambler's shotgun is out and comes back for the pistol. Off by default
 
