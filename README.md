@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.19-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.20-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -138,6 +138,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - Export / import settings and inventory favorites as shareable codes
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
+- **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
@@ -250,7 +251,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.19 — current
+#### v6.1.20 — current
+
+- **Favorites Import / Export moved:** Export Favorites and Import Favorites are now two tiles under **MODS ▸ Manage**, next to the backup file tiles. The two icon buttons beside the egg colors in the inventory are gone. Your favorites and the `FAV-` codes are unchanged
+
+#### v6.1.19
 
 - **Instant Chick'n Winner:** a new switch under **MODS ▸ Menus**. In the Chick'n Winner egg game, one click cracks the egg instead of six. You get the same prize, because the game settles it before the eggs show. It's off by default
 
