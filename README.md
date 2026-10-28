@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.24-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.25-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -108,7 +108,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Profiles**: save / load / duplicate / export / import, with a visual **gallery** you can reorder by dragging
 - **Valorant codes**: Import also takes a crosshair code copied from Valorant and turns the shape and color of your main crosshair into a profile
 - **Starter crosshairs** to try, and a **quick picker** of small previews under GALLERY
-- Color, length, width, gap, opacity, rotation, scale, outline, dot shape, dot outline color and width
+- Color, length, width, gap, opacity, rotation, scale, outline (with an on / off switch for the arms and the dot), dot shape, dot outline color and width
 - Static (outer) lines, plus-shape dot, rounded dot, and more
 - Live preview with Sky, Grey, Dark and White backgrounds
 - **Undo / Redo / Revert**, with Ctrl+Z and Ctrl+Y
@@ -251,7 +251,13 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.24 — current
+#### v6.1.25 — current
+
+- **Crosshair tab:** the **Gallery** button and its **Back to Settings** button are orange, so they are easier to find. The profile bar (the profile picker, its icon buttons and Undo / Redo / Revert) has a frosted glass look.
+- **Outline switches:** the **Arms** and the **Center Dot** each have an **Outline** switch. Turn it off to hide the outline without losing its color or width; the crosshair keeps its exact size and place. A profile code only carries the new switch when it is off, so every older code works as before.
+- **Match Stats:** the Kills, Deaths and KDR numbers on the respawn box are less bold.
+
+#### v6.1.24
 
 - **Match Stats polish:** removed shadows from the numbers and the pale inner outline around the box.
 
