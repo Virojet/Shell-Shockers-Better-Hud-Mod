@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.23
+// @version      6.1.24
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -82,10 +82,11 @@
         var style = document.createElement("style");
         style.id = "ssb-respawn-challenges-size";
         style.textContent = "#respawn-menu > .display-grid > .player-challenges-aside{align-self:start}" +
+            "#ssb-pinned-stats{background:var(--ss-blue3,#0e91b4)!important;background-clip:padding-box!important;outline:none!important;box-shadow:none!important}" +
             "#ssb-pinned-stats > .title{font-family:'Sigmar One',cursive!important;font-size:24px!important;font-weight:400!important;line-height:1.2!important;letter-spacing:0!important}" +
             "#ssb-pinned-stats-content{background:linear-gradient(rgb(75,166,197),rgb(110,190,215),rgb(171,227,246),rgb(171,227,246))}" +
             "#ssb-pinned-stats-content > div > span:first-child{font-family:'Nunito',sans-serif!important;font-size:16px!important;font-weight:900!important;line-height:1.2!important}" +
-            "#ssb-pinned-stats-content > div > span:last-child{font-family:'Nunito',sans-serif!important;font-size:28px!important;font-weight:900!important;line-height:1.2!important}";
+            "#ssb-pinned-stats-content > div > span:last-child{font-family:'Nunito',sans-serif!important;font-size:28px!important;font-weight:900!important;line-height:1.2!important;text-shadow:none!important}";
         parent.appendChild(style);
         return true;
     }
@@ -114,7 +115,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.23");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.24");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4534,6 +4535,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Match Stats polish", text: "Removed the shadows from the Kills, Deaths and KDR numbers and the pale inner outline around the box.", group: "v6.1.24" },
             { label: "Challenges Box", text: "The respawn Challenges box now fits its challenge rows instead of stretching beneath them.", group: "v6.1.23" },
             { label: "Match Stats", text: "The respawn Match Stats heading, labels and values are larger and use the game fonts, with a lighter blue gradient.", group: "v6.1.23" },
             { label: "Hide Center Dot With Shotgun", text: "A new switch in the Crosshair tab, under Hide Center Dot: the dot goes away while the Scrambler's shotgun is out and comes back when you switch to the pistol. Off by default.", group: "v6.1.22" },
