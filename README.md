@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.18-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.19-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -99,6 +99,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
 - **Match History button**: a round clock button on the home screen, beside Game Mode
+- **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
 - **Volume slider** added directly to the pause menu
 - **Auto Fullscreen**: clicking into a match goes fullscreen, and in Chrome and Edge Esc only pauses, like F11
 - **Tab-out key**: release pointer lock without snapping the camera
@@ -249,7 +250,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.18 — current
+#### v6.1.19 — current
+
+- **Instant Chick'n Winner:** a new switch under **MODS ▸ Menus**. In the Chick'n Winner egg game, one click cracks the egg instead of six. You get the same prize, because the game settles it before the eggs show. It's off by default
+
+#### v6.1.18
 
 - **Remove All Mod Data:** a new tile under **MODS ▸ Manage** deletes everything Better HUD saved in this browser (settings, crosshairs, favorites, match history, hotkeys) and reloads the page, for a fresh start. Save a backup file first if you want to keep any of it
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.18
+// @version      6.1.19
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -81,7 +81,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.18");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.19");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4460,6 +4460,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Instant Chick'n Winner", text: "A new switch in MODS ▸ Menus: in the Chick'n Winner egg game, one click cracks the egg instead of six. You get the same prize, since the game settles it before the eggs show. It's off by default.", group: "v6.1.19" },
             { label: "Remove All Mod Data", text: "A new tile in MODS ▸ Manage deletes everything Better HUD saved in this browser (settings, crosshairs, favorites, match history, hotkeys) and reloads, for a fresh start. Save a backup file first if you want to keep any of it.", group: "v6.1.18" },
             { label: "Join From Chat", text: "Clicking a game code in chat no longer also opens the game's Mute / Report / Boot menu for the player who said it.", group: "v6.1.17" },
             { label: "Crosshair", text: "Import now also takes a crosshair code from Valorant. It brings in the shape and color of your main crosshair: the lines, their outline, the center dot and the outer lines. Anything that moves while you run or shoot is left out.", group: "v6.1.16" },
@@ -6596,6 +6597,41 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             key: KEY, section: "menus", after: "tp-fixChickenWinner", label: "Early Respawn Guard", code: "Rw", def: true,
             tip: "Clicking Play before the respawn countdown is over no longer restarts it (the game could start it over at 5, mostly after you spectated or switched teams). The button just shakes.",
             keywords: "respawn countdown timer reset play button too fast wait 5 seconds glitch spectate team switch",
+            get: isOn, set: setOn
+        });
+        document.addEventListener("click", onClick, true);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
+})();
+
+/* Instant Chick'n Winner. After the ad, the game shows three eggs and cracks the one you click on the sixth click: its
+   eggClickCounter counts each egg's value up and cracks the egg when the value is 5. The prize was settled before the eggs
+   showed (the server's reward is already in your account), so the five clicks before only play cracking pictures and sounds.
+   With this on, the first click on an egg sets that egg's counter to 5 just before the game's own click handler reads it, so
+   that one click goes down the game's own cracking path: the same sound, the same prize pop-up, the same balance refresh,
+   and the other two eggs go dead like they do after the sixth click. Nothing else changes, the ad included. Off by default. */
+(function () {
+    "use strict";
+    const KEY = "tp-instantChickenWinner";
+    const isOn = () => { try { return JSON.parse(localStorage.getItem(KEY)) === true; } catch (e) { return false; } };
+    const setOn = (v) => { try { localStorage.setItem(KEY, JSON.stringify(!!v)); } catch (e) { window.__ssbErr && window.__ssbErr("chwinstant#1", e); } };
+    function onClick(ev) {
+        try {
+            if (!isOn()) return;
+            const t = ev.target;
+            if (!t || !t.classList || !t.classList.contains("incentivized-egg-chick")) return;
+            const v = window.vueApp, n = v && v.$refs && v.$refs.chickenNugget;
+            if (!n || n.isMiniGameComplete || !Array.isArray(n.eggs)) return;   // not the egg game, or already cracked
+            const egg = n.eggs.find(e => e && e.id === t.id);
+            if (egg && typeof egg.value === "number" && egg.value < 5) egg.value = 5;   // a game update that renames these does nothing
+        } catch (e) { window.__ssbErr && window.__ssbErr("chwinstant#2", e); }
+    }
+    function boot() {
+        window.__ssbSettings.add({
+            key: KEY, section: "menus", after: "tp-fixChickenWinner", label: "Instant Chick'n Winner", code: "Ci", def: false,
+            tip: "In the Chick'n Winner egg game, one click cracks the egg instead of six. The prize is the same: the game settles it before the eggs show.",
+            keywords: "chicken winner chickn egg eggs crack click clicks instant fast quick free eggs",
             get: isOn, set: setOn
         });
         document.addEventListener("click", onClick, true);
