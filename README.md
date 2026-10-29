@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.26-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.28-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -85,7 +85,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 | **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Live scoreboards, session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
-| **Inventory favorites** | Star inventory items and share them with a code |
+| **Inventory favorites** | Star inventory items, list them first and share them with a code |
 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
 <details>
@@ -139,6 +139,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
+- **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
@@ -251,7 +252,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.26 — current
+#### v6.1.28 — current
+
+- **Favorites First:** a new switch under **MODS ▸ Menus**, under **Only Show Favorites**. The inventory items you've starred come first, ahead of the rest; the other items keep the game's order. Off by default
+
+#### v6.1.26
 
 - **Hide Chick'n Winner:** a new switch under **MODS ▸ HUD** hides the Chick'n Winner button in the bottom-left corner of the main menu and of the respawn screen during a match. Off by default
 

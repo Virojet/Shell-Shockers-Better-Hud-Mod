@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.26
+// @version      6.1.28
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -115,7 +115,7 @@
    localStorage "ssb-debug" set to "1", each tag also logs its first failure
    once in the console.
    ssb-tokens: the colour tokens every Better HUD stylesheet uses. */
-window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.26");
+window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.1.28");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 // A first install: no settings schema and no changelog seen yet. The Welcome Guide opens then, in the changelog's place.
@@ -4548,6 +4548,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
         const changelogVersion = "6.1";
         const changelogKey = "ssb-better-ui-changelog-seen";
         const v61Items = [
+            { label: "Favorites First", text: "A new switch in MODS ▸ Menus, under Only Show Favorites: the items you've starred come first in the inventory, ahead of the rest. The other items keep the game's order. Off by default.", group: "v6.1.28" },
             { label: "Hide Chick'n Winner", text: "A new switch in MODS ▸ HUD hides the Chick'n Winner button in the bottom-left corner of the main menu and of the respawn screen during a match. Off by default.", group: "v6.1.26" },
             { label: "Crosshair tab", text: "The Gallery and Back to Settings buttons are orange now, and the profile bar has a glass look. New Outline switches for the Arms and the Center Dot hide the outline and keep its color and width.", group: "v6.1.25" },
             { label: "Match Stats", text: "The Kills, Deaths and KDR numbers in the respawn Match Stats box are less bold.", group: "v6.1.25" },
@@ -5288,6 +5289,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
  *  Settings ▸ MODS ▸ Mod HUD Widgets:
  *    • "Show Favorites Icon" — a ★ button on each inventory item to favorite it.
  *    • "Only Show Favorites" — filter the inventory grid to starred items.
+ *    • "Favorites First" — starred items come first in the inventory grid.
  *  Skin memory: while the Skin Unlocker ("toggle skins") is ON, the loadout
  *  you pick is remembered and goes into the loadout the game applies when
  *  it loads (game patch "loadout"), so a reload opens in it. Only appends DOM.
@@ -5299,16 +5301,18 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     const LS = {
         showFav: "tp-showFavIcon",
         favFilter: "tp-favOnly",
+        favFirst: "tp-favFirst",
         favs: "tp-favItems",
         skinCache: "tp-lastSkinCache",
     };
 
     const readJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v === null ? fb : JSON.parse(v); } catch (e) { return fb; } };
     const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { window.__ssbErr("favorites#1", e) } };
-    let showFavState, favOnlyState, favoriteIds = new Set();
+    let showFavState, favOnlyState, favFirstState, favoriteIds = new Set();
     function syncFeatureState() {
         showFavState = readJSON(LS.showFav, false) === true;
         favOnlyState = readJSON(LS.favFilter, false) === true;
+        favFirstState = readJSON(LS.favFirst, false) === true;
         const stored = readJSON(LS.favs, []);
         favoriteIds = new Set(Array.isArray(stored) ? stored : []);
     }
@@ -5316,7 +5320,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     document.addEventListener("ssb:settings-change", syncFeatureState);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) syncFeatureState(); });
     window.addEventListener("storage", e => {
-        if (e.key === null || e.key === LS.showFav || e.key === LS.favFilter || e.key === LS.favs) {
+        if (e.key === null || e.key === LS.showFav || e.key === LS.favFilter || e.key === LS.favFirst || e.key === LS.favs) {
             syncFeatureState(); window.__ssbMenuPoll.reconcile();
         }
     });
@@ -5324,6 +5328,8 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     const setShowFavIcon = (v) => { showFavState = !!v; writeJSON(LS.showFav, showFavState); };
     const favOnly = () => favOnlyState;
     const setFavOnly = (v) => { favOnlyState = !!v; writeJSON(LS.favFilter, favOnlyState); };
+    const favFirst = () => favFirstState;
+    const setFavFirst = (v) => { favFirstState = !!v; writeJSON(LS.favFirst, favFirstState); };
     const getFavs = () => new Set(favoriteIds);
     const setFavs = (s) => { favoriteIds = new Set(s); writeJSON(LS.favs, [...s]); };
     const isFav = (id) => favoriteIds.has(id);
@@ -5357,7 +5363,15 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     }
     function inInventory() { return !!visibleGrid(); }
     function gridItems() { try { const es = window.vueApp.$refs.equipScreen; return (es && es.equip && es.equip.showingItems) || []; } catch (e) { return []; } }
-    function refreshGrid() { try { const es = window.vueApp.$refs.equipScreen; if (es && es.equip && es.populateItemGridWithType) es.populateItemGridWithType(es.equip.selectedItemType); } catch (e) { window.__ssbErr("favorites#3", e) } }
+    // A search typed into the inventory runs again on the new list, as the game does after it fills the grid.
+    function refreshGrid() {
+        try {
+            const es = window.vueApp.$refs.equipScreen;
+            if (!es || !es.equip || !es.populateItemGridWithType) return;
+            es.populateItemGridWithType(es.equip.selectedItemType);
+            if (es.equip.itemSearchTerm && typeof es.itemSearch === "function") es.itemSearch();
+        } catch (e) { window.__ssbErr("favorites#3", e) }
+    }
 
     /* ---- skin memory ----
        tp-lastSkinCache = { current: the last loadout worn, slot -> item id (3 primary, 4 secondary,
@@ -5554,18 +5568,45 @@ window.__ssbSettings = window.__ssbSettings || (function () {
     }
 
     /* ---- "Only show favorites" filter ---- */
+    // Favorites First. The game's item grid sorts the list it shows in place, by how each item is unlocked (premium ones
+    // first, bought ones last), so a list with the favorites moved to the front would only lift them inside each of those
+    // groups. While the switch is on, the list the inventory shows gets its own sort(): the starred items ahead of the rest,
+    // and the game's own order inside each part. Off, or in the shop, the lists are the game's own.
+    const favSortMark = Symbol.for("ssb.favorites-first.sort");
+    const favGridMark = Symbol.for("ssb.favorites.grid");
+    function installFavFirstSort(list, es) {
+        if (!Array.isArray(list) || typeof list.sort !== "function" || list.sort[favSortMark]) return;
+        const innerSort = list.sort;
+        const sort = function (cmp) {
+            if (!favFirst() || !window.vueData || es.currentEquipMode !== window.vueData.equipMode.inventory || typeof cmp !== "function") return innerSort.apply(this, arguments);
+            const favs = getFavs();
+            return innerSort.call(this, (a, b) => {
+                const fa = !!a && favs.has(a.id), fb = !!b && favs.has(b.id);
+                return fa === fb ? cmp(a, b) : fa ? -1 : 1;
+            });
+        };
+        Object.defineProperty(sort, favSortMark, { value: true });
+        Object.defineProperty(list, "sort", { value: sort, configurable: true, writable: true });
+    }
     function installFavFilterHook() {
         const es = window.vueApp && window.vueApp.$refs && window.vueApp.$refs.equipScreen;
         if (!es || typeof es.populateItemGrid !== "function") return;
         if (es.populateItemGrid === es.__ssbFavWrapper) return; // already outermost
         const inner = es.populateItemGrid;
-        es.__ssbFavWrapper = function (items) {
+        es.__ssbFavWrapper = function (items, ...args) {
+            let invMode = false;
             try {
-                const invMode = window.vueData && this.currentEquipMode === window.vueData.equipMode.inventory;
+                invMode = !!window.vueData && this.currentEquipMode === window.vueData.equipMode.inventory;
                 if (favOnly() && invMode) { const favs = getFavs(); items = (items || []).filter((it) => it && favs.has(it.id)); }
             } catch (e) { window.__ssbErr("favorites#15", e) }
-            return inner.call(this, items);
+            const out = inner.call(this, items, ...args);
+            try {
+                const list = invMode && favFirst() && this.equip.showingItems;   // the list the game just made
+                if (list) installFavFirstSort(list, this);
+            } catch (e) { window.__ssbErr("favorites#21", e) }
+            return out;
         };
+        Object.defineProperty(es.__ssbFavWrapper, favGridMark, { value: true });
         es.populateItemGrid = es.__ssbFavWrapper;
     }
 
@@ -5587,7 +5628,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 star.addEventListener("click", (e) => {
                     e.stopPropagation(); e.preventDefault();
                     paintStar(star, toggleFav(Number(star.dataset.itemId)));
-                    if (favOnly()) refreshGrid();
+                    if (favOnly() || favFirst()) refreshGrid();
                 }, true);
                 tile.appendChild(star);
             }
@@ -5668,6 +5709,12 @@ window.__ssbSettings = window.__ssbSettings || (function () {
             keywords: "favorites filter inventory starred",
             get: favOnly, set: (v) => { setFavOnly(v); refreshGrid(); }
         });
+        window.__ssbSettings.add({
+            key: LS.favFirst, section: "menus", after: LS.favFilter, label: "Favorites First", code: "Ap", def: false,
+            tip: "In the Inventory, show the items you've starred first, before the rest.",
+            keywords: "favorites first top order sort starred inventory",
+            get: favFirst, set: (v) => { setFavFirst(v); installFavFilterHook(); refreshGrid(); }
+        });
     }
 
     function injectStyles() {
@@ -5710,7 +5757,7 @@ window.__ssbSettings = window.__ssbSettings || (function () {
                 // the flag keeps the respawn-panel transition firing correctly after unlock.
                 if (document.pointerLockElement) { _wasPauseWSVisible = false; return; }
                 // The favorites work reads layout, so it only runs while a favorites setting is on.
-                if (showFavIcon() || favOnly()) {
+                if (showFavIcon() || favOnly() || favFirst()) {
                     installFavFilterHook();  // keep the favorites filter outermost
                     if (inInventory()) decorateTiles();
                 }
