@@ -119,38 +119,24 @@
     "2026-10-28": {
       "count": 98,
       "uniques": 32
+    },
+    "2026-10-29": {
+      "count": 59,
+      "uniques": 25
     }
   },
   "popular_paths": [
     {
-      "count": 70,
+      "count": 66,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 45
+      "uniques": 43
     },
     {
       "count": 3,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
       "title": "/issues",
       "uniques": 3
-    },
-    {
-      "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
-      "title": "/tree/main/.github",
-      "uniques": 2
-    },
-    {
-      "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
-      "title": "/tree/main/.github/scripts",
-      "uniques": 2
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/traffic.yml",
-      "title": "/actions/workflows/traffic.yml",
-      "uniques": 1
     },
     {
       "count": 1,
@@ -181,9 +167,32 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
       "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
       "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/compare/main",
+      "title": "/compare/main",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
+      "title": "/tree/main/.github",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
+      "title": "/tree/main/.github/scripts",
+      "uniques": 1
     }
   ],
   "referrers": [
+    {
+      "count": 7,
+      "referrer": "shellshock.io",
+      "uniques": 5
+    },
     {
       "count": 6,
       "referrer": "github.com",
@@ -195,11 +204,6 @@
       "uniques": 4
     },
     {
-      "count": 6,
-      "referrer": "shellshock.io",
-      "uniques": 4
-    },
-    {
       "count": 3,
       "referrer": "Bing",
       "uniques": 2
@@ -207,12 +211,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 656,
-      "uniques": 333
+      "count": 715,
+      "uniques": 358
     },
     "views": {
-      "count": 275,
-      "uniques": 168
+      "count": 279,
+      "uniques": 171
     }
   },
   "views": {
@@ -335,6 +339,10 @@
     "2026-10-28": {
       "count": 9,
       "uniques": 7
+    },
+    "2026-10-29": {
+      "count": 4,
+      "uniques": 3
     }
   }
 }
