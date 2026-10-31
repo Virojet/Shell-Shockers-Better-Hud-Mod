@@ -123,14 +123,18 @@
     "2026-10-29": {
       "count": 59,
       "uniques": 25
+    },
+    "2026-10-30": {
+      "count": 62,
+      "uniques": 28
     }
   },
   "popular_paths": [
     {
-      "count": 66,
+      "count": 63,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 43
+      "uniques": 42
     },
     {
       "count": 3,
@@ -158,6 +162,12 @@
     },
     {
       "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/archive/Better-UI-V4.7.txt",
+      "title": "/blob/main/archive/Better-UI-V4.7.txt",
+      "uniques": 1
+    },
+    {
+      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
       "title": "/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
       "uniques": 1
@@ -179,23 +189,17 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
       "title": "/tree/main/.github",
       "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
-      "title": "/tree/main/.github/scripts",
-      "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 7,
-      "referrer": "shellshock.io",
+      "count": 6,
+      "referrer": "github.com",
       "uniques": 5
     },
     {
       "count": 6,
-      "referrer": "github.com",
+      "referrer": "shellshock.io",
       "uniques": 5
     },
     {
@@ -211,12 +215,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 715,
-      "uniques": 358
+      "count": 777,
+      "uniques": 386
     },
     "views": {
-      "count": 279,
-      "uniques": 171
+      "count": 284,
+      "uniques": 174
     }
   },
   "views": {
@@ -342,6 +346,10 @@
     },
     "2026-10-29": {
       "count": 4,
+      "uniques": 3
+    },
+    "2026-10-30": {
+      "count": 5,
       "uniques": 3
     }
   }
