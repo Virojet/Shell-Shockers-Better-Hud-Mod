@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.28-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.1.29-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -115,6 +115,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Effects & FPS
 - **Uncap FPS** to match high-refresh-rate monitors
+- **Effects FPS:** Off or 30–240 FPS in **MODS ▸ Effects**, controlling particles and world-object animation updates independently of rendering. Try 60 FPS with Uncap FPS; off by default
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
 - **Render Scale**: draws the game at a lower resolution for more FPS. 1 is the normal resolution, up to 4 for the most FPS. Smart Auto Detail can still step down from it
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
@@ -252,7 +253,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.28 — current
+#### v6.1.29 — current
+
+- **Effects FPS:** a slider in **MODS ▸ Effects** sets particle and world-object animation updates to **30–240 FPS**, or **Off**. Try **60 FPS** with Uncap FPS. Camera and gameplay timing retain their normal rate; performance gains depend on the scene. Off by default
+
+#### v6.1.28
 
 - **Favorites First:** a new switch under **MODS ▸ Menus**, under **Only Show Favorites**. The inventory items you've starred come first, ahead of the rest; the other items keep the game's order. Off by default
 
