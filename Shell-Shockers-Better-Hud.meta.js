@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.1.29
+// @version      6.2.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -8,8 +8,6 @@
 // @icon         https://www.google.com/s2/favicons?domain=shellshock.io
 // @homepageURL  https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod
 // @supportURL   https://github.com/Virojet/Shell-Shockers-Better-Hud-Mod/issues
-// @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
-// @updateURL    https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
 // @match        *://*.shellshock.io/*
 // @match        *://*.algebra.best/*
 // @match        *://*.algebra.vip/*
@@ -66,7 +64,30 @@
 // @match        *://*.zygote.cafe/*
 // @match        *://*.shellshockers.best/*
 // @match        *://*.eggboy.me/*
+// @match        *://*.algebra.monster/*
+// @match        *://*.combateggs.com/*
+// @match        *://*.deathegg.life/*
+// @match        *://*.eggbattle.com/*
+// @match        *://*.egggames.best/*
+// @match        *://*.eggshock.com/*
+// @match        *://*.eggshock.me/*
+// @match        *://*.eggshock.net/*
+// @match        *://*.eggshooter.best/*
+// @match        *://*.eggshooter.com/*
+// @match        *://*.eggwarfare.com/*
+// @match        *://*.eggwars.io/*
+// @match        *://*.scrambled.best/*
+// @match        *://*.shellgame.me/*
+// @match        *://*.shellplay.live/*
+// @match        *://*.shellshock.guru/*
+// @match        *://*.shellshockers.ca/*
+// @match        *://*.shellshockers.today/*
+// @match        *://*.shellshockers.website/*
+// @match        *://*.shellshockers.wiki/*
+// @match        *://*.yolk.monster/*
 // (html-to-image is lazy-loaded from cdnjs, with an SRI hash, on the first stats screenshot or FPS Check picture)
 // @grant        none
 // @run-at       document-start
+// @downloadURL  https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js
+// @updateURL    https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.meta.js
 // ==/UserScript==

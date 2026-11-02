@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.1.29-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.2.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v61) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v62) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,12 +65,16 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.1
+## What's new in v6.2
 
-- **Tab Out keeps your view:** tabbing out and back in no longer turns you toward the spawn direction. The mouse locks again with the game's own **Fix Mouse Glitch** setting, and the key can't drop you into the pause menu by mistake anymore
-- **Render Scale is back** in **MODS ▸ FPS & Ping**: raise it to draw the game at a lower resolution for more FPS. Smart Auto Detail still works on top of it
-- **Install count:** the installs badge above now counts players (see [Privacy](#privacy))
-- From v6.0: the **Welcome Guide** for first installs, and **Disable All Particles** leaves smoke visible
+- **King of the Coop Stats:** a new switch in **MODS ▸ Stats** adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard, your match history and the CSV export. Off by default
+- **When King of the Coop Ends:** a new choice in **MODS ▸ Stats** copies the scoreboard picture or downloads it when a team wins a King of the Coop game. Off by default
+- **Uncap gear:** Controlled Uncap and a new 30–1000 Target FPS option, both optional
+- **Chat and HUD:** eight messages with Infinite off; Session Time stays visible with FPS and Ping hidden; crosshair pixel-alignment adjustments (zoom drift remains under review)
+- **Type to Search:** open Settings and start typing. Better HUD switches to MODS and the letters go straight into the search box
+- **Match Stats:** the scoreboard keeps kills, deaths and team scores up to date while it's open
+- **Smaller script:** 618,405 bytes, 17.3% smaller than the published 6.1.29. This is a file-size comparison; FPS depends on your setup.
+- From v6.1: Tab Out keeps your view, **Render Scale**, **Join From Chat**, **Effects FPS**, **Favorites First** and **Remove All Mod Data**
 
 [Full changelog ↓](#changelog)
 
@@ -84,7 +88,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 | **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
 | **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
-| **Stats tracker** | Live scoreboards, session K / D / KDR, an end-of-match overlay, and match history you can filter and export |
+| **Stats tracker** | Live scoreboards, session K / D / KDR, optional King of the Coop time, captures and takeovers, an end-of-match overlay, and match history you can filter and export |
 | **Inventory favorites** | Star inventory items, list them first and share them with a code |
 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
@@ -96,7 +100,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Server-region picker** integrated into the home screen with live ping
 - **GUI Scale**: a slider for the size of the HUD, menus and chat, weighted toward making them smaller. The crosshair keeps its size
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters, challenges, the Chick'n Winner button
-- **Infinite Chat History**: keeps the whole match's chat; pause or open chat and scroll back to read it all
+- **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest eight messages
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
@@ -114,8 +118,10 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Undo / Redo / Revert**, with Ctrl+Z and Ctrl+Y
 
 #### Effects & FPS
-- **Uncap FPS** to match high-refresh-rate monitors
-- **Effects FPS:** Off or 30–240 FPS in **MODS ▸ Effects**, controlling particles and world-object animation updates independently of rendering. Try 60 FPS with Uncap FPS; off by default
+- **Uncap FPS** runs frames back to back while playing. Its gear opens **Controlled Uncap**, an optional adaptive limiter, and **Target FPS**, Off or any whole 30–1000 rate. All start off; menus keep their normal rendering rate. A target is a limit, not a guarantee your graphics card can reach it
+- **Effects FPS:** an Off/30–240 slider and a custom **1–540 FPS** box in **MODS ▸ Effects**, controlling particles and world-object animation updates independently of rendering. Clear the box for Off; off by default
+- **Hide Bullet Splats:** hide the small bullet wall-impact puff while keeping grenade smoke and rocket trails
+- **Stats window:** desktop coop teams side by side, optional **Kill Bars** and **Highlight Your Name**, plus renaming a match by clicking its name/code chip
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
 - **Render Scale**: draws the game at a lower resolution for more FPS. 1 is the normal resolution, up to 4 for the most FPS. Smart Auto Detail can still step down from it
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
@@ -127,6 +133,8 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
 - **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them by mode and map, and export JSON / CSV. The match you're playing is the first row
+- **King of the Coop Stats** (off by default, **MODS ▸ Stats**): each player's time on the coop, captures and takeovers in the King of the Coop scoreboard, match history and CSV export. Matches saved before show a dash. Needs Stats Tracker on
+- **When King of the Coop Ends** (off by default, **MODS ▸ Stats**): when a team wins a King of the Coop game, copy the scoreboard picture to the clipboard or download it. Needs Stats Tracker on
 - Pinned compact stats above the pause weapon select
 - Configurable hotkey
 
@@ -141,7 +149,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
-- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Manage, Changed)
+- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Other Mods, Manage, Changed). Open Settings and just start typing to search
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - **Welcome Guide**: the three-step setup a new install opens with; open it again from **MODS ▸ Manage**
@@ -156,7 +164,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 ## Using it
 
 - **Find everything** under the game's **Settings** menu, in the **MODS** and **CROSSHAIR** tabs.
-- **Search**, or pick a section in the sidebar. Each setting's description is under its name.
+- **Search** (open Settings and start typing), or pick a section in the sidebar. Each setting's description is under its name.
 - **See what changed** by clicking the **Better HUD** version at the bottom of the MODS tab.
 
 ---
@@ -228,14 +236,14 @@ Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](h
 
 ## Compatibility
 
-Works on **shellshock.io and 40+ mirror domains**, in any browser that runs Tampermonkey or Violentmonkey.
+Works on **shellshock.io and 70+ mirror domains**, in any browser that runs Tampermonkey or Violentmonkey.
 
 <details>
 <summary>Show all domains</summary>
 
 <br>
 
-`shellshock.io`, `algebra.best`, `algebra.vip`, `biologyclass.club`, `deadlyegg.com`, `deathegg.world`, `eggboy.club`, `eggboy.xyz`, `eggcombat.com`, `egg.dance`, `eggfacts.fun`, `egghead.institute`, `eggisthenewblack.com`, `eggsarecool.com`, `geometry.best`, `geometry.monster`, `geometry.pw`, `geometry.report`, `hardboiled.life`, `hardshell.life`, `humanorganising.org`, `mathactivity.xyz`, `mathactivity.club`, `mathdrills.info`, `mathdrills.life`, and more.
+`shellshock.io`, `algebra.best`, `algebra.vip`, `biologyclass.club`, `deadlyegg.com`, `deathegg.world`, `eggboy.club`, `eggboy.xyz`, `eggcombat.com`, `egg.dance`, `eggfacts.fun`, `egghead.institute`, `eggisthenewblack.com`, `eggsarecool.com`, `geometry.best`, `geometry.monster`, `geometry.pw`, `geometry.report`, `hardboiled.life`, `hardshell.life`, `humanorganising.org`, `mathactivity.xyz`, `mathactivity.club`, `mathdrills.info`, `mathdrills.life`, `mathfun.rocks`, `mathgames.world`, `math.international`, `mathlete.fun`, `mathlete.pro`, `overeasy.club`, `risenegg.com`, `scrambled.tech`, `scrambled.today`, `scrambled.us`, `scrambled.world`, `shellshockers.club`, `shellshockers.life`, `shellshockers.site`, `shellshockers.us`, `shellshockers.world`, `shellshockers.xyz`, `shellsocks.com`, `softboiled.club`, `urbanegger.com`, `violentegg.club`, `violentegg.fun`, `yolk.best`, `yolk.life`, `yolk.rocks`, `yolk.tech`, `yolk.quest`, `yolk.today`, `zygote.cafe`, `shellshockers.best`, `eggboy.me`, `algebra.monster`, `combateggs.com`, `deathegg.life`, `eggbattle.com`, `egggames.best`, `eggshock.com`, `eggshock.me`, `eggshock.net`, `eggshooter.best`, `eggshooter.com`, `eggwarfare.com`, `eggwars.io`, `scrambled.best`, `shellgame.me`, `shellplay.live`, `shellshock.guru`, `shellshockers.ca`, `shellshockers.today`, `shellshockers.website`, `shellshockers.wiki`, `yolk.monster`.
 
 </details>
 
@@ -253,7 +261,27 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.1.29 — current
+#### v6.2.0 — current
+
+- **Chat:** with Infinite Chat History off, keeps the newest eight messages. Clearing chat for a new match cannot restore an old line from a pending batch
+- **Crosshair:** adjusts four-arm alignment to the screen-pixel grid; some browser-zoom configurations can still shift the arms or center dot, and that reported issue remains under review. The search box no longer adds an orange focus ring
+- **Session Time:** stays in the readouts box when both FPS and Ping are hidden
+- **First install:** starts from preset `M2-Fb0Pb1Uv0Gb0Sp0Ai1Am0.pi`. Existing users keep their saved settings; Reset All keeps the built-in defaults
+- **Stats window:** coop teams fit side by side on desktop. **Kill Bars** adds optional proportional team-colored bars behind each player row (off by default). **Highlight Your Name** controls your own highlight (on by default). Click the match-name/code chip to rename it in place: Enter or blur saves, Esc cancels
+- **Uncap FPS gear:** opens **Controlled Uncap** and **Target FPS** (Off or 30–1000). Full Uncap runs frames back to back while playing; Controlled adds the adaptive limiter if it delays your mouse. Target caps frame starts using the elapsed-time gate concept from onlypuppy7's FPS Unlocker. Changing a pending target takes effect immediately; menus remain native. All start off
+- **Effects FPS:** the slider keeps Off and 30–240 FPS; the number box accepts **1–540**. Clear it for Off. Camera and gameplay timing retain their normal rate
+- **Hide Bullet Splats:** hides only the bullet wall-impact puff, preserving grenade smoke and rocket trails. Off by default
+- **Pause-menu Match Stats:** six stats use two rows without changing the weapon selector or Play button
+- **King of the Coop Stats:** a new switch in **MODS ▸ Stats** adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard, the pause-menu stats, your match history and the CSV export. A capture counts for each player of the scoring team who is on the coop when the point is scored; a takeover for each player on the coop when their team takes it from the other team. Better HUD counts what your own game sees, and matches saved before show a dash. Off by default; it needs Stats Tracker on
+- **When King of the Coop Ends:** a new choice in **MODS ▸ Stats** (Off / Copy / Download). When a team wins a King of the Coop game, Better HUD copies the scoreboard picture to your clipboard or downloads it, the same picture **Copy Image** and **Download** make in the stats window. If the browser won't copy right then, your next click or key copies it. Off by default; it needs Stats Tracker on
+- **Type to Search:** open Settings and start typing. Better HUD switches to **MODS** and the letters go straight into the search box, so you don't have to click it first. Esc clears the search, and a second Esc closes Settings. Setting a key on the game's own Keyboard tab works as before
+- **Match Stats:** the scoreboard now keeps kills, deaths and team scores up to date while it's open, and a player named something like `constructor` no longer mixes up the stats
+- **Smaller script:** the GitHub file is 618,405 bytes, down from 748,145 in 6.1.29 (17.3%). The Greasy Fork file is 735,567, down from 821,825 (10.5%). No FPS increase is promised; a performance comparison follows the game test.
+
+<details>
+<summary><b>v6.1 and older</b></summary>
+
+#### v6.1.29
 
 - **Effects FPS:** a slider in **MODS ▸ Effects** sets particle and world-object animation updates to **30–240 FPS**, or **Off**. Try **60 FPS** with Uncap FPS. Camera and gameplay timing retain their normal rate; performance gains depend on the scene. Off by default
 
@@ -390,9 +418,6 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 - **Tab Out key:** it now reaches Tab Out before the game, so it can't open the pause menu by mistake (this happened more often after using chat). Holding the key down no longer flips you out and back in
 - **Render Scale:** back in **MODS ▸ FPS & Ping**, above FPS Check. A slider from 1 to 4 that lowers the resolution for more FPS. Smart Auto Detail works on top of it, and FPS Check lists it and suggests it when FPS is low. Old settings codes with it still import
 - **Install count:** Better HUD now adds one to a public install counter the first time it runs (see [Privacy](#privacy)). Players who update count once too, so the total includes everyone already using it
-
-<details>
-<summary><b>v6.0 and older</b></summary>
 
 #### v6.0.0
 
@@ -636,11 +661,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Development
 
-The userscript is a single self-contained file.
+The userscript is a single self-contained file. Since v6.2 it is stored compact (the same code without comments or indentation), so it's smaller to download. The [Greasy Fork edition](https://greasyfork.org/scripts/599225) is a readable copy that leaves out the GitHub-only parts, such as the install counter and the update check.
 
-1. Edit `Shell-Shockers-Better-Hud.user.js` directly
-2. Reload the Shell Shockers tab; Tampermonkey picks up the change
-3. Bump `@version` in the header for a release. On push to `main`, the **Sync meta.js** workflow copies the header into `Shell-Shockers-Better-Hud.meta.js`, the file userscript managers check for updates
+The release file is generated from maintained source fragments; do not edit the generated release by hand.
+For local experiments, use a separate userscript-manager copy and reload the game after changing it. Startup patches require a reload.
+A release keeps its header and runtime version synchronized. On push to `main`, the **Sync meta.js** workflow copies the header into `Shell-Shockers-Better-Hud.meta.js`, the file userscript managers check for updates.
 
 ---
 
