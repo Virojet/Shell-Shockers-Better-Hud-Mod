@@ -131,20 +131,36 @@
     "2026-10-31": {
       "count": 14,
       "uniques": 8
+    },
+    "2026-11-01": {
+      "count": 5,
+      "uniques": 3
     }
   },
   "popular_paths": [
     {
-      "count": 61,
+      "count": 52,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 42
+      "uniques": 36
     },
     {
       "count": 3,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
       "title": "/issues",
       "uniques": 3
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "uniques": 2
+    },
+    {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "uniques": 2
     },
     {
       "count": 1,
@@ -160,12 +176,6 @@
     },
     {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
-      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
-      "uniques": 1
-    },
-    {
-      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/archive/Better-UI-V4.7.txt",
       "title": "/blob/main/archive/Better-UI-V4.7.txt",
       "uniques": 1
@@ -174,12 +184,6 @@
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
       "title": "/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
-      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
       "uniques": 1
     },
     {
@@ -207,19 +211,24 @@
       "uniques": 3
     },
     {
-      "count": 3,
+      "count": 2,
+      "referrer": "search.brave.com",
+      "uniques": 1
+    },
+    {
+      "count": 1,
       "referrer": "Bing",
-      "uniques": 2
+      "uniques": 1
     }
   ],
   "totals": {
     "clones": {
-      "count": 791,
-      "uniques": 394
+      "count": 796,
+      "uniques": 397
     },
     "views": {
-      "count": 294,
-      "uniques": 183
+      "count": 301,
+      "uniques": 187
     }
   },
   "views": {
@@ -354,6 +363,10 @@
     "2026-10-31": {
       "count": 10,
       "uniques": 9
+    },
+    "2026-11-01": {
+      "count": 7,
+      "uniques": 4
     }
   }
 }
