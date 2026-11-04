@@ -139,20 +139,24 @@
     "2026-11-02": {
       "count": 27,
       "uniques": 15
+    },
+    "2026-11-03": {
+      "count": 4,
+      "uniques": 2
     }
   },
   "popular_paths": [
     {
-      "count": 45,
+      "count": 47,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 31
+      "uniques": 33
     },
     {
       "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
-      "title": "/issues",
-      "uniques": 3
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
+      "title": "/tree/main/.github",
+      "uniques": 1
     },
     {
       "count": 2,
@@ -167,9 +171,15 @@
       "uniques": 2
     },
     {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/issues",
+      "title": "/issues",
+      "uniques": 2
+    },
+    {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.gitattributes",
-      "title": "/blob/main/.gitattributes",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/8f5edf22021356e3a41079d74e066af9ef6491ad/Shell-Shockers-Better-Hud.user.js",
+      "title": "/blob/8f5edf22021356e3a41079d74e066af9ef6491ad/Shell-Shockers-Better-Hud.user.js",
       "uniques": 1
     },
     {
@@ -192,14 +202,8 @@
     },
     {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/compare/main",
-      "title": "/compare/main",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
-      "title": "/tree/main/.github",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/8f5edf22021356e3a41079d74e066af9ef6491ad",
+      "title": "/commit/8f5edf22021356e3a41079d74e066af9ef6491ad",
       "uniques": 1
     }
   ],
@@ -210,9 +214,14 @@
       "uniques": 5
     },
     {
-      "count": 3,
+      "count": 5,
       "referrer": "github.com",
-      "uniques": 3
+      "uniques": 4
+    },
+    {
+      "count": 2,
+      "referrer": "Google",
+      "uniques": 2
     },
     {
       "count": 2,
@@ -220,24 +229,24 @@
       "uniques": 1
     },
     {
-      "count": 1,
-      "referrer": "Bing",
+      "count": 2,
+      "referrer": "youtube.com",
       "uniques": 1
     },
     {
       "count": 1,
-      "referrer": "Google",
+      "referrer": "Bing",
       "uniques": 1
     }
   ],
   "totals": {
     "clones": {
-      "count": 823,
-      "uniques": 412
+      "count": 827,
+      "uniques": 414
     },
     "views": {
-      "count": 303,
-      "uniques": 189
+      "count": 316,
+      "uniques": 192
     }
   },
   "views": {
@@ -380,6 +389,10 @@
     "2026-11-02": {
       "count": 2,
       "uniques": 2
+    },
+    "2026-11-03": {
+      "count": 13,
+      "uniques": 3
     }
   }
 }
