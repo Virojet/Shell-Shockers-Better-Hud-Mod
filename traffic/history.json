@@ -147,14 +147,18 @@
     "2026-11-04": {
       "count": 5,
       "uniques": 3
+    },
+    "2026-11-05": {
+      "count": 22,
+      "uniques": 13
     }
   },
   "popular_paths": [
     {
-      "count": 60,
+      "count": 68,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 40
+      "uniques": 43
     },
     {
       "count": 3,
@@ -181,6 +185,12 @@
       "uniques": 2
     },
     {
+      "count": 2,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
+      "title": "/blob/main/LICENSE",
+      "uniques": 1
+    },
+    {
       "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/8f5edf22021356e3a41079d74e066af9ef6491ad/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/8f5edf22021356e3a41079d74e066af9ef6491ad/Shell-Shockers-Better-Hud.user.js",
@@ -194,33 +204,27 @@
     },
     {
       "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.meta.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.meta.js",
+      "uniques": 1
+    },
+    {
+      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/archive/Better-UI-V4.7.txt",
       "title": "/blob/main/archive/Better-UI-V4.7.txt",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
-      "title": "/commit/8b3b88cfcd270d36db924cdb1ad4693b0c4f101a",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/8f5edf22021356e3a41079d74e066af9ef6491ad",
-      "title": "/commit/8f5edf22021356e3a41079d74e066af9ef6491ad",
       "uniques": 1
     }
   ],
   "referrers": [
     {
       "count": 8,
-      "referrer": "youtube.com",
-      "uniques": 2
+      "referrer": "github.com",
+      "uniques": 7
     },
     {
-      "count": 6,
-      "referrer": "github.com",
-      "uniques": 5
+      "count": 8,
+      "referrer": "youtube.com",
+      "uniques": 2
     },
     {
       "count": 6,
@@ -245,12 +249,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 832,
-      "uniques": 417
+      "count": 854,
+      "uniques": 430
     },
     "views": {
-      "count": 330,
-      "uniques": 199
+      "count": 343,
+      "uniques": 203
     }
   },
   "views": {
@@ -401,6 +405,10 @@
     "2026-11-04": {
       "count": 14,
       "uniques": 7
+    },
+    "2026-11-05": {
+      "count": 13,
+      "uniques": 4
     }
   }
 }
