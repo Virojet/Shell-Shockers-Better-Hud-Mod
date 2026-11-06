@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.2.0
+// @version      6.2.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.1";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.2.0");
+.version) || "6.2.1");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.1",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1507,7 +1507,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.2.0",
+version: "6.2.1",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -1738,7 +1738,7 @@ const [all, actors, dt, pickups, update, ...pools] = frame;
 if (new Set(pools).size !== 6) throw new Error("Particle pools changed");
 const draws = unique(/([\w$]+)\.render\(\),([\w$]+)\.render\(\)/g,
 src.slice(frame.index + all.length, frame.index + all.length + 1200), "scene draws");
-const early = unique(/if\(([\w$]+)\)([\w$]+)\.EY\.update\(([\w$]+)\);else\{for/g, src,
+const early = unique(/if\(([\w$]+)\)([\w$]+)\.[\w$]+\.update\(([\w$]+)\);else\{for/g, src,
 "actor pass boundary");
 if (early[3] !== dt || early.index >= frame.index || frame.index - early.index > 1400) throw new Error(
 "Actor pass changed");
@@ -13454,6 +13454,10 @@ const displayVersion = "6.2";
 const changelogVersion = "6.2";
 const changelogKey = "ssb-better-ui-changelog-seen";
 const v62Items = [{
+label: "Effects FPS",
+text: "Works again on the new game version, 1.0.29. A game update had stopped it attaching, so the setting did nothing and a one-time message said so.",
+group: "v6.2.1"
+}, {
 label: "King of the Coop Stats",
 text: "A new switch in MODS ▸ Stats adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard and your match history. Matches saved before show a dash. Off by default; it needs Stats Tracker on.",
 group: "v6.2"

@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.2.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.2.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -175,6 +175,8 @@ Each one is its own userscript. Install any of them next to Better HUD; they upd
 
 | Mod | What it does | |
 |---|---|---|
+| **[Smoke Logo](https://github.com/Virojet/Shell-Shockers-Smoke-Logo)** | Add your own logo to grenade and rocket smoke | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Smoke-Logo/main/Shell-Shockers-Smoke-Logo.user.js) |
+| **[Shellstrike Mod](https://github.com/Virojet/Shell-Shockers-Shellstrike-Mod)** | Shellstrike-themed smoke and effects | [Repository](https://github.com/Virojet/Shell-Shockers-Shellstrike-Mod) |
 | **[Mod Menu](https://github.com/Virojet/Shell-Shockers-Mod-Menu)** | One menu to switch your mods and themes on or off, with game sounds on every control | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Mod-Menu/main/Shell-Shockers-Mod-Menu.user.js) |
 | **[Gun Sounds](https://github.com/Virojet/Shell-Shockers-Gun-Sounds)** | Pick weapon, meme or your own sounds for shots, melee swings, reloads and the empty click | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Gun-Sounds/main/Shell-Shockers-Gun-Sounds.user.js) |
 | **[Valorant Kill Sounds](https://github.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds)** | Valorant-style kill sounds and banners that climb with your streak, from fifteen packs or your own files | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds/main/Shell-Shockers-Valorant-Kill-Sounds.user.js) |
@@ -261,7 +263,11 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.2.0 — current
+#### v6.2.1 — current
+
+- **Effects FPS:** works again on game version 1.0.29. A game update had stopped it attaching, so the setting did nothing and a one-time "couldn't attach to part of the game" message appeared
+
+#### v6.2.0
 
 - **Chat:** with Infinite Chat History off, keeps the newest eight messages. Clearing chat for a new match cannot restore an old line from a pending batch
 - **Crosshair:** adjusts four-arm alignment to the screen-pixel grid; some browser-zoom configurations can still shift the arms or center dot, and that reported issue remains under review. The search box no longer adds an orange focus ring
