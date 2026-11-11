@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.2.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.3.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v62) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v63) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,15 +65,11 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.2
+## What's new in v6.3
 
-- **King of the Coop Stats:** a new switch in **MODS ▸ Stats** adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard, your match history and the CSV export. Off by default
-- **When King of the Coop Ends:** a new choice in **MODS ▸ Stats** copies the scoreboard picture or downloads it when a team wins a King of the Coop game. Off by default
-- **Uncap gear:** Controlled Uncap and a new 30–1000 Target FPS option, both optional
-- **Chat and HUD:** eight messages with Infinite off; Session Time stays visible with FPS and Ping hidden; crosshair pixel-alignment adjustments (zoom drift remains under review)
-- **Type to Search:** open Settings and start typing. Better HUD switches to MODS and the letters go straight into the search box
-- **Match Stats:** the scoreboard keeps kills, deaths and team scores up to date while it's open
-- **Smaller script:** 618,405 bytes, 17.3% smaller than the published 6.1.29. This is a file-size comparison; FPS depends on your setup.
+- **Inventory Count:** a new switch in **MODS ▸ Menus** adds a card under it with how many hats, stamps, primary guns, secondary guns, grenades and melee weapons you own, out of everything the game lists, and a total. Off by default
+- **Match History:** the map name saved with each match uses the game's current map list and native map data. The game-mode label is never used as a map name. Better HUD no longer keeps a copy of the names
+- From v6.2: **King of the Coop Stats**, **When King of the Coop Ends**, **Type to Search**, the Uncap FPS gear with **Controlled Uncap**, and a smaller script
 - From v6.1: Tab Out keeps your view, **Render Scale**, **Join From Chat**, **Effects FPS**, **Favorites First** and **Remove All Mod Data**
 
 [Full changelog ↓](#changelog)
@@ -89,7 +85,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 | **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Live scoreboards, session K / D / KDR, optional King of the Coop time, captures and takeovers, an end-of-match overlay, and match history you can filter and export |
-| **Inventory favorites** | Star inventory items, list them first and share them with a code |
+| **Inventory favorites** | Star inventory items, list them first, share them with a code and count how many you own |
 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
 <details>
@@ -149,6 +145,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
+- **Inventory Count**: a card with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default (**MODS ▸ Menus**)
 - Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Other Mods, Manage, Changed). Open Settings and just start typing to search
 - **Changed** page: only the settings you've changed, each with its own Reset
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
@@ -263,7 +260,12 @@ Your settings, crosshairs and match history stay in your browser. **MODS ▸ Man
 
 ## Changelog
 
-#### v6.2.1 — current
+#### v6.3.0 — current
+
+- **Inventory Count:** a new switch under **MODS ▸ Menus**, under **Favorites First**. A card shows how many hats, stamps, primary guns, secondary guns, grenades and melee weapons your account has, each as owned out of everything the game lists, and a total with its percentage. The free starter items count as owned, and the lists include some items that can't be earned any more. Better HUD only reads your account and changes nothing. Off by default
+- **Match History:** the map name saved with each match now uses the game's current map list and native map data. The game-mode label is never used as a map name. Better HUD no longer keeps a copy of the names, which a game update could leave out of date and name a map wrongly
+
+#### v6.2.1
 
 - **Effects FPS:** works again on game version 1.0.29. A game update had stopped it attaching, so the setting did nothing and a one-time "couldn't attach to part of the game" message appeared
 

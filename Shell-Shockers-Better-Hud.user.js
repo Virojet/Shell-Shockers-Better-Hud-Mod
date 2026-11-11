@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.2.1
+// @version      6.3.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.1";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.3.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.2.1");
+.version) || "6.3.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.2.1",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.3.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1507,7 +1507,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.2.1",
+version: "6.3.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -4661,20 +4661,7 @@ _lastKills: {},
 _lastDeaths: {},
 knownPlayers: {},
 everSeenTeams: false
-},
-ey = ["Abduction", "Aqueduct", "Backstage", "Bastion", "Bedrock", "BioHazard", "Blender", "Blue", "Bridge",
-"Canyon", "Cash", "Castle", "Castle Arena", "Catacombs", "Chicken Itza", "Cluckgrounds", "Cobalt",
-"Courtyard", "Creak", "Crossed", "Crowsnest", "Death Pit", "Dirt", "Dirt Base", "Downfall", "Duel Pyramid",
-"Eggcrates", "Enchanted", "Exposure", "Facility", "Feedlot", "Field", "Flux", "Fort Flip", "Foundation",
-"Four Quarters", "Gravel Stomp", "Greenhouse", "Growler", "Haunted", "Helix", "Hydro", "Ice Box", "Indigo",
-"Inmates", "Jail Break", "Jinx", "Junction", "King's Court", "Lunar Module", "Mansion", "Maze Runner",
-"Metamorph", "Metro 1012", "Moonbase", "Mud Gulch", "Nextdoor", "Orbital", "Outer Reach", "Overcooked",
-"Palace Siege", "Quarry", "Queen's Court", "Raceway", "Rameses", "Rats", "Relic", "Rivals", "Road", "Ruins",
-"Sanctuary", "Scales", "Shady Glen", "Shellville", "Shipyard", "Sky Scratcher", "Space Factory",
-"Space Arena", "Sparta", "Spellbound", "Stage", "Starship", "Stax Arena", "Teggtris", "Temple", "Timetwist",
-"Trainyard", "Tree Fort", "Two Towers", "Uncovered", "Vert", "Wimble", "Wonderland", "Wreckage",
-"Yolkido Garrison", "Zoomies"
-];
+};
 function ex() {
 try {
 let e = window.players || [],
@@ -4682,10 +4669,7 @@ _vd = window.vueApp && (window.vueApp.$data || window.vueApp) || {},
 _maps = _vd.maps;
 for (let t of e) {
 let o = t && t.gameData && t.gameData.mapIdx;
-if (typeof o == "number") {
-if (_maps && _maps[o] && _maps[o].name) return _maps[o].name;
-if (ey[o]) return ey[o]
-}
+if (typeof o == "number" && _maps && _maps[o] && _maps[o].name) return _maps[o].name
 }
 } catch (n) {
 window.__ssbErr("stats#6", n)
@@ -4693,10 +4677,7 @@ window.__ssbErr("stats#6", n)
 let i = e => !e || /^(none|photo|menu|lobby|select|loading)/i.test(String(e).trim());
 try {
 let a = window.vueApp?.$data || window.vueApp || {},
-r = [a.game?.mapName, a.gameMap, a.mapName, a.map, a.ui?.game?.map, a.$data?.map, document
-.getElementById("mainScreens")?.children?.length ? document.querySelector(
-".btn_game_mode:not(.mod-server-clone) .game-mode-type")?.textContent : null,
-];
+r = [a.game?.mapName, a.gameMap, a.mapName, a.map, a.ui?.game?.map, a.$data?.map];
 for (let s of r)
 if (typeof s == "string" && !i(s)) return s.trim()
 } catch (l) {
@@ -8529,6 +8510,7 @@ let h = o.previousElementSibling,
 sec = h && h.classList.contains("mod-header") ? h.textContent : "",
 c = 0;
 Array.from(o.children).forEach(t => {
+if (t.id === "ssb-inv-card") return;
 let tt = t.getAttribute("data-tooltip") || (t.querySelector(
 "[data-tooltip]") || t).getAttribute("data-tooltip") || "",
 hay = (t.textContent + " " + tt + " " + (t.getAttribute(
@@ -13450,9 +13432,18 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.2";
-const changelogVersion = "6.2";
+const displayVersion = "6.3";
+const changelogVersion = "6.3";
 const changelogKey = "ssb-better-ui-changelog-seen";
+const v63Items = [{
+label: "Inventory Count",
+text: "A new switch in MODS ▸ Menus adds a card under it with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default.",
+group: "v6.3"
+}, {
+label: "Match History",
+text: "The map name saved with each match now comes only from the game's own map list. Better HUD no longer keeps a copy of the names, which a game update could leave out of date and name a map wrongly.",
+group: "v6.3"
+}];
 const v62Items = [{
 label: "Effects FPS",
 text: "Works again on the new game version, 1.0.29. A game update had stopped it attaching, so the setting did nothing and a one-time message said so.",
@@ -13506,51 +13497,14 @@ label: "Lighter",
 text: "Better HUD does less work in the background on the menus, and the script file is smaller.",
 group: "v6.2"
 }];
-const v61Items = [{
-label: "Effects FPS",
-text: "Choose Off or 30–240 FPS in MODS ▸ Effects to control particle and world-object animation updates independently of rendering. Try 60 FPS with Uncap FPS. Off by default.",
-group: "v6.1.29"
-}, {
-label: "Favorites First",
-text: "A new switch in MODS ▸ Menus, under Only Show Favorites: the items you've starred come first in the inventory, ahead of the rest. The other items keep the game's order. Off by default.",
-group: "v6.1.28"
-}, {
-label: "Hide Chick'n Winner",
-text: "A new switch in MODS ▸ HUD hides the Chick'n Winner button in the bottom-left corner of the main menu and of the respawn screen during a match. Off by default.",
-group: "v6.1.26"
-}, {
-label: "Crosshair tab",
-text: "The Gallery and Back to Settings buttons are orange now, and the profile bar has a glass look. New Outline switches for the Arms and the Center Dot hide the outline and keep its color and width.",
-group: "v6.1.25"
-}, {
-label: "Hide Center Dot With Shotgun",
-text: "A new switch in the Crosshair tab, under Hide Center Dot: the dot goes away while the Scrambler's shotgun is out and comes back when you switch to the pistol. Off by default.",
-group: "v6.1.22"
-}, {
-label: "Two Copies Warning",
-text: "If Better HUD is installed twice (an older test build beside the release, say), one short message names the versions and says to turn one off in your script manager. It shows once per browser session, and MODS ▸ Manage ▸ Copy Support Info lists the copies.",
-group: "v6.1.21"
-}, {
-label: "Favorites Import / Export",
-text: "Export Favorites and Import Favorites are now two tiles in MODS ▸ Manage. The two buttons beside the egg colors in the inventory are gone. Your favorites and the codes are the same as before.",
-group: "v6.1.20"
-}, {
-label: "Instant Chick'n Winner",
-text: "A new switch in MODS ▸ Menus: in the Chick'n Winner egg game, one click cracks the egg instead of six. You get the same prize, since the game settles it before the eggs show. It's off by default.",
-group: "v6.1.19"
-}, {
-label: "Remove All Mod Data",
-text: "A new tile in MODS ▸ Manage deletes everything Better HUD saved in this browser (settings, crosshairs, favorites, match history, hotkeys) and reloads, for a fresh start. Save a backup file first if you want to keep any of it.",
-group: "v6.1.18"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.2:",
-items: v62Items
+intro: "Here's what's new in v6.3:",
+items: v63Items
 }, {
-version: "6.1",
-intro: "Previously in v6.1:",
-items: v61Items
+version: "6.2",
+intro: "Previously in v6.2:",
+items: v62Items
 }];
 function hasSeenChangelog() {
 try {
@@ -15965,6 +15919,8 @@ if (window.__ssbErr) window.__ssbErr(t, e);
 };
 let run = null,
 pauseUntil = 0,
+retryCount = 0,
+retryReason = "",
 lastEnd = 0,
 silentUntil = 0,
 closeUntil = 0;
@@ -15974,6 +15930,8 @@ visAt = Date.now();
 let watchedApp = null,
 unwatch = null,
 runObserver = null;
+let ticking = false,
+wakeQueued = false;
 let prizeKey = "";
 let typedAt = 0;
 const isText = el => !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
@@ -16110,10 +16068,11 @@ wrapOnce(v, "showGameMenu", () => matchRun() && calledBy(/resetGame/));
 wrapOnce(ex, "releaseKeys", () => matchRun() && calledBy(/showChicknWinnerPopup/));
 }
 function popupBusy(v) {
-if (rects(document.getElementById("chicknWinner")) || document.getElementById("ssb-dialog-overlay"))
-return true;
 const refs = v.$refs || {};
-if (refs.chicknWinner && refs.chicknWinner.isShowing) return true;
+const winner = refs.chicknWinner;
+if ((winner && winner.isShowing) || ((!winner || winner.isShowing !== false) &&
+rects(document.getElementById("chicknWinner"))) || document.getElementById("ssb-dialog-overlay"))
+return true;
 for (const k in refs) {
 if (!/Popup$/.test(k)) continue;
 const r = refs[k],
@@ -16205,6 +16164,7 @@ hookGame();
 style();
 document.documentElement.classList.remove(GONE);
 run = {
+app: v,
 kind: kind,
 t0: clk,
 step: "wait",
@@ -16216,7 +16176,7 @@ document.documentElement.classList.add(CLS);
 const pop = document.getElementById("chicknWinner");
 if (pop && typeof MutationObserver === "function") {
 runObserver = new MutationObserver(() => {
-if (document.hidden && run) tick();
+if (run) wake();
 });
 runObserver.observe(pop, {
 childList: true,
@@ -16229,10 +16189,11 @@ try {
 v.playIncentivizedAd();
 } catch (e) {
 err("cwauto#2", e);
-finish(false, 600000);
+finish(false, "the game could not start the attempt");
 }
 }
-function finish(ok, pauseMs) {
+function finish(ok, reason) {
+const wasReset = run && run.kind === "reset";
 if (runObserver) {
 runObserver.disconnect();
 runObserver = null;
@@ -16241,7 +16202,16 @@ document.documentElement.classList.remove(CLS);
 run = null;
 lastEnd = Date.now();
 silentUntil = lastEnd + 1500;
-if (pauseMs) pauseUntil = lastEnd + pauseMs;
+if (ok) {
+retryCount = 0;
+retryReason = "";
+pauseUntil = 0;
+} else if (reason) {
+retryReason = reason;
+const delay = wasReset ? 60000 : Math.min(60000, 15000 * Math.pow(2, Math.min(retryCount, 2)));
+retryCount++;
+pauseUntil = lastEnd + delay;
+}
 }
 function note(ids) {
 try {
@@ -16258,7 +16228,7 @@ ex = window.extern,
 c = v && v.chw,
 now = clk,
 r = run;
-if (!v || !ex || !c) return finish(false, 600000);
+if (!v || !ex || !c || v !== r.app) return finish(false, "the game changed while waiting");
 const quick = r.inMatch && ex.inGame && !inMatchMenu(v);
 if (r.kind === "reset") {
 if (!c
@@ -16269,27 +16239,30 @@ d.spent += r.cost;
 put(KDAY, d);
 return finish(true);
 }
-if (now - r.t0 > 20000) return finish(false, 1800000);
+if (now - r.t0 > 20000 && !c.onClick) return finish(false, "the game did not confirm the reset");
 return;
 }
 const n = v.$refs && v.$refs.chickenNugget,
 pop = document.getElementById("chicknWinner");
 if (r.step === "wait") {
 const popup = v.$refs && v.$refs.chicknWinner;
-if (rects(pop) && popup && popup.isShowing === true && n && !n.isMiniGameComplete && Array.isArray(n
+if (popup && popup.isShowing === true && n && !n.isMiniGameComplete && Array.isArray(n
 .eggs) && n.eggs.length) {
 r.step = "open";
 r.t1 = now;
 return;
 }
-if (now - r.t0 > 20000 || (now - r.t0 > 2500 && !c.onClick)) return finish(false, 600000);
+if (now - r.t0 > 5000 && !c.onClick) return finish(false, "the game did not open the reward");
 return;
 }
 if (r.step === "open") {
 if (!document.hidden && !quick && now - r.t1 < 700) return;
 const egg = n && n.eggs.find(e => e && e.active !== false && typeof e.value === "number");
 const el = egg && document.getElementById(egg.id);
-if (!el) return finish(false, 600000);
+if (!el) {
+if (now - r.t1 > 8000) finish(false, "the egg controls did not appear");
+return;
+}
 egg.value = 5;
 el.click();
 r.step = "crack";
@@ -16309,7 +16282,7 @@ r.step = "shown";
 r.t3 = now;
 return;
 }
-if (now - r.t2 > 8000) return finish(false, 600000);
+if (now - r.t2 > 8000) return finish(false, "the egg game did not finish");
 return;
 }
 if (r.step === "shown") {
@@ -16323,11 +16296,9 @@ r.t4 = now;
 return;
 }
 if (r.step === "close") {
-if (!rects(pop) && !c.onClick) return finish(true);
-if (document.hidden && !c
-.onClick
-) {
-document.documentElement.classList.add(GONE);
+const popup = v.$refs && v.$refs.chicknWinner;
+if (!c.onClick && ((!popup || popup.isShowing === false) || !rects(pop))) {
+if (document.hidden && rects(pop)) document.documentElement.classList.add(GONE);
 return finish(true);
 }
 if (now - r.t4 > 8000) {
@@ -16336,13 +16307,13 @@ v.$refs.chicknWinner.hide();
 } catch (e) {
 err("cwauto#5", e);
 }
-finish(false, 600000);
+finish(false, "the reward popup did not close");
 }
 }
 }
 function watchReady() {
 const v = window.vueApp;
-if (v === watchedApp) return;
+if (v === watchedApp && unwatch) return;
 if (unwatch) {
 unwatch();
 unwatch = null;
@@ -16351,17 +16322,29 @@ watchedApp = v;
 if (v && typeof v.$watch === "function") {
 unwatch = v.$watch(() => {
 const c = v.chw || {};
-return [c.ready, c.limitReached, c.onClick];
-}, () => {
-if (document.hidden) tick();
+const refs = v.$refs || {},
+popup = refs.chicknWinner,
+nugget = refs.chickenNugget;
+return [c.ready, c.limitReached, c.onClick, popup && popup.isShowing,
+nugget && nugget.isMiniGameComplete, v.firebaseId].join("|");
+}, wake);
+}
+}
+function wake() {
+if (wakeQueued || (!run && !level())) return;
+wakeQueued = true;
+Promise.resolve().then(() => {
+wakeQueued = false;
+tick();
 });
 }
-}
 function tick() {
+if (ticking) return;
+ticking = true;
 try {
 watchReady();
 const t = Date.now();
-if (lastTickAt) clk += Math.min(t - lastTickAt, 1500);
+if (lastTickAt) clk += Math.max(0, Math.min(t - lastTickAt, 1500));
 lastTickAt = t;
 const html = document.documentElement;
 unGone();
@@ -16386,16 +16369,21 @@ if (w.go) begin(w.go, w.cost);
 } catch (e) {
 err("cwauto#4", e);
 try {
-finish(false, 600000);
+finish(false, "an unexpected error interrupted the attempt");
 } catch (e2) {
 }
+} finally {
+ticking = false;
 }
 }
 function setLevel(n) {
 put(KEY, n);
 pauseUntil = 0;
+retryCount = 0;
+retryReason = "";
 if (!n) document.documentElement.classList.remove(GONE);
 if (!n && run) finish(false);
+if (n) wake();
 }
 function status() {
 const lvl = level(),
@@ -16410,8 +16398,9 @@ if (lvl === 3) lines.push("No limits: it pays every reset your eggs cover.");
 if (lvl) {
 const w = look(true),
 left = pauseUntil - Date.now();
-lines.push(run ? "Running now." : left > 0 ? "Paused after a problem for about " + Math.ceil(left /
-60000) + " more minutes." : w.go ? "Next: a " + w.go + ", as soon as no pop-up is open." :
+lines.push(run ? (run.step === "wait" ? "Waiting for the game's reward response." : "Running now.") :
+left > 0 ? "Retrying in " + Math.ceil(left / 1000) + " seconds: " + retryReason + "." :
+w.go ? "Next: a " + w.go + ", as soon as no pop-up is open." :
 "Waiting: " + w.why + ".");
 }
 const wl = wins();
@@ -16568,11 +16557,15 @@ if (!document.hidden) {
 visAt = Date.now();
 setTimeout(unGone, 1600);
 }
+wake();
 });
+window.addEventListener("focus", wake);
+window.addEventListener("pageshow", wake);
 setInterval(tick, 1000);
 winsBoot();
+tick();
 }
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
 else boot();
 })();
 (function() {
@@ -16912,6 +16905,234 @@ setOn(v);
 sync();
 }
 });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
+const KEY = "tp-inventoryCount",
+CARD = "ssb-inv-card",
+STYLE = "ssb-inv-style",
+KINDS = [
+["hats", "Hats"],
+["stamps", "Stamps"],
+["primaryWeapons", "Primary guns"],
+["secondaryWeapons", "Secondary guns"],
+["grenades", "Grenades"],
+["melee", "Melee"]
+];
+let on = false,
+stopPoll = null,
+seen = "",
+reported = false;
+try {
+on = JSON.parse(localStorage.getItem(KEY)) === true;
+} catch (e) {
+on = false;
+}
+const setOn = (v) => {
+on = !!v;
+try {
+localStorage.setItem(KEY, JSON.stringify(on));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("invcount#1", e);
+}
+};
+const asReal = (fn) => {
+const was = window.__ssbSkinUnlocker;
+window.__ssbSkinUnlocker = false;
+try {
+return fn();
+} finally {
+window.__ssbSkinUnlocker = was;
+}
+};
+function count() {
+const x = window.extern,
+cat = x && x.catalog;
+if (!cat || typeof x.isItemOwned !== "function") return null;
+return asReal(() => {
+const kinds = [];
+let owned = 0,
+total = 0;
+for (const [prop, name] of KINDS) {
+const list = cat[prop];
+if (!Array.isArray(list)) return null;
+let o = 0,
+t = 0;
+for (const it of list) {
+if (!it) continue;
+t++;
+if (it.unlock === "default" || x.isItemOwned(it)) o++;
+}
+kinds.push({
+name: name,
+owned: o,
+total: t
+});
+owned += o;
+total += t;
+}
+return {
+kinds: kinds,
+owned: owned,
+total: total
+};
+});
+}
+function safeCount() {
+try {
+return count();
+} catch (e) {
+if (!reported && window.__ssbErr) {
+reported = true;
+window.__ssbErr("invcount#2", e);
+}
+return null;
+}
+}
+function ensureStyle() {
+if (document.getElementById(STYLE)) return;
+const s = document.createElement("style");
+s.id = STYLE;
+s.textContent = `#mod-settings-section .ssb-inv-card { grid-column:1 / -1; box-sizing:border-box; min-width:0; padding:12px 16px 11px; border:1px solid var(--pm-edge, rgba(255,255,255,0.5)); border-radius:14px;
+background:var(--pm-glass, rgba(255,255,255,0.24)); box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 6px rgba(8,62,84,0.06);
+font-family:"Nunito", system-ui, sans-serif; color:var(--ssb-ink, #0c576f); }
+#mod-settings-section .mod-grid:has(> .ssb-inv-card) { grid-auto-flow:row dense; }
+#mod-settings-section.mod-searching .ssb-inv-card { display:none !important; }
+#mod-settings-section .ssb-inv-title { margin:0 0 9px; font-size:16.5px; font-weight:800; line-height:1.25; }
+#mod-settings-section .ssb-inv-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:9px 22px; }
+#mod-settings-section .ssb-inv-row { min-width:0; }
+#mod-settings-section .ssb-inv-line { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:14px; font-weight:700; line-height:1.3; }
+#mod-settings-section .ssb-inv-line > span { margin:0; padding:0; font-family:inherit; font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; }
+#mod-settings-section .ssb-inv-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#mod-settings-section .ssb-inv-num { font-weight:900; font-variant-numeric:tabular-nums; white-space:nowrap; }
+#mod-settings-section .ssb-inv-bar { display:block; height:6px; margin-top:3px; border-radius:3px; background:rgba(12,87,111,0.16); overflow:hidden; }
+#mod-settings-section .ssb-inv-bar > b { display:block; height:100%; border-radius:3px; background:var(--ssb-blue, #216a80); }
+#mod-settings-section .ssb-inv-total { grid-column:1 / -1; margin-top:3px; }
+#mod-settings-section .ssb-inv-total .ssb-inv-line { font-size:15.5px; font-weight:900; }
+#mod-settings-section .ssb-inv-total .ssb-inv-bar { height:8px; border-radius:4px; }
+#mod-settings-section .ssb-inv-total .ssb-inv-bar > b { border-radius:4px; }
+#mod-settings-section .ssb-inv-note { margin-top:9px; font-size:12.5px; font-weight:600; line-height:1.35; color:var(--pm-sub, rgba(12,87,111,0.72)); }
+`;
+(document.head || document.documentElement).appendChild(s);
+}
+function build() {
+ensureStyle();
+const c = document.createElement("div");
+c.id = CARD;
+c.className = "ssb-inv-card";
+c.setAttribute("data-keywords", "inventory count owned items collection complete completion progress hats stamps guns grenades melee skins");
+const t = document.createElement("div");
+t.className = "ssb-inv-title";
+t.textContent = "Inventory";
+const g = document.createElement("div");
+g.className = "ssb-inv-grid";
+const n = document.createElement("div");
+n.className = "ssb-inv-note";
+c.appendChild(t);
+c.appendChild(g);
+c.appendChild(n);
+return c;
+}
+function addRow(grid, name, owned, total, cls) {
+const r = document.createElement("div");
+r.className = "ssb-inv-row" + (cls ? " " + cls : "");
+const line = document.createElement("div");
+line.className = "ssb-inv-line";
+const a = document.createElement("span");
+a.className = "ssb-inv-name";
+a.textContent = name;
+const b = document.createElement("span");
+b.className = "ssb-inv-num";
+b.textContent = owned + " / " + total;
+line.appendChild(a);
+line.appendChild(b);
+const bar = document.createElement("i");
+bar.className = "ssb-inv-bar";
+bar.setAttribute("role", "progressbar");
+bar.setAttribute("aria-label", name);
+bar.setAttribute("aria-valuemin", "0");
+bar.setAttribute("aria-valuemax", String(total));
+bar.setAttribute("aria-valuenow", String(owned));
+const f = document.createElement("b");
+f.style.width = (total ? Math.round(1000 * owned / total) / 10 : 0) + "%";
+bar.appendChild(f);
+r.appendChild(line);
+r.appendChild(bar);
+grid.appendChild(r);
+}
+function paint(card) {
+const d = safeCount(),
+sig = d ? d.kinds.map(k => k.owned + "/" + k.total).join(",") : "none";
+if (sig === seen) return;
+seen = sig;
+const g = card.querySelector(".ssb-inv-grid"),
+n = card.querySelector(".ssb-inv-note");
+g.textContent = "";
+if (!d) {
+n.textContent = "Not available yet. The game's item lists aren't ready.";
+return;
+}
+d.kinds.forEach(k => addRow(g, k.name, k.owned, k.total));
+const pct = d.total ? Math.round(100 * d.owned / d.total) : 0;
+addRow(g, "Total (" + pct + "%)", d.owned, d.total, "ssb-inv-total");
+n.textContent = "Includes items that can't be earned any more. Free starter items count as owned.";
+}
+function tick() {
+try {
+const root = document.getElementById("mod-settings-section"),
+row = root && root.querySelector('[data-setting="' + KEY + '"]');
+let c = document.getElementById(CARD);
+if (!on || !row) {
+if (c) c.remove();
+seen = "";
+return;
+}
+if (!c || c.previousElementSibling !== row) {
+if (c) c.remove();
+c = build();
+row.after(c);
+seen = "";
+}
+if (seen && c.checkVisibility && !c.checkVisibility()) return;
+paint(c);
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("invcount#3", e);
+}
+}
+function start() {
+if (!stopPoll) stopPoll = window.__ssbMenuPoll(tick, 1000);
+}
+function stop() {
+if (stopPoll) stopPoll();
+stopPoll = null;
+seen = "";
+const c = document.getElementById(CARD);
+if (c) c.remove();
+}
+function boot() {
+window.__ssbInventoryCount = {
+count: safeCount
+};
+window.__ssbSettings.add({
+key: KEY,
+section: "menus",
+after: "tp-favFirst",
+label: "Inventory Count",
+code: "Ic",
+def: false,
+tip: "Adds a card under this switch with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. It only reads your account and changes nothing.",
+keywords: "inventory count owned items collection complete completion progress how many hats stamps guns grenades melee skins",
+get: () => on,
+set: (v) => {
+setOn(v);
+if (on) start();
+else stop();
+}
+});
+if (on) start();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
