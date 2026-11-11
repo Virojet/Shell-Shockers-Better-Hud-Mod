@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.3.0
+// @version      6.4.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.3.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.3.0");
+.version) || "6.4.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.3.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -381,6 +381,8 @@ var CSS = `#ssb-dialog-overlay { position:fixed; inset:0; z-index:2147483647; di
 #ssb-dialog-panel .ssb-dlg-list li { margin:0; padding:9px 12px; border-radius:8px; background:rgba(255,255,255,0.9); color:var(--ssb-ink); }
 #ssb-dialog-panel .ssb-dlg-list b { display:block; font-size:15px; font-weight:900; line-height:1.25; }
 #ssb-dialog-panel .ssb-dlg-list span { display:block; margin-top:3px; font-size:14px; font-weight:700; line-height:1.35; color:var(--ssb-muted); }
+#ssb-dialog-panel .ssb-dlg-list .ssb-dlg-act { min-width:0; height:34px; margin:8px 0 2px; padding:0 14px; border-width:3px; font-size:15px; }
+#ssb-dialog-panel .ssb-dlg-acts { display:flex; flex-wrap:wrap; gap:8px; }
 #ssb-dialog-panel .ssb-dlg-facts li { display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:6px 12px; }
 #ssb-dialog-panel .ssb-dlg-facts b { flex:none; font-size:14px; }
 #ssb-dialog-panel .ssb-dlg-facts span { margin:0; text-align:right; }
@@ -819,6 +821,7 @@ copyText(text, "Couldn't copy the picture, so the report was copied as text.");
 }
 var api = {
 toast: toast,
+dialog: dialog,
 confirm: function(o) {
 o = o || {};
 return dialog({
@@ -915,6 +918,26 @@ sec.items.forEach(function(it) {
 var li = node("li");
 li.appendChild(node("b", null, it.label));
 if (it.text) li.appendChild(node("span", null, it.text));
+if (it.act && typeof it.act.run === "function") {
+var ab = node("button", "ssb-dlg-btn ssb-dlg-blue ssb-dlg-act", it.act.label || "Fix it");
+ab.type = "button";
+ab.addEventListener("click", function() {
+var ok = false;
+try {
+ok = it.act.run() !== false;
+} catch (e) {
+window.__ssbErr("ui#act", e)
+}
+sound("ui_click");
+if (ok) {
+ab.textContent = it.act.done || "Done";
+ab.disabled = true;
+} else toast("That didn't work. You can change it in MODS instead.", {
+type: "error"
+});
+});
+li.appendChild(ab);
+}
 list.appendChild(li);
 });
 body.appendChild(list);
@@ -1507,7 +1530,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.3.0",
+version: "6.4.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -1864,6 +1887,13 @@ last = 0,
 quietUntil = 0,
 played = 0,
 renders = 0;
+var hitch = 0,
+freeze = 0,
+worst = 0,
+refDt = 1000 / 30;
+function fresh() {
+frames = time = hitch = freeze = worst = 0;
+}
 var match = null,
 lastMatch = null,
 probe = null,
@@ -1966,6 +1996,11 @@ renders++;
 if (dt > 0 && dt < 1000 && now >= quietUntil && held()) {
 frames++;
 time += dt;
+if (dt > 50 && dt > 3 * (frames >= 20 ? time / frames : refDt)) {
+hitch++;
+if (dt > 150) freeze++;
+}
+if (dt > worst) worst = dt;
 }
 });
 } catch (err) {
@@ -1986,8 +2021,7 @@ if (n === shown) return;
 shown = n;
 why = null;
 plan = null;
-frames = 0;
-time = 0;
+fresh();
 quietUntil = Math.max(quietUntil, performance.now() + 500);
 if (!match || !w) return;
 if (w === "low" || w === "recovered") probe = {
@@ -2070,7 +2104,11 @@ if (match) {
 if (match.time > 0) lastMatch = {
 fps: match.frames * 1000 / match.time,
 lowest: match.lowest,
-steps: match.steps
+steps: match.steps,
+time: match.time,
+hitches: match.hitches,
+freezes: match.freezes,
+worst: match.worst
 };
 kept = why === "no help" || why === "too low" ? step : probe ? probe.from :
 shown;
@@ -2080,8 +2118,7 @@ step = 0;
 why = null;
 probe = null;
 plan = null;
-frames = 0;
-time = 0;
+fresh();
 apply();
 return;
 }
@@ -2091,7 +2128,10 @@ start: now,
 frames: 0,
 time: 0,
 lowest: Infinity,
-steps: []
+steps: [],
+hitches: 0,
+freezes: 0,
+worst: 0
 };
 probe = null;
 plan = null;
@@ -2112,16 +2152,18 @@ apply();
 if (!held()) plan = null;
 if (!onScreen()) quietUntil = Math.max(quietUntil, now + 5000);
 if (now < quietUntil) {
-frames = 0;
-time = 0;
+fresh();
 return;
 }
 if (time < WINDOW) return;
 var n = frames,
 t = time,
 fps = n * 1000 / t;
-frames = 0;
-time = 0;
+match.hitches += hitch;
+match.freezes += freeze;
+if (worst > match.worst) match.worst = worst;
+refDt = t / n;
+fresh();
 played += t;
 match.frames += n;
 match.time += t;
@@ -2199,7 +2241,11 @@ upHold: upHold,
 match: match && {
 fps: match.time ? match.frames * 1000 / match.time : 0,
 lowest: match.lowest,
-steps: match.steps.slice()
+steps: match.steps.slice(),
+time: match.time,
+hitches: match.hitches,
+freezes: match.freezes,
+worst: match.worst
 },
 lastMatch: lastMatch
 };
@@ -2337,6 +2383,28 @@ var WHY = {
 "too low": "too slow higher up",
 "kept": "from the last match"
 };
+function stutters(m) {
+if (!m.hitches) return "None noticed";
+var s = m.hitches - m.freezes,
+parts = [];
+if (s) parts.push(s + (s === 1 ? " short stutter" : " short stutters"));
+if (m.freezes) parts.push(m.freezes + (m.freezes === 1 ? " freeze" : " freezes"));
+return parts.join(", ") + ", the longest " + Math.round(m.worst) + " ms";
+}
+function turnOn(key) {
+var S = window.__ssbSettings,
+it = S && S.items.find(function(x) {
+return x.key === key;
+});
+if (!it) return false;
+if (!it.get()) {
+it.set(true);
+if (it.onToggle) it.onToggle(true);
+}
+var cb = document.querySelector('#mod-settings-section [data-setting="' + key + '"] input[type=checkbox]');
+if (cb) cb.checked = !!it.get();
+return !!it.get();
+}
 function check() {
 var gl = glInfo();
 var r0 = renders,
@@ -2396,7 +2464,14 @@ text: "The game's Auto Detail halved it after a slow moment. Smart Auto Detail c
 }
 if (slow && !on) tips.push({
 label: "Turn on Smart Auto Detail",
-text: "When your FPS drops, it lowers the resolution the next time you die or pause, and raises it again when your FPS recovers."
+text: "When your FPS drops, it lowers the resolution the next time you die or pause, and raises it again when your FPS recovers.",
+act: {
+label: "Turn it on",
+done: "Turned on",
+run: function() {
+return turnOn(KEY);
+}
+}
 });
 if (slow && on && !ad) tips.push({
 label: "Turn on the game's Auto Detail",
@@ -2408,11 +2483,24 @@ text: "It's above, in FPS & Ping. At 1.5 the game draws two-thirds of the width 
 });
 if (gl.aa && !soft && (slow || builtIn(gl.renderer))) tips.push({
 label: "Turn on Disable Anti-Aliasing",
-text: "It's above, in FPS & Ping. Edges look a little more jagged, but weaker graphics can gain a lot of FPS. Press F5 after turning it on."
+text: "It's above, in FPS & Ping. Edges look a little more jagged, but weaker graphics can gain a lot of FPS. Press F5 after turning it on.",
+act: {
+label: "Turn it on",
+done: "On: press F5 to apply",
+run: function() {
+return turnOn("tp-noAA");
+}
+}
 });
 if (onBattery && !(frame && frame.steady30)) tips.push({
 label: "Plug in",
 text: "Laptops slow their graphics down on battery."
+});
+var hz = prev && prev.time > 0 ? prev.freezes / (prev.time / 60000) : 0;
+if (prev && prev.time >= 30000 && (prev.freezes >= 5 || hz >= 2)) tips.push({
+label: "Close what runs in the background",
+text: "The game froze for more than 150 ms " + prev.freezes + (prev.freezes === 1 ? " time" : " times") +
+". Short freezes usually come from other programs, browser tabs or extensions busy at the same time, or from Windows updates and downloads, rather than from the game's settings."
 });
 facts.push({
 label: "Graphics",
@@ -2425,6 +2513,10 @@ text: Math.round(fps) + " FPS"
 if (prev) facts.push({
 label: prev === cur ? "This match" : "Last match",
 text: Math.round(avg) + " FPS on average, " + Math.round(prev.lowest) + " at the lowest"
+});
+if (prev && prev.time > 0 && prev.hitches != null) facts.push({
+label: "Stutters",
+text: stutters(prev)
 });
 if (e) facts.push({
 label: "Game view",
@@ -2870,6 +2962,7 @@ const _ssbCore = [
 ["hideFPS", "hideBox", "tp-hideBox", "Fb", true, "b", "Hide Box Background"],
 ["hideFPS", "showMs", "tp-showMs", "Fm", false, "b", "Show Frametime (ms)"],
 ["hideFPS", "showSessionTime", "tp-showSessionTime", "Ft", false, "b", "Show Session Time"],
+["hideFPS", "sessionFrom", "tp-sessionTimeFrom", "Fs", 0, "n1", "Session Time Counts From"],
 ["hideFPS", "hide", "tp-hideFPS", "Fh", false, "b", "Hide FPS"],
 ["hideFPS", "min", "tp-minFPS", "Fi", 60, "n1"],
 ["hideFPS", "max", "tp-maxFPS", "Fa", 60, "n1"],
@@ -2897,6 +2990,7 @@ const _ssbCore = [
 ["ui", "hideHP", "tp-hideHP", "Uh", false, "b", "Hide HP"],
 ["ui", "showVolumeSlider", "tp-showVolumeSlider", "Uv", true, "b", "Pause-Menu Volume Slider"],
 ["ui", "showServerList", "tp-showServerList", "Ul", false, "b", "Server Picker"],
+["ui", "showChangedTab", "tp-showChangedTab", "Uz", false, "b", "Show Changed Tab"],
 ["ui", "guiScale", "tp-guiScale", "Ui", 1, "n", "GUI Scale"],
 ["gameplay", "tabOutKey", "tp-tabOutKey", "Gt", "Tab", "key", "Tab Out Key"],
 ["gameplay", "noExplosionSmoke", "tp-noExplosionSmoke", "Gs", false, "b"],
@@ -4307,6 +4401,13 @@ i = t % 60,
 a = e => String(e).padStart(2, "0");
 return o > 0 ? `${o}:${a(n)}:${a(i)}` : `${a(n)}:${a(i)}`
 }
+function _ssbSessMs() {
+let now = Date.now();
+if (d.hideFPS.sessionFrom === 1) try {
+if (eb.matchStartMs && eb.inMatch) return Math.max(0, (eb.matchEndMs || now) - eb.matchStartMs)
+} catch (x) {}
+return now - ee
+}
 function eo() {
 r("ssb-hide-fps-box", en, d.hideFPS.hideBox);
 let t = o("FPS"),
@@ -4364,8 +4465,8 @@ p.style
 .display = "";
 m.style.display = "";
 if (p.textContent !== "TIME") p.textContent = "TIME";
-if (m
-.textContent !== et(Date.now() - ee)) m.textContent = et(Date.now() - ee);
+let _sm = et(_ssbSessMs());
+if (m.textContent !== _sm) m.textContent = _sm;
 } else {
 if (p) p.style
 .display = "none";
@@ -4629,7 +4730,8 @@ if (A.enabled) q();
 if (e && e$ % 6 != 0)(function e() {
 if (!d.hideFPS.showSessionTime) return;
 let t = o("ssb-session-time");
-if (t && t.textContent !== et(Date.now() - ee)) t.textContent = et(Date.now() - ee);
+let _sm = et(_ssbSessMs());
+if (t && t.textContent !== _sm) t.textContent = _sm;
 }());
 else {
 eo();
@@ -4688,12 +4790,13 @@ return ""
 function ev() {
 if (window.currentServerRegion) return window.currentServerRegion;
 try {
-let e = JSON.parse(localStorage.getItem("mod-server-hosts") || "{}"),
-t = Object.keys(e);
-return t.length ? t[t.length - 1] : ""
-} catch (o) {
+let h = window.__ssbGameHost,
+e = JSON.parse(localStorage.getItem("mod-server-hosts") || "{}") || {};
+if (h)
+for (let r of Object.keys(e))
+if (e[r] && e[r].host === h) return r
+} catch (o) {}
 return ""
-}
 }
 function e0() {
 let vg = function() {
@@ -4762,6 +4865,162 @@ setHist: h => _ssbHistSet(h)
 };
 window.addEventListener("storage", e => {
 if (!(e.key !== "tp-statsHistory" && e.key !== null || _histT)) _histMem = null;
+});
+const _HIST_MAX = 40,
+_HIST_KEPT = 20;
+function _ssbHistTrim(hist) {
+let kept = 0,
+plain = 0;
+for (let i = 0; i < hist.length; i++) {
+let h = hist[i];
+if (h && h.kept && kept < _HIST_KEPT) {
+kept++;
+continue
+}
+if (h && h.kept) delete h.kept;
+if (++plain > _HIST_MAX) {
+hist.splice(i, 1);
+i--
+}
+}
+}
+function _ssbMatchPerf() {
+try {
+let s = window.__ssbSmartDetail && window.__ssbSmartDetail.state(),
+m = s && s.match;
+if (!m || !(m.time > 0) || !(m.fps > 0)) return null;
+let p = {
+avg: Math.round(m.fps)
+};
+if (Number.isFinite(m.lowest)) p.low = Math.round(m.lowest);
+if (m.freezes) p.frz = m.freezes;
+let pcts = (m.steps || []).map(x => +x.pct).filter(Number.isFinite);
+if (pcts.length) p.res = Math.min(100, ...pcts);
+return p
+} catch (e) {
+return null
+}
+}
+window.__ssbStatsShowFps = () => {
+try {
+return JSON.parse(localStorage.getItem("tp-statsShowFps") || "false") === true
+} catch (e) {
+return false
+}
+};
+window.__ssbSettings.add({
+key: "tp-statsShowFps",
+section: "stats",
+after: "tp-statsPinned",
+label: "Show Match FPS",
+code: "Sf",
+def: false,
+tip: "Match History shows each match's average and lowest FPS, from what Smart Auto Detail measured while you played, and the CSV export gets those columns. Matches are measured either way, so turning it on shows earlier ones too.",
+keywords: "fps frame rate frames per second performance lag history match average lowest",
+get: window.__ssbStatsShowFps,
+set: v => {
+try {
+localStorage.setItem("tp-statsShowFps", JSON.stringify(!!v))
+} catch (e) {
+window.__ssbErr("stats.fps", e)
+}
+}
+});
+const _ssbRecOn = () => {
+try {
+return JSON.parse(localStorage.getItem("tp-personalRecords") || "true") !== false
+} catch (e) {
+return true
+}
+};
+function _ssbRecGet() {
+try {
+let r = JSON.parse(localStorage.getItem("tp-statsRecords") || "{}");
+return r && typeof r == "object" && !Array.isArray(r) ? r : {}
+} catch (e) {
+return {}
+}
+}
+window.__ssbRecords = _ssbRecGet;
+function _ssbRecords(entry) {
+if (!_ssbRecOn() || !entry.mode) return;
+let me = (entry.players || []).find(p => p && p.isMe),
+k = me ? +me.kills || 0 : 0;
+if (!k) return;
+let kdr = k >= 10 ? Math.round(k / Math.max(1, +me.deaths || 0) * 100) / 100 : 0,
+R = _ssbRecGet(),
+changed = false,
+own = r => r && r.c === entry.code && r.s === entry.startMs,
+bump = (box, key, n) => {
+let cur = box[key];
+if (own(cur)) {
+if (cur.prev && n <= cur.prev.n) box[key] = cur.prev;
+else if (n !== cur.n) cur.n = n;
+else return;
+changed = true;
+return
+}
+if (cur && !(n > cur.n)) return;
+box[key] = {
+n: n,
+c: entry.code,
+s: entry.startMs,
+m: entry.map || ""
+};
+if (cur) box[key].prev = {
+n: cur.n,
+c: cur.c,
+s: cur.s,
+m: cur.m
+};
+changed = true
+},
+slot = (grp, name) => {
+let g = R[grp] && typeof R[grp] == "object" ? R[grp] : (R[grp] = {});
+return g[name] && typeof g[name] == "object" ? g[name] : (g[name] = {})
+};
+[slot("modes", entry.mode), entry.map && slot("maps", entry.map)].forEach(box => {
+if (!box) return;
+bump(box, "k", k);
+if (kdr) bump(box, "r", kdr)
+});
+if (changed) try {
+localStorage.setItem("tp-statsRecords", JSON.stringify(R))
+} catch (e) {
+window.__ssbErr("stats.rec", e)
+}
+}
+function _ssbRecTell(entry) {
+if (!_ssbRecOn() || !eb.matchEndMs || eb._recTold === entry.startMs) return;
+eb._recTold = entry.startMs;
+let m = (_ssbRecGet().modes || {})[entry.mode] || {},
+mine = r => r && r.c === entry.code && r.s === entry.startMs && r.prev,
+out = [];
+if (mine(m.k)) out.push(m.k.n + " kills (was " + m.k.prev.n + ")");
+if (mine(m.r)) out.push("KDR " + m.r.n.toFixed(2) + " (was " + m.r.prev.n.toFixed(2) + ")");
+if (out.length && window.__ssbUI) window.__ssbUI.toast("New personal best in " + _stMode(entry.mode) + ": " +
+out.join(", ") + ".", {
+type: "success",
+ms: 6500
+})
+}
+window.__ssbSettings.add({
+key: "tp-personalRecords",
+section: "stats",
+after: "tp-statsShowFps",
+label: "Personal Records",
+code: "Sr",
+def: true,
+tip: "Keeps your most kills and best KDR (with at least 10 kills) for each mode and map. Match History shows them, and when a match beats one, a message at the end says so. Needs Stats Tracker.",
+keywords: "records best personal best pb high score most kills kdr record",
+get: _ssbRecOn,
+set: v => {
+try {
+localStorage.setItem("tp-personalRecords", JSON.stringify(!!v))
+} catch (e) {
+window.__ssbErr("stats.recOn", e)
+}
+}
 });
 function _ssbSaveStats(_f) {
 try {
@@ -4840,12 +5099,22 @@ players: players
 };
 let idx = hist.findIndex(h => h && h.code === _gcS && Math.abs((h.startMs || 0) - (eb.matchStartMs || 0)) <
 15e3);
+let _pf = _ssbMatchPerf();
+if (_pf) entry.perf = _pf;
 if (idx >= 0) {
 entry.label = hist[idx].label;
+if (hist[idx].kept) entry.kept = true;
+if (!entry.perf && hist[idx].perf) entry.perf = hist[idx].perf;
 hist[idx] = entry;
 } else hist.unshift(entry);
-if (hist.length > 40) hist.splice(40);
-_ssbHistWrite(!!_f)
+_ssbHistTrim(hist);
+_ssbHistWrite(!!_f);
+try {
+_ssbRecords(entry);
+if (_f) _ssbRecTell(entry)
+} catch (re) {
+window.__ssbErr("stats.records", re)
+}
 } catch (e) {
 window.__ssbErr("stats.save", e)
 }
@@ -5695,6 +5964,11 @@ return t ? `${t}m ${o}s` : `${o}s`
 }
 function eSN(e) {
 if (!e) return "-";
+let k = String(e).toLowerCase().trim();
+try {
+let n = eB.find(x => x.value === k);
+if (n && n.text && n.text !== n.value) return n.text
+} catch (x) {}
 let t = {
 singapore: "Singapore",
 uswest: "US West",
@@ -5703,7 +5977,7 @@ uscentral: "US Central",
 useast: "US East",
 germany: "Germany",
 santiago: "Chile"
-} [String(e).toLowerCase().trim()];
+} [k];
 return t || e
 }
 function _stKdr(k, dd) {
@@ -6021,7 +6295,7 @@ t.textContent = `#ssb-stats-overlay { position:fixed; inset:0; z-index:214748364
 #ssb-stats-panel {
 --st-ink:#0C576F; --st-sub:rgba(12,87,111,0.74); --st-glass:rgba(255,255,255,0.26); --st-glass-hi:rgba(255,255,255,0.44); --st-edge:rgba(255,255,255,0.55);
 --st-line:rgba(12,87,111,0.12); --st-field:rgba(255,255,255,0.8); --st-orange:linear-gradient(180deg,#ffb23f,#ff961d); --st-orange-edge:#cf700c; --st-red:#c42020;
---st-lift:0 10px 26px rgba(8,62,84,0.16); --st-grid:minmax(0,1fr) 150px 100px;
+--st-lift:0 10px 26px rgba(8,62,84,0.16); --st-grid:minmax(0,1fr) 172px 100px;
 position:relative; box-sizing:border-box; display:flex; flex-direction:column; width:720px; max-height:min(640px, calc(76vh / var(--ssb-ui-scale, 1))); margin:0; padding:14px 22px 22px;
 border:3px solid #0C576F; border-radius:12px; background:linear-gradient(#1192bc 0%, #3ea2c7 20%, #5bb2d2 42%, #75c3de 70%, #8dd3ea 100%);
 color:var(--st-ink); box-shadow:0 18px 50px rgba(0,0,0,0.4); font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -6042,6 +6316,12 @@ font-size:14px; font-weight:700; line-height:1.3; text-align:left; letter-spacin
 #ssb-stats-panel .ssb-chips { flex:1 1 auto; min-width:0; display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
 #ssb-stats-panel .ssb-chip { display:inline-flex; align-items:center; height:28px; padding:0 10px; border:1px solid var(--st-edge); border-radius:999px; background:rgba(255,255,255,0.28); color:var(--st-sub); font-size:12px; font-weight:800; line-height:1; white-space:nowrap; }
 #ssb-stats-panel .ssb-chip-strong { background:var(--st-field); color:var(--st-ink); font-weight:900; box-shadow:inset 0 1px 0 #fff; }
+/* Individual matches grow to the header's natural width. Keep every chip on one row;
+if the screen is narrower, scroll just the chips and leave the actions in view. */
+#ssb-stats-panel:is(.ssb-v-match, .ssb-v-live) { width:max-content; min-width:min(720px, calc(96vw / var(--ssb-ui-scale, 1))) !important; max-width:calc(96vw / var(--ssb-ui-scale, 1)) !important; }
+#ssb-stats-panel:is(.ssb-v-match, .ssb-v-live):has(.ssb-coop-cols) { width:max-content; min-width:min(1160px, calc(96vw / var(--ssb-ui-scale, 1))) !important; }
+#ssb-stats-panel:is(.ssb-v-match, .ssb-v-live) .ssb-chips { flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; padding:3px; margin:-3px; }
+#ssb-stats-panel:is(.ssb-v-match, .ssb-v-live) .ssb-chip { flex:none; }
 #ssb-stats-panel .ssb-match-name { all:unset; font:inherit; color:inherit; cursor:text; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #ssb-stats-panel .ssb-name-input { box-sizing:border-box; width:240px; max-width:100%; height:28px; border:1px solid var(--st-ink); border-radius:8px; padding:0 8px; background:var(--st-field); color:var(--st-ink); font:800 12px "Nunito",sans-serif; }
 #ssb-stats-panel .ssb-ico { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; padding:0; }
@@ -6132,7 +6412,14 @@ font-size:14px; font-weight:700; line-height:1.3; text-align:left; letter-spacin
 The hidden Played cell lets clicks through: at opacity 0 it paints on top of the buttons. */
 #ssb-stats-panel .ssb-hr-when { display:grid; align-items:center; min-width:0; }
 #ssb-stats-panel .ssb-hr-when > * { grid-area:1 / 1; min-width:0; transition:opacity 0.12s; }
-#ssb-stats-panel .ssb-hr-acts { display:flex; gap:4px; margin-left:-4px; opacity:0; pointer-events:none; }
+#ssb-stats-panel .ssb-hr-acts { display:flex; flex-wrap:wrap; gap:0 4px; margin-left:-4px; opacity:0; pointer-events:none; }
+/* Keep: a kept match carries a small Kept mark, and the 40-match trim skips it */
+#ssb-stats-panel .ssb-kept-pill { display:inline-block; margin-left:8px; padding:1px 7px; border-radius:999px; background:var(--st-field); color:var(--st-ink); font-size:11px; font-weight:900; letter-spacing:0.4px; vertical-align:2px; box-shadow:inset 0 1px 0 #fff; }
+/* Personal Records: one compact card above the list */
+#ssb-stats-panel .ssb-records { flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:4px 16px; padding:8px 14px; border:1px solid var(--st-edge); border-radius:12px; background:var(--st-glass); }
+#ssb-stats-panel .ssb-rec-h { font-size:11px; font-weight:900; letter-spacing:0.6px; text-transform:uppercase; color:var(--st-sub); }
+#ssb-stats-panel .ssb-rec-row { display:flex; align-items:baseline; gap:4px; font-size:13px; font-weight:800; color:var(--st-ink); white-space:nowrap; }
+#ssb-stats-panel .ssb-rec-t { margin-right:2px; color:var(--st-sub); }
 #ssb-stats-panel .ssb-hist-row:is(:hover, :focus-within) .ssb-hr-acts { opacity:1; pointer-events:auto; }
 #ssb-stats-panel .ssb-hist-row:not(.ssb-hr-live):is(:hover, :focus-within) .ssb-hr-info { opacity:0; pointer-events:none; }
 #ssb-stats-panel .ssb-hr-live { border-color:#fff; background:var(--st-glass-hi); }
@@ -6152,6 +6439,7 @@ The hidden Played cell lets clicks through: at opacity 0 it paints on top of the
 #ssb-stats-panel.ssb-shot { height:auto !important; animation:none !important; box-shadow:none; }
 #ssb-stats-panel.ssb-shot .ssb-noimg { display:none !important; }
 #ssb-stats-panel.ssb-shot .ssb-body { overflow:visible !important; }
+#ssb-stats-panel.ssb-shot:is(.ssb-v-match, .ssb-v-live) { max-width:none !important; }
 `;
 (document.head || document.documentElement).appendChild(t);
 }
@@ -6387,6 +6675,32 @@ ew();
 eS();
 }
 }
+function _stPerf(h, long) {
+let p = h && h.perf;
+if (!p || !(p.avg > 0) || !window.__ssbStatsShowFps()) return "";
+let s = p.avg + " FPS avg";
+if (p.low > 0) s += ", lowest " + p.low;
+if (long) {
+if (p.frz > 0) s += ", " + p.frz + (p.frz === 1 ? " freeze" : " freezes");
+if (p.res > 0 && p.res < 100) s += ", resolution down to " + p.res + "%";
+}
+return s
+}
+function _stRecCard(flt) {
+if (!d.stats.enabled || !_ssbRecOn()) return "";
+let R = _ssbRecGet(),
+order = ["ffa", "team", "ctf", "king"],
+rows = [],
+btn = (r, txt) => `<button type="button" class="ssb-link ssb-rec" data-rec-code="${eC(r.c || "")}" data-rec-start="${eC(String(r.s || ""))}" data-tooltip="${eC([r.m, r.s && _stDate(r.s)].filter(Boolean).join(", "))}">${eC(txt)}</button>`,
+add = (title, box) => {
+if (!box || typeof box != "object" || !(box.k || box.r)) return;
+rows.push(`<div class="ssb-rec-row"><span class="ssb-rec-t">${eC(title)}</span>${box.k ? btn(box.k, box.k.n + " kills") : ""}${box.r ? btn(box.r, "KDR " + (+box.r.n).toFixed(2)) : ""}</div>`)
+};
+if (flt.map) add(flt.map, (R.maps || {})[flt.map]);
+else Object.keys(R.modes || {}).filter(m => !flt.mode || m === flt.mode).sort((a, b) => (order.indexOf(a) + 1 || 9) -
+(order.indexOf(b) + 1 || 9)).forEach(m => add(_stMode(m), R.modes[m]));
+return rows.length ? `<div class="ssb-records"><span class="ssb-rec-h">Personal records</span>${rows.join("")}</div>` : ""
+}
 function eHIST(focus, top) {
 let ov = _stOverlay();
 let all = _ssbHist().filter(h => h && typeof h == "object"),
@@ -6420,9 +6734,11 @@ sk += +m.kills || 0;
 sd += +m.deaths || 0;
 });
 let part = hist.length !== all.length,
+keptN = all.filter(h => h.kept).length,
 games = n => n + " " + (n === 1 ? "game" : "games"),
 chips = `<span class="ssb-head-name">Match History</span>` + (all.length ? _stChips([], [part ? hist
-.length + " of " + all.length + " games" : games(all.length) + " &middot; last 40 kept", sk +
+.length + " of " + all.length + " games" : games(all.length) + " &middot; " + (keptN ? "last 40 + " +
+keptN + " kept" : "last 40 saved"), sk +
 " / " + sd
 ]) + `<span class="ssb-chip ssb-chip-strong">KDR ${_stKdr(sk, sd)}</span>` : ""),
 modes = [...new Set([...all.map(h => h.mode), live && lMode].filter(Boolean).map(String))],
@@ -6439,14 +6755,15 @@ k = +m.kills || 0,
 dd = +m.deaths || 0,
 len = _stLen(h),
 name = h.label || h.code || "-",
-meta = [h.label && h.code, h.map, _stMode(h.mode), h.server && eSN(h.server)].filter(Boolean)
+meta = [h.label && h.code, h.map, _stMode(h.mode), h.server && eSN(h.server), _stPerf(h)].filter(
+Boolean)
 .map(eC).join(" &middot; ");
-return `<div class="ssb-hist-row" tabindex="0" role="button" ${keyOf(h)} aria-label="${eC(name + ", " + (h.map || "unknown map") + ", " + k + " kills, " + dd + " deaths")}"><div class="ssb-hr-main"><div class="ssb-hr-name">${eC(name)}</div><div class="ssb-hr-sub">${meta || "&nbsp;"}</div></div><div class="ssb-hr-when"><div class="ssb-hr-info"><div class="ssb-hr-strong">${eC(_stWhen(h.startMs))}</div><div class="ssb-hr-sub">${len || "&nbsp;"}</div></div><div class="ssb-hr-acts"><button type="button" class="ssb-hist-abtn ssb-link" data-hact="rename" ${keyOf(h)}>Rename</button><button type="button" class="ssb-hist-abtn ssb-link ssb-danger" data-hact="del" ${keyOf(h)}>Delete</button></div></div><div class="ssb-hr-kd"><div class="ssb-hr-strong">${k} / ${dd}</div><div class="ssb-hr-sub">KDR ${_stKdr(k, dd)}</div></div></div>`
+return `<div class="ssb-hist-row${h.kept ? " ssb-hr-kept" : ""}" tabindex="0" role="button" ${keyOf(h)} aria-label="${eC(name + ", " + (h.map || "unknown map") + ", " + k + " kills, " + dd + " deaths" + (h.kept ? ", kept" : ""))}"><div class="ssb-hr-main"><div class="ssb-hr-name">${eC(name)}${h.kept ? '<span class="ssb-kept-pill">Kept</span>' : ""}</div><div class="ssb-hr-sub">${meta || "&nbsp;"}</div></div><div class="ssb-hr-when"><div class="ssb-hr-info"><div class="ssb-hr-strong">${eC(_stWhen(h.startMs))}</div><div class="ssb-hr-sub">${len || "&nbsp;"}</div></div><div class="ssb-hr-acts"><button type="button" class="ssb-hist-abtn ssb-link" data-hact="keep" ${keyOf(h)} data-tooltip="${h.kept ? "Let the 40-match limit remove it again" : "Keep it when older matches are removed (up to 20)"}">${h.kept ? "Unkeep" : "Keep"}</button><button type="button" class="ssb-hist-abtn ssb-link" data-hact="rename" ${keyOf(h)}>Rename</button><button type="button" class="ssb-hist-abtn ssb-link ssb-danger" data-hact="del" ${keyOf(h)}>Delete</button></div></div><div class="ssb-hr-kd"><div class="ssb-hr-strong">${k} / ${dd}</div><div class="ssb-hr-sub">KDR ${_stKdr(k, dd)}</div></div></div>`
 }).join("") ||
 `<div class="ssb-empty">${all.length ? "No saved matches fit these filters." : "No games recorded yet. Finish a match and it shows up here."}</div>`,
 body = (all.length ?
 `<div class="ssb-filters">${_stDd("mode", "All modes", flt.mode, modes, _stMode)}${_stDd("map", "All maps", flt.map, maps)}<span class="ssb-fx"><button type="button" class="ssb-btn ssb-sm" data-act="exjson" data-tooltip="Download the matches shown as JSON">JSON</button><button type="button" class="ssb-btn ssb-sm" data-act="excsv" data-tooltip="Download the matches shown as a spreadsheet (CSV)">CSV</button></span></div>` :
-"") + (all.length || showLive ?
+"") + _stRecCard(flt) + (all.length || showLive ?
 `<div class="ssb-colhd" aria-hidden="true"><span>Match</span><span>Played</span><span>K / D</span></div>` :
 "") + `<div class="ssb-hist-list">${rows}</div>`;
 ov.innerHTML = _stShell("hist", "", (all.length ? _stIcoBtn("clearhist", "Clear History", "ssb-danger") : "") +
@@ -6462,11 +6779,12 @@ _stWire(ov, "hist", "Match history", focus);
 on('[data-act="clearhist"]', async () => {
 if ((await window.__ssbUI.confirm({
 title: "Clear History",
-text: "Delete every match in your saved history?",
+text: keptN ? "Delete every match you haven't kept? The " + (keptN === 1 ? "kept match stays" : keptN +
+" kept matches stay") + ": Unkeep one first to delete it." : "Delete every match in your saved history?",
 ok: "Clear",
 danger: true
 }))) {
-_ssbHistSet([]);
+_ssbHistSet(_ssbHist().filter(h => h && h.kept));
 eHIST();
 }
 });
@@ -6505,12 +6823,38 @@ row);
 }
 };
 });
+ov.querySelectorAll(".ssb-rec").forEach(b => b.onclick = ev => {
+ev.stopPropagation();
+let h = all.find(x => x.code === (b.getAttribute("data-rec-code") || "") && String(x.startMs || "") === (b
+.getAttribute("data-rec-start") || ""));
+if (!h) {
+window.__ssbUI.toast("That match is no longer in your history. Keep a match to stop it being removed.");
+return
+}
+eb._histTop = keep();
+eb._histKey = [h.code || "", String(h.startMs || "")];
+ef("ui_toggletab");
+eHISTDetail(h);
+});
 ov.querySelectorAll(".ssb-hist-abtn").forEach(b => b.onclick = async ev => {
 ev.stopPropagation();
 let act = b.getAttribute("data-hact"),
 H = _ssbHist(),
 x = H.find(same(b));
 if (!x) return;
+if (act === "keep") {
+let t = keep();
+if (!x.kept && H.filter(h => h && h.kept).length >= _HIST_KEPT) {
+window.__ssbUI.toast("You can keep up to " + _HIST_KEPT + " matches. Unkeep one first.");
+return
+}
+if (x.kept) delete x.kept;
+else x.kept = true;
+_ssbHistSet(H);
+ef("ui_click");
+eHIST(rowSel(b.getAttribute("data-code") || "", b.getAttribute("data-start") || ""), t);
+return
+}
 if (act === "del") {
 if (await window.__ssbUI.confirm({
 title: "Delete Match",
@@ -6561,7 +6905,13 @@ king: "King of the Coop",
 team: "Teams",
 ffa: "Free for All"
 };
-if (kind === "json") blob = new Blob([JSON.stringify(list, null, 2)], {
+let fps = window.__ssbStatsShowFps();
+if (kind === "json") blob = new Blob([JSON.stringify(fps ? list : list.map(h => {
+if (!h || !h.perf) return h;
+let c = Object.assign({}, h);
+delete c.perf;
+return c
+}), null, 2)], {
 type: "application/json"
 });
 else {
@@ -6572,8 +6922,8 @@ return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v
 },
 lines = [
 ["Name", "Code", "Start", "Duration (s)", "Map", "Mode", "Server", "Kills", "Deaths", "KDR",
-"Players", "Coop Time (s)", "Captures", "Takeovers"
-].join(",")
+"Players", "Coop Time (s)", "Captures", "Takeovers", "Kept"
+].concat(fps ? ["Avg FPS", "Lowest FPS", "Freezes", "Lowest Resolution (%)"] : []).join(",")
 ];
 list.forEach(h => {
 let m = (h.players || []).find(p => p.isMe) || {
@@ -6588,8 +6938,10 @@ h.startMs && h.endMs ? Math.round((h.endMs - h.startMs) / 1e3) : "", h.map ||
 .toFixed(2), (h.players || []).length, Number.isFinite(m.coopMs) && m.coopMs >=
 0 ? (m.coopMs / 1000).toFixed(3) : "", Number.isFinite(m.coopCaptures) && m
 .coopCaptures >= 0 ? Math.floor(m.coopCaptures) : "", Number.isFinite(m
-.coopTakeovers) && m.coopTakeovers >= 0 ? Math.floor(m.coopTakeovers) : ""
-].map(q).join(","))
+.coopTakeovers) && m.coopTakeovers >= 0 ? Math.floor(m.coopTakeovers) : "", h.kept ? "yes" : ""
+].concat(fps ? [h.perf && h.perf.avg || "", h.perf && h.perf.low || "", h.perf ? h.perf.frz || 0 :
+"", h.perf && h.perf.res || ""
+] : []).map(q).join(","))
 });
 blob = new Blob(["﻿" + lines.join("\r\n")], {
 type: "text/csv"
@@ -6628,7 +6980,7 @@ eb.kotcScore = _sk
 }
 let chips = _stChips([_stNameChip(h), h.label && _stRoomCode(h.code) && `<span data-match-code>${eC(h.code)}</span>`, h.startMs && _stWhen(h
 .startMs, true), h.startMs && _stDate(h.startMs)], [eC(h.map || ""), h.server && eC(eSN(h.server)),
-eC(_stMode(mode)), eC(_stLen(h))
+eC(_stMode(mode)), eC(_stLen(h)), h.kept && "Kept", eC(_stPerf(h, true))
 ]);
 ov.innerHTML = _stShell("match", "", _stIcoBtn("backhist", "Match History") + _stIcoBtn("copy", "Copy Image") +
 _stIcoBtn("download", "Download") + _stIcoBtn("close", "Close", "ssb-danger"), teams, chips);
@@ -7157,6 +7509,7 @@ if (_gm[1] !== window.__ssbGameCode && !document.pointerLockElement) eb._readyFo
 true;
 window.__ssbGameCode = _gm[1];
 window.__ssbGameHost = i;
+window.currentServerRegion = "";
 }
 } catch (_ge) {
 window.__ssbErr("net#1", _ge)
@@ -7326,10 +7679,12 @@ let o = {
 "Hide Ping": "Completely hides the ping display from the in-game HUD.",
 "Show Frametime (ms)": "Swaps standard FPS into milliseconds per frame (frametime) readout.",
 "Show Session Time": "Displays a real-time count of how long you've been playing in this session.",
+"Session Time Counts From": "Where Show Session Time's TIME counts from: when you loaded the page, or when the match you're in started. Outside a match it shows the time since the page loaded.",
 "Hide Box Background": "Removes the dark backdrop behind the in-game FPS / ping box.",
 "Server Picker": "Adds a server region picker with live ping readouts to the home screen, beside Game Mode.",
 "Auto-pick Best Server": "When the region list shows ping times, waits for them all (up to 5 seconds) and switches to the lowest, if it beats your region by at least 15 ms or 20%, whichever is more. A region you pick yourself stays until you turn this off and on again.",
 "Pause-Menu Volume Slider": "Adds an extra master volume slider directly under the pause weapon selection.",
+"Show Changed Tab": "Shows the Changed tab in the MODS sidebar, listing settings that differ from their defaults with a Reset for each. Off by default.",
 "King of the Coop Stats": "Adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard and match history. Needs Stats Tracker on.",
 "When King of the Coop Ends": "When a team wins a King of the Coop game, copies the scoreboard picture to your clipboard or downloads it. It's the picture Copy Image and Download make in the stats window. Needs Stats Tracker on.",
 "Stats Tracker": "Tracks kills, deaths, KDR and local match history.",
@@ -7509,6 +7864,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), var(--pm-lift);
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search { height:40px; border:2px solid rgba(14,118,151,0.28) !important; border-radius:12px; font-size:15px; box-shadow:inset 0 2px 4px rgba(8,62,84,0.08); }
 
 /* Section buttons: quiet until hovered, the selected one is the game's orange button */
+#mod-top-bar .mod-jump-chip[hidden] { display:none !important; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-jump-chip {
 flex:none; display:flex; align-items:center; justify-content:flex-start; gap:11px; width:100%; height:42px; margin:0; padding:0 12px;
 border:2px solid transparent; border-radius:12px; background:transparent; color:var(--ssb-ink);
@@ -7563,6 +7919,7 @@ font-size:22px; letter-spacing:0.5px; line-height:1.1;
 #mod-settings-section.ssb-paged .mod-header[data-section="effects"]::after { content:"Turn off visual effects for a cleaner, faster game."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Raise your frame rate, and set up the FPS and ping readout."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="menus"]::after { content:"Extras for the home screen, pause menu and inventory."; }
+#mod-settings-section.ssb-paged .mod-header[data-section="fixes"]::after { content:"Workarounds for bugs in the game itself. Each says which bug it works around; turn one off if the game fixes it."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="stats"]::after { content:"Track your kills, deaths and KDR in every match."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="gameplay"]::after { content:"Classic skins and sounds, keys and field of view."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="manage"]::after { content:"Back up, share or reset your MODS settings, or everything at once with a backup file."; }
@@ -7691,6 +8048,9 @@ font-size:15px !important; font-weight:900 !important; line-height:1.2;
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="favexp"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3M7 8l5-5 5 5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="favimp"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E"); }
 
+#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="presets"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 3 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5'/%3E%3C/svg%3E"); }
+#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="preset-save"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2zM7 3v6h9V3M7 21v-8h10v8'/%3E%3C/svg%3E"); }
+
 /* Other Mods: one card per mod, with whether it's installed and a button to get it */
 #mod-settings-section.ssb-paged[data-page="others"]:not(.mod-searching) > [data-section]:not([data-section="others"]) { display:none !important; }
 #mod-settings-section.ssb-paged .mod-header[data-section="others"]::after { content:"More mods by Virojet. Each one is its own userscript, and they work next to Better HUD."; }
@@ -7727,6 +8087,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,0.6); transition:background 0.15s, tra
 #mod-settings-section.ssb-paged[data-page="effects"]:not(.mod-searching) > [data-section]:not([data-section="effects"]),
 #mod-settings-section.ssb-paged[data-page="fps"]:not(.mod-searching) > [data-section]:not([data-section="fps"]),
 #mod-settings-section.ssb-paged[data-page="menus"]:not(.mod-searching) > [data-section]:not([data-section="menus"]),
+#mod-settings-section.ssb-paged[data-page="fixes"]:not(.mod-searching) > [data-section]:not([data-section="fixes"]),
 #mod-settings-section.ssb-paged[data-page="stats"]:not(.mod-searching) > [data-section]:not([data-section="stats"]),
 #mod-settings-section.ssb-paged[data-page="gameplay"]:not(.mod-searching) > [data-section]:not([data-section="gameplay"]),
 #mod-settings-section.ssb-paged[data-page="manage"]:not(.mod-searching) > [data-section]:not([data-section="manage"]) { display:none !important; }
@@ -8046,6 +8407,10 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #mod-settings-section .mod-key-btn.mod-key-listening { width:auto !important; min-width:120px; border:none !important; background:var(--ssb-card) !important; box-shadow:inset 0 0 0 2px var(--ssb-muted); text-transform:none !important; }
 #mod-settings-section .mod-key-clear { margin:0; padding:2px 4px; border:none; background:none; color:var(--ssb-muted); font-family:"Nunito", system-ui, sans-serif; font-size:14px; font-weight:800; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 #mod-settings-section .mod-key-clear:hover { color:var(--ssb-ink); }
+/* The clash warning under a key row (13a _keyClash): its own line, red like the game's warnings */
+#mod-settings-section .mod-slider-container:has(> .mod-key-warn:not([hidden])) { flex-wrap:wrap; row-gap:6px; }
+#mod-settings-section .mod-key-warn { flex:1 0 100%; margin:0; font-family:"Nunito", system-ui, sans-serif; font-size:13.5px; font-weight:800; line-height:1.3; color:#d11414; }
+#mod-settings-section .mod-key-warn[hidden] { display:none; }
 /* Off / Copy / Download (When King of the Coop Ends): the Crosshair tab's segmented control, without icons */
 #mod-settings-section .mod-seg { display:flex; gap:4px; padding:4px; border-radius:13px; background:rgba(12,87,111,0.1); box-shadow:inset 0 1px 3px rgba(8,62,84,0.14); }
 #mod-settings-section .mod-seg-btn { flex:1 1 0; min-width:84px; height:36px; margin:0; padding:0 12px; border:1px solid transparent; border-radius:10px; background:transparent; box-shadow:none; color:var(--ssb-ink); font-family:"Nunito", system-ui, sans-serif; font-size:14px; font-weight:800; letter-spacing:0.2px; line-height:1; text-transform:none; text-shadow:none; white-space:nowrap; cursor:pointer; transition:background 0.12s; }
@@ -8068,7 +8433,8 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #mod-settings-section [data-tooltip], #mod-settings-section .mod-slider-label[data-tooltip] {
 cursor: default;
 }
-`;
+`
+;
 (document.head || document.documentElement).appendChild(n);
 }
 if (!document.getElementById("mod-crosshair-compact")) {
@@ -8100,9 +8466,11 @@ let kw = {
 "Hide Box Background": "hide box fps box backdrop",
 "Show Frametime (ms)": "milliseconds",
 "Show Session Time": "timer clock",
+"Session Time Counts From": "session time timer clock match round start since page load reset",
 "Server Picker": "show server list frontpage home region ping",
 "Auto-pick Best Server": "auto best lowest ping region server select",
 "Pause-Menu Volume Slider": "show volume slider sound audio",
+"Show Changed Tab": "changed settings modified defaults reset sidebar tab optional",
 "Stats Tracker": "enable stats kdr kills deaths",
 "Kill Bars": "scoreboard row fill kills team bar graph",
 "Highlight Your Name": "stats scoreboard own player me highlight row",
@@ -8156,7 +8524,31 @@ if (a) a();
 e.appendChild(s);
 return s;
 }
-function hk(e, t, n, k, get) {
+function _keyClash(v, def, other, otherName) {
+let nk = x => {
+let s = String(x == null ? "" : x);
+return s === " " ? "space" : s.trim().toLowerCase().replace(/^(key|digit)(?=[a-z0-9])/, "");
+};
+let me = nk(v);
+if (!me || me === nk(def)) return "";
+if (other && nk(other) === me) return "This is also your " + otherName +
+": pressing it does both.";
+try {
+let vm = window.vueApp,
+ui = vm && (vm.$data && vm.$data.settingsUi || vm.settingsUi),
+kb = ui && ui.controls && ui.controls.keyboard;
+for (let list of [kb && kb.game, kb && kb.spectate]) {
+if (!Array.isArray(list)) continue;
+for (let b of list) {
+let bv = b && b.value;
+if (bv && (nk(bv.code) === me || nk(bv.label) === me))
+return "The game uses this key too (Settings ▸ Controls): pressing it does both.";
+}
+}
+} catch (x) {}
+return "";
+}
+function hk(e, t, n, k, get, clash) {
 let a = document.createElement("div");
 a.className = "mod-slider-container";
 if (k) a.setAttribute("data-setting", k);
@@ -8177,10 +8569,17 @@ c = false;
 function d(e) {
 return e ? e === " " ? "Space" : e : "None"
 }
+let warn = document.createElement("div");
+warn.className = "mod-key-warn";
+warn.setAttribute("role", "status");
+warn.hidden = true;
 function paint() {
 l.textContent = d(cur);
 l.setAttribute("aria-label", e + ": " + d(cur) +
 ". Press to change.");
+let w = clash ? clash(cur) : "";
+if (warn.textContent !== w) warn.textContent = w;
+warn.hidden = !w;
 }
 l.type = "button";
 l.className = "mod-num-input mod-key-btn";
@@ -8265,6 +8664,7 @@ paint();
 a.appendChild(r);
 a.appendChild(l);
 a.appendChild(clr);
+a.appendChild(warn);
 return a;
 }
 function seg(e, opts, cur, n, k) {
@@ -8339,8 +8739,8 @@ jb.setAttribute("aria-label",
 "MODS sections");
 let _jmp =
 0;
-let _pages = ["hud", "chat", "effects", "fps", "menus", "stats", "gameplay", "others", "manage",
-"changed"
+let _pages = ["hud", "chat", "effects", "fps", "menus", "fixes", "stats", "gameplay", "others",
+"manage", "changed"
 ],
 _ico = {
 others: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='3.5' y='3.5' width='7' height='7' rx='1.5'/><rect x='13.5' y='3.5' width='7' height='7' rx='1.5'/><rect x='3.5' y='13.5' width='7' height='7' rx='1.5'/><path d='M17 13.5v7M13.5 17h7'/></svg>",
@@ -8349,6 +8749,7 @@ chat: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor'
 effects: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 3l1.8 4.9L19 9.5l-5.2 1.6L12 16l-1.8-4.9L5 9.5l5.2-1.6z'/><path d='M19 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'/></svg>",
 fps: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4.5 18a8.5 8.5 0 1 1 15 0'/><path d='M12 14.5l3.5-4.5'/><circle cx='12' cy='14.5' r='1.3'/></svg>",
 menus: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01'/></svg>",
+fixes: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M14.7 6.3a4 4 0 0 0-5.4 5.2L4 16.8V20h3.2l5.3-5.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.5-.5-2.3z'/></svg>",
 stats: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 20h16'/><path d='M7 16v-5M12 16V6M17 16v-8'/></svg>",
 gameplay: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M7 8h10a5 5 0 0 1 4.8 6.3l-.6 2.2a2.3 2.3 0 0 1-4 .8L15.5 15h-7l-1.7 2.3a2.3 2.3 0 0 1-4-.8l-.6-2.2A5 5 0 0 1 7 8z'/><path d='M8 10.5v3M6.5 12h3M15.5 11.5h.01M17.5 13h.01'/></svg>",
 manage: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 7h9M17 7h3M4 17h3M11 17h9'/><circle cx='15' cy='7' r='2'/><circle cx='9' cy='17' r='2'/></svg>",
@@ -8359,7 +8760,10 @@ try {
 _pg0 = localStorage.getItem("ssb-modsPage")
 } catch (x) {}
 i.classList.add("ssb-paged");
-i.dataset.page = _pages.includes(_pg0) ? _pg0 : "hud";
+function pageAllowed(id) {
+return _pages.includes(id) && (id !== "changed" || d.ui.showChangedTab);
+}
+i.dataset.page = pageAllowed(_pg0) ? _pg0 : "hud";
 function paintPage() {
 let id = i.dataset.page;
 jb.querySelectorAll(".mod-jump-chip").forEach(b => {
@@ -8370,7 +8774,7 @@ b.setAttribute("aria-selected", on ? "true" :
 })
 }
 function setPage(id) {
-if (!_pages.includes(id)) return;
+if (!pageAllowed(id)) return;
 let fresh = i.dataset.page !== id;
 i.dataset.page = id;
 i.scrollTop = 0;
@@ -8386,6 +8790,14 @@ localStorage.setItem("ssb-modsPage", id)
 if (id === "changed" && window.__ssbPaintChanged) window.__ssbPaintChanged();
 if (id === "others" && window.__ssbPaintOthers) window.__ssbPaintOthers();
 if (window.__ssbRequestLayout) window.__ssbRequestLayout();
+}
+function syncChangedTab() {
+const button = jb.querySelector('[data-jump="changed"]');
+if (button) button.hidden = !d.ui.showChangedTab;
+if (!d.ui.showChangedTab && i.dataset.page === "changed") {
+setPage("menus");
+i.querySelector('[data-setting="tp-showChangedTab"] input')?.focus({preventScroll: true});
+}
 }
 function jump(id) {
 if (id === "changed") {
@@ -8421,6 +8833,7 @@ if (i.scrollTop === from && from !== top) i.scrollTop = top;
 ["effects", "Effects"],
 ["fps", "FPS & Ping"],
 ["menus", "Menus"],
+["fixes", "Fixes"],
 ["stats", "Stats"],
 ["gameplay", "Gameplay"],
 ["others", "Other Mods"],
@@ -8434,6 +8847,7 @@ b.textContent = t;
 if (_ico[id]) b
 .insertAdjacentHTML("afterbegin", _ico[id]);
 b.setAttribute("data-jump", id);
+if (id === "changed") b.hidden = !d.ui.showChangedTab;
 b
 .setAttribute("role", "tab");
 b.addEventListener("click", () => {
@@ -8864,6 +9278,14 @@ s(T, "Hide Ping", d.ping, "hide",
 "tp-hidePing", eo);
 s(T, "Show Frametime (ms)", d.hideFPS, "showMs", "tp-showMs", eo);
 s(T, "Show Session Time", d.hideFPS, "showSessionTime", "tp-showSessionTime", eo);
+T.appendChild(seg("Session Time Counts From", ["Page Load", "Match Start"], d.hideFPS.sessionFrom ===
+1 ? 1 : 0, v => {
+d.hideFPS.sessionFrom = v === 1 ? 1 : 0;
+localStorage.setItem("tp-sessionTimeFrom", JSON.stringify(d.hideFPS.sessionFrom));
+eo();
+document.dispatchEvent(new Event("ssb:settings-change"));
+return d.hideFPS.sessionFrom;
+}, "tp-sessionTimeFrom"));
 s(T,
 "Hide Box Background", d.hideFPS, "hideBox", "tp-hideBox", eo);
 let _rsC = document.createElement("div");
@@ -8965,6 +9387,8 @@ localStorage.removeItem(
 }, "5.2");
 s(P, "Pause-Menu Volume Slider", d.ui, "showVolumeSlider", "tp-showVolumeSlider",
 ei);
+s(P, "Show Changed Tab", d.ui, "showChangedTab", "tp-showChangedTab", syncChangedTab);
+a("Fixes", "fixes");
 let St = a("Stats", "stats");
 s(St, "Stats Tracker", d.stats, "enabled", "tp-statsEnabled");
 s(St, "King of the Coop Stats", d
@@ -8984,7 +9408,8 @@ d.stats.hotkey = e || "";
 localStorage.setItem("tp-statsHotkey", d.stats
 .hotkey);
 document.dispatchEvent(new Event("ssb:settings-change"));
-}, "tp-statsHotkey", () => d.stats.hotkey));
+}, "tp-statsHotkey", () => d.stats.hotkey, v => _keyClash(v, "\\", d.gameplay.tabOutKey,
+"Tab Out Key")));
 let L = a("Gameplay", "gameplay");
 s(L, "Legacy Skins", d.gameplay, "legacySkins", "tp-legacySkins", () => setLegacySkins(d
 .gameplay.legacySkins));
@@ -8999,7 +9424,8 @@ d.gameplay.tabOutKey = e || "";
 localStorage.setItem("tp-tabOutKey", d.gameplay
 .tabOutKey);
 document.dispatchEvent(new Event("ssb:settings-change"));
-}, "tp-tabOutKey", () => d.gameplay.tabOutKey));
+}, "tp-tabOutKey", () => d.gameplay.tabOutKey, v => _keyClash(v, "Tab", d.stats.hotkey,
+"Stats Hotkey")));
 let _fovC = document.createElement("div");
 _fovC.className = "mod-slider-container";
 _fovC.setAttribute("data-setting", "tp-fovStretch");
@@ -9393,7 +9819,7 @@ if (window.__ssbApplyParticles) window.__ssbApplyParticles();
 document.dispatchEvent(new Event("ssb:settings-change"));
 return reload ? "\nPress F5 to finish." : "";
 }
-function packModSettings(current) {
+function packModSettings(current, regParts) {
 const S = window.__ssbSettings,
 parts = [];
 Object.keys(CODE_KEYS).forEach(code => {
@@ -9405,7 +9831,7 @@ v === def) return;
 parts.push(code + (type === "b" ? (v ? "1" : "0") : code === "Fv" && v === 1 ? "01" :
 S.encodeValue(type === "key" ? v : _ssbPackNum(v, type === "n1" ? 1 : 100))));
 });
-return S.packCode(parts.join("") + S.codeParts());
+return S.packCode(parts.join("") + (regParts != null ? regParts : S.codeParts()));
 }
 function unpackModSettings(code) {
 if (!code) throw new Error("Invalid code format");
@@ -9424,6 +9850,10 @@ return;
 if (key === "Sm") {
 const n = _ssbUnpackNum(v, 1);
 res[sec][prop] = n === 1 || n === 2 ? n : 0;
+return;
+}
+if (key === "Fs") {
+res[sec][prop] = _ssbUnpackNum(v, 1) === 1 ? 1 : 0;
 return;
 }
 if (key === "Fg") {
@@ -9639,6 +10069,7 @@ placeholder: "M2-…",
 ok: "Next",
 validate: v => {
 if (!(v = v.trim())) return "Paste a code first.";
+if (/^copy chat$/i.test(v)) return "";
 if (cmds.some(c => c[0].test(v))) return "";
 if (/^SSB-MODS-/i.test(v) || /^eyJ[A-Za-z0-9+/=]*$/.test(v))
 return "That code is from an older Better HUD and can't be imported anymore. Settings codes now start with M2-.";
@@ -9658,6 +10089,11 @@ return ""
 });
 if (code == null) return;
 code = code.trim();
+if (/^copy chat$/i.test(code)) {
+if (window.__ssbCopyChat) window.__ssbCopyChat();
+else U.toast("Chat isn't ready yet. Try again in a moment.", {type: "error"});
+return;
+}
 for (let [re, run] of cmds) {
 let mt = re.exec(code);
 if (mt) {
@@ -9720,6 +10156,251 @@ U.toast("Import failed: " + n.message, {
 type: "error"
 })
 }
+});
+const _PRESETS = [{
+name: "Performance",
+text: "Smart Auto Detail, Disable Anti-Aliasing, Disable All Particles (smoke stays visible), Hide Bullets, Hide Bullet Splats and Hide Explosion Fire.",
+core: {
+"perf.noParticles": true,
+"perf.noBulletProjectiles": true,
+"gameplay.noBulletSplats": true,
+"gameplay.noExplosionFire": true
+},
+reg: {
+"tp-smartDetail": true,
+"tp-noAA": true
+}
+}, {
+name: "Clean HUD",
+text: "Hides the egg count, challenges, Chick'n Winner and best streak. Your health, ammo, chat and kill feed stay.",
+core: {
+"ui.hideEggCount": true,
+"ui.hideChallenges": true,
+"ui.hideChickenWinner": true,
+"ui.hideBestStreak": true
+},
+reg: {}
+}, {
+name: "Default",
+text: "Every MODS setting back at its default. Your crosshairs, favorites and match history stay.",
+all: true
+}],
+_PRESET_MAX = 10;
+function _presetCode(p) {
+const S = window.__ssbSettings;
+let cur = JSON.parse(JSON.stringify(p.all ? dDefaults : d)),
+reg = "";
+if (!p.all) Object.keys(p.core).forEach(k => {
+let [sec, prop] = k.split(".");
+if (cur[sec]) cur[sec][prop] = p.core[k];
+});
+S.items.forEach(s => {
+if (!s.code) return;
+let v = p.all ? !!s.def : Object.prototype.hasOwnProperty.call(p.reg, s.key) ? !!p.reg[s.key] :
+!!s.get();
+if (v !== !!s.def) reg += s.code + (v ? "1" : "0");
+});
+return packModSettings(cur, reg);
+}
+function _presetsGet() {
+try {
+let a = JSON.parse(localStorage.getItem("tp-presets") || "[]");
+return Array.isArray(a) ? a.filter(x => x && typeof x.n == "string" && x.n && typeof x.c ==
+"string" && /^M2-/.test(x.c)).slice(0, _PRESET_MAX) : []
+} catch (x) {
+return []
+}
+}
+function _presetsSet(a) {
+try {
+if (a.length) localStorage.setItem("tp-presets", JSON.stringify(a));
+else localStorage.removeItem("tp-presets");
+return true;
+} catch (x) {
+window.__ssbErr("presets#1", x);
+return false;
+}
+}
+function _ssbMerge(t, o) {
+if (o) Object.keys(o).forEach(n => {
+if (o[n] === null || typeof o[n] != "object" || Array.isArray(o[n])) t[n] = o[n];
+else {
+if (!t[n]) t[n] = {};
+_ssbMerge(t[n], o[n]);
+}
+});
+}
+async function _presetLoad(code, name) {
+let o;
+try {
+o = _ssbKeepSecrets(unpackModSettings(code))
+} catch (n) {
+U.toast("Couldn't load " + name + ": " + n.message, {
+type: "error"
+});
+return
+}
+let diff = _ssbCodeChanges(o, code),
+shown = diff.names.slice(0, 8),
+more = diff.names.length - shown.length + diff.unnamed;
+if (!shown.length && !diff.unnamed) {
+U.toast("Your settings already match " + name + ". Nothing to change.", {
+type: "success"
+});
+return
+}
+if (!(await U.confirm({
+title: "Load " + name,
+text: "This will change: " + shown.join(", ") + (more > 0 ? (shown.length ? " and " : "") +
+more + " more" : "") + ".\nYour crosshairs aren't affected.",
+ok: "Load",
+danger: true
+}))) return;
+try {
+_ssbMerge(d, o);
+_ssbPersistD();
+let ch = window.__ssbSettings.applyCode(code);
+ef("ui_equip");
+U.toast(name + " loaded." + _f5(ch), {
+type: "success"
+});
+_rebuild();
+} catch (n) {
+U.toast("Couldn't load " + name + ": " + n.message, {
+type: "error"
+})
+}
+}
+function _presetsOpen() {
+let wrap = document.createElement("div"),
+list = document.createElement("ul"),
+item = (name, text, load, del) => {
+let li = document.createElement("li"),
+b = document.createElement("b"),
+t = document.createElement("span"),
+acts = document.createElement("div"),
+mk = (label, kind, fn) => {
+let x = document.createElement("button");
+x.type = "button";
+x.className = "ssb-dlg-btn ssb-dlg-" + kind + " ssb-dlg-act";
+x.textContent = label;
+x.addEventListener("click", fn);
+acts.appendChild(x);
+};
+b.textContent = name;
+t.textContent = text;
+acts.className = "ssb-dlg-acts";
+mk("Load", "blue", () => {
+ef("ui_click");
+_presetLoad(load(), name);
+});
+if (del) mk("Delete", "red", del);
+li.append(b, t, acts);
+list.appendChild(li);
+};
+wrap.className = "ssb-dlg-report";
+list.className = "ssb-dlg-list";
+_PRESETS.forEach(p => item(p.name, p.text, () => _presetCode(p)));
+_presetsGet().forEach(x => item(x.n, "Your settings" + (x.t ? ", saved " + new Date(x.t)
+.toLocaleDateString() : "") + ".", () => x.c, async () => {
+ef("ui_click");
+if (await U.confirm({
+title: "Delete Preset",
+text: "Delete the preset \"" + x.n +
+"\"? Your current settings stay as they are.",
+ok: "Delete",
+danger: true
+})) {
+if (_presetsSet(_presetsGet().filter(y => !(y.n === x.n && y.c === x.c))))
+U.toast("Preset deleted.", {type: "success"});
+else U.toast("Couldn't delete the preset: browser storage is full or unavailable.", {
+type: "error"
+});
+}
+_presetsOpen();
+}));
+wrap.appendChild(list);
+U.dialog({
+title: "Presets",
+text: "Load a set of MODS settings. You'll see what it changes before anything does.",
+body: wrap,
+wide: true,
+cancel: undefined,
+buttons: [{
+label: "Save Current",
+kind: "yolk",
+run: () => _presetSave(true)
+}, {
+label: "Close",
+kind: "blue",
+value: undefined,
+primary: true
+}]
+});
+}
+async function _presetSave(fromList) {
+let saved = _presetsGet(),
+nm = await U.prompt({
+title: "Save Preset",
+text: "Name your current MODS settings to load them again from Presets. Using a name again replaces that preset.",
+placeholder: "My settings",
+ok: "Save",
+maxLength: 40,
+validate: v => {
+v = v.trim();
+if (!v) return "Give it a name.";
+if (_PRESETS.some(p => p.name.toLowerCase() === v.toLowerCase()))
+return "That's a built-in preset's name. Pick another.";
+if (!saved.some(x => x.n === v) && saved.length >= _PRESET_MAX)
+return "You can save up to " + _PRESET_MAX + " presets. Delete one first.";
+return ""
+}
+});
+if (nm != null) {
+nm = nm.trim();
+try {
+saved = saved.filter(x => x.n !== nm);
+saved.push({
+n: nm,
+c: packModSettings(d),
+t: Date.now()
+});
+if (!_presetsSet(saved)) throw new Error("Browser storage is full or unavailable.");
+ef("ui_equip");
+U.toast("Saved \"" + nm + "\" in Presets.", {
+type: "success"
+});
+} catch (n) {
+U.toast("Couldn't save the preset: " + n.message, {
+type: "error"
+});
+}
+}
+if (fromList) _presetsOpen();
+}
+let pr_load = document.createElement("button");
+pr_load.className = "ch2-profile-btn";
+pr_load.setAttribute("data-pm", "presets");
+pr_load.textContent = "Presets";
+pr_load.setAttribute("data-tooltip",
+"Load a ready set of settings (Performance, Clean HUD, Default) or one you saved. You see what it changes before anything does.");
+pr_load.setAttribute("data-keywords", "preset presets profile setup performance clean hud default load");
+pr_load.style.cssText = "width: 100%; cursor: pointer; box-sizing: border-box;";
+pr_load.addEventListener("click", () => {
+ef("ui_click");
+_presetsOpen();
+});
+let pr_save = document.createElement("button");
+pr_save.className = "ch2-profile-btn";
+pr_save.setAttribute("data-pm", "preset-save");
+pr_save.textContent = "Save Settings as Preset";
+pr_save.setAttribute("data-tooltip",
+"Save your current MODS settings under a name, to load them again from Presets.");
+pr_save.setAttribute("data-keywords", "preset presets profile setup save");
+pr_save.style.cssText = "width: 100%; cursor: pointer; box-sizing: border-box;";
+pr_save.addEventListener("click", () => {
+ef("ui_click");
+_presetSave();
 });
 let es = document.createElement("button");
 es.className = "ch2-reset-btn";
@@ -10116,6 +10797,8 @@ type: "error"
 });
 et.appendChild(ec_code);
 et.appendChild(ei_code);
+et.appendChild(pr_load);
+et.appendChild(pr_save);
 et.appendChild(bk_save);
 et.appendChild(
 bk_load);
@@ -13432,9 +14115,57 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.3";
-const changelogVersion = "6.3";
+const displayVersion = "6.4";
+const changelogVersion = "6.4";
 const changelogKey = "ssb-better-ui-changelog-seen";
+function changelogSound(name) {
+try {
+window.BAWK?.play?.(name);
+} catch (err) {
+window.__ssbErr("changelog.sound", err);
+}
+}
+const v64Items = [{
+label: "Presets",
+text: "MODS ▸ Manage ▸ Presets loads a ready set of settings (Performance, Clean HUD or Default) or one you saved with Save Settings as Preset. It lists what will change before anything does.",
+group: "v6.4"
+}, {
+label: "Keep Matches",
+text: "Keep, on a match in Match History, saves it from the 40-match limit (up to 20 kept). Clear History leaves kept matches.",
+group: "v6.4"
+}, {
+label: "Personal Records",
+text: "A new switch in MODS ▸ Stats, on by default: your most kills and best KDR for each mode and map, shown above Match History, and a message at the end of a match that beats one.",
+group: "v6.4"
+}, {
+label: "Show Match FPS",
+text: "A new switch in MODS ▸ Stats, off by default: Match History shows each match's average and lowest FPS.",
+group: "v6.4"
+}, {
+label: "FPS Check",
+text: "Now counts stutters and freezes in your match, and its tips can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.",
+group: "v6.4"
+}, {
+label: "Chat",
+text: "With Infinite Chat History off, the chat keeps the game's own 5 messages again. Chat Timestamps (MODS ▸ Chat, off by default) shows when each message arrived while you're paused. Type copy chat in MODS ▸ Manage ▸ Import Settings Code to copy every retained line as text.",
+group: "v6.4"
+}, {
+label: "Session Time",
+text: "Session Time Counts From can start the TIME in the FPS box when the match starts, instead of when the page loaded.",
+group: "v6.4"
+}, {
+label: "Fixes Page",
+text: "Chick'n Winner Fix and Early Respawn Guard have their own Fixes page in MODS. Early Respawn Guard now says why a Play click did nothing.",
+group: "v6.4"
+}, {
+label: "Hotkeys",
+text: "Stats Hotkey and Tab Out Key say so when the key you pick is also the other one, or one the game uses.",
+group: "v6.4"
+}, {
+label: "Match History",
+text: "An unknown server is saved as a dash instead of the last server you ever connected to, and server names come from the game's own list.",
+group: "v6.4"
+}];
 const v63Items = [{
 label: "Inventory Count",
 text: "A new switch in MODS ▸ Menus adds a card under it with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default.",
@@ -13444,67 +14175,14 @@ label: "Match History",
 text: "The map name saved with each match now comes only from the game's own map list. Better HUD no longer keeps a copy of the names, which a game update could leave out of date and name a map wrongly.",
 group: "v6.3"
 }];
-const v62Items = [{
-label: "Effects FPS",
-text: "Works again on the new game version, 1.0.29. A game update had stopped it attaching, so the setting did nothing and a one-time message said so.",
-group: "v6.2.1"
-}, {
-label: "King of the Coop Stats",
-text: "A new switch in MODS ▸ Stats adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard and your match history. Matches saved before show a dash. Off by default; it needs Stats Tracker on.",
-group: "v6.2"
-}, {
-label: "When King of the Coop Ends",
-text: "A new choice in MODS ▸ Stats: when a team wins a King of the Coop game, Better HUD copies the scoreboard picture to your clipboard or downloads it, the same picture Copy Image and Download make in the stats window. Off by default.",
-group: "v6.2"
-}, {
-label: "Stats Window",
-text: "The coop teams fit side by side on desktop. Kill Bars adds an optional team-colored fill behind each player's row, and Highlight Your Name switches your own row's highlight on or off. Click the match-name chip to rename it; Enter or leaving the field saves, Esc cancels.",
-group: "v6.2"
-}, {
-label: "Pause-menu Stats",
-text: "The six match stats use two rows so they fit without changing the weapon selector or Play button.",
-group: "v6.2"
-}, {
-label: "Uncap FPS",
-text: "Uncap FPS now runs frames back to back while you're playing, staying at the normal rate in menus. The gear on its card opens Controlled Uncap, the adaptive limiter for when full Uncap delays your mouse or loads your graphics card too much, and the new Target FPS, which caps the uncapped frame rate anywhere from 30 to 1000. Target FPS is off by default.",
-group: "v6.2"
-}, {
-label: "Chat",
-text: "With Infinite Chat History off, the chat now keeps the newest 8 messages instead of 5.",
-group: "v6.2"
-}, {
-label: "Effects FPS",
-text: "The slider keeps Off and 30–240 FPS. The number box beside it now accepts any whole rate from 1 to 540; clear it for Off. Camera and gameplay timing keep their normal rate.",
-group: "v6.2"
-}, {
-label: "Hide Bullet Splats",
-text: "A new switch in MODS ▸ Effects hides only the small wall-impact puff. Grenade smoke and rocket trails stay visible. Off by default.",
-group: "v6.2"
-}, {
-label: "Type to Search",
-text: "Open Settings and start typing: Better HUD switches to MODS and the letters go straight into the search box, so you don't have to click it first.",
-group: "v6.2"
-}, {
-label: "Match Stats",
-text: "The scoreboard now keeps kills, deaths and team scores up to date while it's open, and a player named something like constructor no longer mixes up the stats.",
-group: "v6.2"
-}, {
-label: "Fixes",
-text: "The crosshair's arms line up at browser zoom levels such as 110%. Show Session Time stays on screen, in its box, when Hide FPS and Hide Ping are both on.",
-group: "v6.2"
-}, {
-label: "Lighter",
-text: "Better HUD does less work in the background on the menus, and the script file is smaller.",
-group: "v6.2"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.3:",
-items: v63Items
+intro: "Here's what's new in v6.4:",
+items: v64Items
 }, {
-version: "6.2",
-intro: "Previously in v6.2:",
-items: v62Items
+version: "6.3",
+intro: "Previously in v6.3:",
+items: v63Items
 }];
 function hasSeenChangelog() {
 try {
@@ -13790,16 +14468,17 @@ return head + `
 }
 selector.addEventListener("change", () => {
 renderRelease(parseInt(selector.value, 10) || 0);
-if (typeof ef === "function") ef("ui_onchange");
+changelogSound("ui_onchange");
 });
 renderRelease(0);
 overlay.querySelector("button").addEventListener("click", () => {
 markChangelogSeen();
 overlay.remove();
+changelogSound("ui_popupclose");
 });
 (document.head || document.documentElement).appendChild(style);
 document.body.appendChild(overlay);
-if (typeof ef === "function") ef("ui_popupopen");
+changelogSound("ui_popupopen");
 return true;
 }
 function installFooterChangelogLink() {
@@ -15145,7 +15824,7 @@ else boot();
 const KEY = "tp-infiniteChat";
 const STYLE_ID = "ssb-infinite-chat-style";
 const MAX_KEEP = 500;
-const SHORT_KEEP = 8;
+const GAME_KEEP = 5;
 const isOn = () => {
 try {
 return JSON.parse(localStorage.getItem(KEY) || "false") === true;
@@ -15295,6 +15974,29 @@ if (playing || (pendingMessages && followLatest)) host.scrollTop = host.scrollHe
 if (jump) jump.hidden = playing || followLatest || (!pendingMessages && jump.hidden);
 pendingMessages = false;
 }
+function copyChat(out) {
+if (!window.__ssbUI) return;
+if (!out || !lines(out)) {
+window.__ssbUI.toast("There's no chat to copy yet.");
+return;
+}
+const rows = Array.from(out.getElementsByClassName("chat-item")).map(el => {
+const s = (el.textContent || "").replace(/\s+/g, " ").trim();
+const t = el.getAttribute("data-ssb-t");
+return s ? (t ? "[" + t + "] " : "") + s : "";
+}).filter(Boolean);
+if (!rows.length) {
+window.__ssbUI.toast("There's no chat to copy yet.");
+return;
+}
+let when = "";
+try {
+when = ", copied " + new Date().toLocaleString();
+} catch (e) {}
+return window.__ssbUI.copyText("Shell Shockers chat" + when + "\n" + rows.join("\n"),
+"Copied " + rows.length + (rows.length === 1 ? " chat message." : " chat messages."));
+}
+window.__ssbCopyChat = () => copyChat(document.getElementById("chatOut"));
 function scheduleChat(added) {
 pendingMessages = pendingMessages || added === true;
 if (!document.hidden && frame === null) frame = nativeFrame.request(flushChat);
@@ -15426,7 +16128,7 @@ const out = document.getElementById("chatOut");
 if (out) {
 out.style.removeProperty("max-height");
 const items = out.querySelectorAll(".chat-item");
-let extra = items.length - SHORT_KEEP;
+let extra = items.length - GAME_KEEP;
 for (let k = 0; k < items.length && extra > 0; k++) {
 if (items[k].classList.contains("chat-pinned-item")) continue;
 items[k].remove();
@@ -15436,50 +16138,9 @@ extra--;
 const el = document.getElementById(STYLE_ID);
 if (el) el.remove();
 }
-let shortObs = null,
-shortOut = null,
-stopShortPoll = null;
-function hookShort() {
-const out = document.getElementById("chatOut");
-if (!out || shortOut === out) return;
-if (shortObs) shortObs.disconnect();
-shortOut = out;
-const mo = shortObs = new MutationObserver(records => {
-mo.disconnect();
-if (restore(out, records, SHORT_KEEP)) {
-const box = out.closest(".chat-container");
-if (box) box.scrollTop = box.scrollHeight;
-}
-mo.observe(out, {
-childList: true
-});
-});
-mo.observe(out, {
-childList: true
-});
-}
-function startShort() {
-hookShort();
-if (!stopShortPoll) stopShortPoll = window.__ssbMenuPoll(hookShort, 2000, {
-inMatch: true
-});
-}
-function stopShort() {
-if (stopShortPoll) {
-stopShortPoll();
-stopShortPoll = null;
-}
-if (shortObs) shortObs.disconnect();
-shortObs = shortOut = null;
-}
 function sync() {
-if (isOn()) {
-stopShort();
-enable();
-} else {
-disable();
-startShort();
-}
+if (isOn()) enable();
+else disable();
 }
 function boot() {
 sync();
@@ -15490,8 +16151,111 @@ after: "tp-hideChat",
 label: "Infinite Chat History",
 code: "Ai",
 def: false,
-tip: "Stops the game deleting old chat messages, so the whole match's chat is kept. Pause or open chat and scroll up to read it back. Off, the chat keeps the newest 8 messages.",
+tip: "Stops the game deleting old chat messages, so the whole match's chat is kept. Pause or open chat and scroll up to read it back. Type copy chat into MODS ▸ Manage ▸ Import Settings Code to copy every retained line as text. Off, the chat keeps the game's newest 5 messages.",
 keywords: "chat log scroll back messages",
+get: isOn,
+set: (v) => {
+setOn(v);
+sync();
+}
+});
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
+const KEY = "tp-chatTimes";
+const STYLE_ID = "ssb-chat-times-style";
+const isOn = () => {
+try {
+return JSON.parse(localStorage.getItem(KEY) || "false") === true;
+} catch (e) {
+return false;
+}
+};
+const setOn = (v) => {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+window.__ssbErr("chattimes#1", e)
+}
+};
+let obs = null,
+out = null,
+stopPoll = null;
+function now() {
+const d = new Date();
+try {
+return d.toLocaleTimeString([], {
+hour: "2-digit",
+minute: "2-digit"
+});
+} catch (e) {
+return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+}
+}
+function stamp(records) {
+let t = "";
+for (const rec of records) {
+for (const n of rec.addedNodes) {
+if (n.nodeType !== 1 || !n.classList.contains("chat-item") || n.hasAttribute("data-ssb-t")) continue;
+n.setAttribute("data-ssb-t", t || (t = now()));
+}
+}
+}
+function hook() {
+const el = document.getElementById("chatOut");
+if (!el || el === out) return;
+if (obs) obs.disconnect();
+out = el;
+obs = new MutationObserver(stamp);
+obs.observe(el, {
+childList: true
+});
+}
+function css(on) {
+let el = document.getElementById(STYLE_ID);
+if (!on) {
+if (el) el.remove();
+return;
+}
+if (!el) {
+el = document.createElement("style");
+el.id = STYLE_ID;
+(document.head || document.documentElement).appendChild(el);
+}
+el.textContent =
+".is-paused #chatOut .chat-item[data-ssb-t]::before{content:attr(data-ssb-t);margin-right:.45em;opacity:.6;font-size:.82em;font-variant-numeric:tabular-nums;}";
+}
+function sync() {
+const on = isOn();
+css(on);
+if (on) {
+hook();
+if (!stopPoll) stopPoll = window.__ssbMenuPoll(hook, 2000, {
+inMatch: true
+});
+return;
+}
+if (stopPoll) {
+stopPoll();
+stopPoll = null;
+}
+if (obs) obs.disconnect();
+obs = out = null;
+}
+function boot() {
+sync();
+window.__ssbSettings.add({
+key: KEY,
+section: "chat",
+after: "tp-infiniteChat",
+label: "Chat Timestamps",
+code: "Ct",
+def: false,
+tip: "When you pause, each chat message shows the time it arrived. The chat you see while playing doesn't change. Messages from before you turned it on have no time.",
+keywords: "chat time times timestamp timestamps clock when sent arrived hour minute",
 get: isOn,
 set: (v) => {
 setOn(v);
@@ -15778,8 +16542,7 @@ if (window.__ssbErr) window.__ssbErr("chwfix#2", e);
 function boot() {
 window.__ssbSettings.add({
 key: KEY,
-section: "menus",
-after: "tp-showServerList",
+section: "fixes",
 label: "Chick'n Winner Fix",
 code: "Cw",
 def: true,
@@ -15827,14 +16590,24 @@ if (!(v.game.respawnTime > 0) && ready && !v.game.disableRespawnButton) return;
 ev.stopImmediatePropagation();
 ev.preventDefault();
 if (gs && typeof gs.jiggleRespawnButton === "function") gs.jiggleRespawnButton();
+tell();
 } catch (e) {
 if (window.__ssbErr) window.__ssbErr("respawnguard#2", e);
 }
 }
+let _toldFor = null;
+function tell() {
+const id = window.__ssbGameCode || "";
+if (_toldFor === id || !window.__ssbUI) return;
+_toldFor = id;
+window.__ssbUI.toast("Early Respawn Guard: wait for the countdown to end. Clicking Play early would restart it.", {
+ms: 4500
+});
+}
 function boot() {
 window.__ssbSettings.add({
 key: KEY,
-section: "menus",
+section: "fixes",
 after: "tp-fixChickenWinner",
 label: "Early Respawn Guard",
 code: "Rw",
@@ -15886,7 +16659,6 @@ function boot() {
 window.__ssbSettings.add({
 key: KEY,
 section: "menus",
-after: "tp-fixChickenWinner",
 label: "Instant Chick'n Winner",
 code: "Ci",
 def: false,

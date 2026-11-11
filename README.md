@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.3.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.4.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v63) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v64) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,12 +65,19 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.3
+## What's new in v6.4
 
-- **Inventory Count:** a new switch in **MODS ▸ Menus** adds a card under it with how many hats, stamps, primary guns, secondary guns, grenades and melee weapons you own, out of everything the game lists, and a total. Off by default
-- **Match History:** the map name saved with each match uses the game's current map list and native map data. The game-mode label is never used as a map name. Better HUD no longer keeps a copy of the names
-- From v6.2: **King of the Coop Stats**, **When King of the Coop Ends**, **Type to Search**, the Uncap FPS gear with **Controlled Uncap**, and a smaller script
-- From v6.1: Tab Out keeps your view, **Render Scale**, **Join From Chat**, **Effects FPS**, **Favorites First** and **Remove All Mod Data**
+- **Presets:** MODS ▸ Manage loads Performance, Clean HUD or Default, or saves your current settings under a name. Every load lists its changes and asks first. Up to 10 saved presets; backup files include them. Failed storage writes now report an error instead of claiming the preset was saved or deleted.
+- **Changed tab:** optional and off by default. Turn on **Show Changed Tab** in **MODS ▸ Menus** to use it; settings codes and backups include the preference
+- **Keep Matches:** Keep on a Match History row protects it from the 40-match limit, with up to 20 kept matches in addition. Clear History leaves kept matches.
+- **Personal Records:** your most kills and best KDR, with at least 10 kills, for each mode and map. Match History shows the records, and a message at match end announces a new best. On by default; needs Stats Tracker.
+- **Show Match FPS:** an off-by-default Stats switch shows average and lowest four-second FPS in Match History and adds performance columns to CSV. Match details can also show freezes and the lowest resolution used. Earlier matches without measurements show no value.
+- **FPS Check:** counts short stutters and freezes over 150 ms. Where applicable, its recommendations can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.
+- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. Type `copy chat` in **MODS ▸ Manage ▸ Import Settings Code** to copy every retained line as plain text, including available timestamps.
+- **Session Time:** Session Time Counts From can use Page Load or Match Start. Outside a match it uses page time.
+- **Fixes:** Chick'n Winner Fix and Early Respawn Guard now have their own MODS ▸ Fixes page. Early Respawn Guard explains why an early Play click did nothing.
+- **Hotkeys:** Stats Hotkey and Tab Out Key warn when they overlap each other or a game control.
+- **Match History:** individual match headers stay on one row and the panel widens to fit. Unknown servers are saved as a dash instead of reusing an old connection, and region names use the game's own list.
 
 [Full changelog ↓](#changelog)
 
@@ -92,11 +99,11 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 <summary><b>Full feature list</b></summary>
 
 #### HUD & widgets
-- **FPS / Ping display** with frametime mode, session timer, an optional see-through box, and customizable values
+- **FPS / Ping display** with frametime mode, a session timer counting from page load or match start, an optional see-through box, and customizable values
 - **Server-region picker** integrated into the home screen with live ping
 - **GUI Scale**: a slider for the size of the HUD, menus and chat, weighted toward making them smaller. The crosshair keeps its size
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters, challenges, the Chick'n Winner button
-- **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest eight messages
+- **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest 5 messages
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
@@ -128,7 +135,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
-- **Match History** saves recent matches so you can revisit scoreboards, maps, modes, servers and durations, filter them by mode and map, and export JSON / CSV. The match you're playing is the first row
+- **Match History** saves the newest 40 matches plus up to 20 kept matches, with scoreboards, maps, modes, servers and durations. Filter by mode and map and export JSON / CSV. The match you're playing is the first row. **Show Match FPS** adds measured performance; **Personal Records** shows your best kills and KDR
 - **King of the Coop Stats** (off by default, **MODS ▸ Stats**): each player's time on the coop, captures and takeovers in the King of the Coop scoreboard, match history and CSV export. Matches saved before show a dash. Needs Stats Tracker on
 - **When King of the Coop Ends** (off by default, **MODS ▸ Stats**): when a team wins a King of the Coop game, copy the scoreboard picture to the clipboard or download it. Needs Stats Tracker on
 - Pinned compact stats above the pause weapon select
@@ -146,8 +153,8 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
 - **Inventory Count**: a card with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default (**MODS ▸ Menus**)
-- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay, Other Mods, Manage, Changed). Open Settings and just start typing to search
-- **Changed** page: only the settings you've changed, each with its own Reset
+- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Fixes, Stats, Gameplay, Other Mods, Manage, Changed). Open Settings and just start typing to search
+- **Changed** page (optional): only the settings you've changed, each with its own Reset. Enable **MODS ▸ Menus ▸ Show Changed Tab** to show it; off by default
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - **Welcome Guide**: the three-step setup a new install opens with; open it again from **MODS ▸ Manage**
 - In-game pop-ups for codes and confirmations instead of browser popups
@@ -256,11 +263,25 @@ Better HUD makes three kinds of request, and sends nothing about you or your set
 - **Update check:** it reads the small version file from this repo on GitHub, at most every 30 minutes, to tell you when a new version is out
 - **Pictures:** the first time you take a stats screenshot or an FPS Check picture, it loads the html-to-image library from cdnjs
 
-Your settings, crosshairs and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (everything saved under the `tp-`, `ch2-` and `ssb-` names, and the server list) and reloads the page. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
+Your settings, saved presets, crosshairs, personal records and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (everything saved under the `tp-`, `ch2-` and `ssb-` names, and the server list) and reloads the page. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
 
 ## Changelog
 
-#### v6.3.0 — current
+#### v6.4.0 — current
+
+- **Presets:** MODS ▸ Manage loads Performance, Clean HUD or Default, or saves your current settings under a name. Every load lists its changes and asks first. Up to 10 saved presets; backup files include them. Failed storage writes now report an error instead of claiming the preset was saved or deleted.
+- **Changed tab:** optional and off by default. Turn on **Show Changed Tab** in **MODS ▸ Menus** to use it; settings codes and backups include the preference
+- **Keep Matches:** Keep on a Match History row protects it from the 40-match limit, with up to 20 kept matches in addition. Clear History leaves kept matches.
+- **Personal Records:** your most kills and best KDR, with at least 10 kills, for each mode and map. Match History shows the records, and a message at match end announces a new best. On by default; needs Stats Tracker.
+- **Show Match FPS:** an off-by-default Stats switch shows average and lowest four-second FPS in Match History and adds performance columns to CSV. Match details can also show freezes and the lowest resolution used. Earlier matches without measurements show no value.
+- **FPS Check:** counts short stutters and freezes over 150 ms. Where applicable, its recommendations can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.
+- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. Type `copy chat` in **MODS ▸ Manage ▸ Import Settings Code** to copy every retained line as plain text, including available timestamps.
+- **Session Time:** Session Time Counts From can use Page Load or Match Start. Outside a match it uses page time.
+- **Fixes:** Chick'n Winner Fix and Early Respawn Guard now have their own MODS ▸ Fixes page. Early Respawn Guard explains why an early Play click did nothing.
+- **Hotkeys:** Stats Hotkey and Tab Out Key warn when they overlap each other or a game control.
+- **Match History:** individual match headers stay on one row and the panel widens to fit. Unknown servers are saved as a dash instead of reusing an old connection, and region names use the game's own list.
+
+#### v6.3.0
 
 - **Inventory Count:** a new switch under **MODS ▸ Menus**, under **Favorites First**. A card shows how many hats, stamps, primary guns, secondary guns, grenades and melee weapons your account has, each as owned out of everything the game lists, and a total with its percentage. The free starter items count as owned, and the lists include some items that can't be earned any more. Better HUD only reads your account and changes nothing. Off by default
 - **Match History:** the map name saved with each match now uses the game's current map list and native map data. The game-mode label is never used as a map name. Better HUD no longer keeps a copy of the names, which a game update could leave out of date and name a map wrongly
