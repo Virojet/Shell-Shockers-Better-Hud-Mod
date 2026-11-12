@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.5.2
+// @version      6.5.3
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.2";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.3";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.5.2");
+.version) || "6.5.3");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.2",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.3",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1476,7 +1476,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.5.2",
+version: "6.5.3",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -7807,16 +7807,19 @@ margin:0 0 2px; padding:12px 12px 28px; border:1px solid var(--pm-edge); border-
 background:linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.14));
 box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), var(--pm-lift);
 }
-#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search-wrap { flex:none; min-width:0; order:0; }
+#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search-wrap { min-width:0; order:0; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .ssb-settings-feedback { flex-basis:auto; order:1; margin:-6px 2px 0; font-size:12px; }
-@media (max-height:760px) { #mod-top-bar .mod-jump-chip { height:34px !important; } #mod-top-bar { gap:8px !important; } }
-#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-jump-bar { flex-direction:column; flex-wrap:nowrap; gap:4px; width:auto; overflow:visible; padding:0; order:2; }
+@media (max-height:760px) { #mod-top-bar { gap:8px !important; } }
+/* The section buttons share whatever height the sidebar has: they shrink together (down to 22px) instead of spilling over the footer */
+#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar { overflow:hidden; }
+#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search-wrap { flex:none; }
+#popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-jump-bar { flex-direction:column; flex-wrap:nowrap; gap:4px; width:auto; min-height:0; overflow:visible; padding:0; order:2; flex:0 1 auto; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search { height:40px; border:2px solid rgba(14,118,151,0.28) !important; border-radius:12px; font-size:15px; box-shadow:inset 0 2px 4px rgba(8,62,84,0.08); }
 
 /* Section buttons: quiet until hovered, the selected one is the game's orange button */
 #mod-top-bar .mod-jump-chip[hidden] { display:none !important; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-jump-chip {
-flex:none; display:flex; align-items:center; justify-content:flex-start; gap:11px; width:100%; height:42px; margin:0; padding:0 12px;
+flex:0 1 42px; min-height:22px; display:flex; align-items:center; justify-content:flex-start; gap:11px; width:100%; height:42px; margin:0; padding:0 12px; box-sizing:border-box;
 border:2px solid transparent; border-radius:12px; background:transparent; color:var(--ssb-ink);
 font-size:15px; font-weight:800; letter-spacing:0.1px; text-align:left;
 transition:background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.12s;
@@ -7938,6 +7941,8 @@ transition:background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1
 #mod-settings-section .ssb-uc-gear[aria-expanded="true"] { background:rgba(12,87,111,0.12); border-color:rgba(12,87,111,0.22); box-shadow:inset 0 1px 3px rgba(8,62,84,0.22); }
 #mod-settings-section .ssb-uc-gear[aria-expanded="true"]::before { transform:rotate(90deg); }
 #mod-settings-section .ssb-uc-open > .ssb-uc-sub { animation:ssb-uc-in 0.2s ease-out; }
+/* Session Time Counts From only shows while Show Session Time is on (it always shows on the Changed page) */
+#mod-settings-section:not([data-page="changed"]) .mod-grid:has(> [data-setting="tp-showSessionTime"] input:not(:checked)) > [data-setting="tp-sessionTimeFrom"] { display:none !important; }
 @keyframes ssb-uc-in { from { opacity:0; transform:translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) {
 #mod-settings-section .ssb-uc-gear::before { transition:none; }

@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.5.2-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.5.3-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -67,6 +67,8 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ## What's new in v6.5
 
+- **Sidebar fix:** with the Changed button showing, the section buttons no longer run over the bottom bar; they shrink to fit.
+- **Session Time:** **Session Time Counts From** only shows while **Show Session Time** is on.
 - **Reload pop-up:** a setting that needs a page reload (Disable Anti-Aliasing, for one) now opens a small pop-up with **Reload now** and **Later**. The "Reload required" line in the sidebar, which covered the section buttons, is gone.
 - **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls and has more room at the bottom, and the search box is empty again each time you reopen the menu.
 - **Block Ads:** the switch is removed from **MODS ▸ Menus**. It is now a command: type `block ads` in **Import Settings Code** to turn it on or off, then reload (F5). Your saved choice is kept.
@@ -265,7 +267,12 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.5.2 — current
+#### v6.5.3 — current
+
+- **Sidebar fix:** with the Changed button showing, the section buttons no longer run over the bottom bar; they shrink to fit.
+- **Session Time:** **Session Time Counts From** only shows while **Show Session Time** is on.
+
+#### v6.5.2
 
 - **Sidebar:** more space under the last section button.
 
