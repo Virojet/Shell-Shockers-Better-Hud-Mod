@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.5.0
+// @version      6.5.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.1";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.5.0");
+.version) || "6.5.1");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.1",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1354,38 +1354,6 @@ return m.js;
 });
 }();
 ! function() {
-var KEY = "tp-adBypass";
-function isOn() {
-try {
-return JSON.parse(localStorage.getItem(KEY) || "false") === true;
-} catch (e) {
-return false;
-}
-}
-function setOn(v) {
-try {
-localStorage.setItem(KEY, JSON.stringify(!!v));
-} catch (e) {
-window.__ssbErr("patches#4", e)
-}
-}
-window.__ssbSettings.add({
-key: KEY,
-section: "menus",
-label: "Block Ads",
-code: "Ab",
-def: false,
-requiresReload: true,
-tip: "Blocks in-game video/banner ads. Off by default. Requires a full page reload (F5) to take effect, not just leaving and rejoining a match, since it changes how the game's own script loads the moment the page opens.",
-keywords: "adblock advertisements video banner",
-get: isOn,
-set: setOn,
-onToggle: function(v) {
-window.__ssbUI.toast("Block Ads is " + (v ? "on" : "off") + ". Press F5 to apply it.");
-}
-});
-}();
-! function() {
 var KEY = "tp-noAA";
 function isOn() {
 try {
@@ -1508,7 +1476,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.5.0",
+version: "6.5.1",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -7679,7 +7647,7 @@ let o = {
 "Render Scale": "Draws the game at a lower resolution for more FPS. 1 is the normal resolution, 2 is half the width and height. Higher looks blurrier. Smart Auto Detail can still lower it further when your FPS drops.",
 "GUI Scale": "Makes the game's HUD, menus, chat and scoreboard smaller or larger. 1 is the normal size and most of the range makes things smaller. The crosshair keeps its size. Applies when you let go of the slider.",
 "FOV (Black Bars)": "Widens your view by adding black bars at the top and bottom. The HUD and menus keep their normal size unless Resize Everything is on. Only in matches; 1 turns it off.",
-"Reset All Mod Settings": "Restore every MODS setting to its default, including Block Ads, Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected."
+"Reset All Mod Settings": "Restore every MODS setting to its default, including Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected."
 };
 if (!document.getElementById("mod-settings-style")) {
 let n = document.createElement("style");
@@ -7834,13 +7802,14 @@ display:grid !important; grid-template-columns:minmax(150px, 10.5em) minmax(0, 1
 
 /* Sidebar: a frosted panel holding search and the section list */
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar {
-grid-column:1; grid-row:1; flex-direction:column; flex-wrap:nowrap; align-items:stretch; align-self:stretch; gap:14px; min-height:0; overflow-y:auto;
+grid-column:1; grid-row:1; flex-direction:column; flex-wrap:nowrap; align-items:stretch; align-self:stretch; gap:14px; min-height:0; overflow:visible;
 margin:0 0 2px; padding:12px; border:1px solid var(--pm-edge); border-radius:18px;
 background:linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.14));
 box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), var(--pm-lift);
 }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search-wrap { flex:none; min-width:0; order:0; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .ssb-settings-feedback { flex-basis:auto; order:1; margin:-6px 2px 0; font-size:12px; }
+@media (max-height:760px) { #mod-top-bar .mod-jump-chip { height:34px !important; } #mod-top-bar { gap:8px !important; } }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-jump-bar { flex-direction:column; flex-wrap:nowrap; gap:4px; width:auto; overflow:visible; padding:0; order:2; }
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar .mod-search { height:40px; border:2px solid rgba(14,118,151,0.28) !important; border-radius:12px; font-size:15px; box-shadow:inset 0 2px 4px rgba(8,62,84,0.08); }
 
@@ -8843,22 +8812,30 @@ jump(id);
 jb.appendChild(b);
 });
 hdr.appendChild(jb);
-let feedback = document.createElement("div");
-feedback.className = "ssb-settings-feedback";
-let resultCount = document.createElement("span");
-resultCount.setAttribute("role", "status");
-resultCount.setAttribute("aria-live", "polite");
-let reloadNotice = document.createElement("span");
-reloadNotice.className = "ssb-reload-notice";
-feedback.appendChild(resultCount);
-feedback.appendChild(reloadNotice);
-hdr.appendChild(feedback);
+const _reloadSeen = new Set();
+let _reloadT = 0;
+const askReload = () => {
+_reloadT = 0;
+const ui = window.__ssbUI;
+if (!ui || !ui.confirm || document.querySelector("#ssb-dialog-overlay,#ssb-intro-overlay")) return;
+const pending = window.__ssbSettings.reloadPending();
+if (!pending.some(x => !_reloadSeen.has(x.key))) return;
+pending.forEach(x => _reloadSeen.add(x.key));
+ui.confirm({
+title: "Reload required",
+text: "Reload the page to apply: " + pending.map(x => x.label).join(", ") + ".",
+ok: "Reload now",
+cancelLabel: "Later"
+}).then(yes => {
+if (yes) location.reload();
+});
+};
 const showFeedback = () => {
 const pending = window.__ssbSettings.reloadPending();
-const text = pending.length ? "Reload required: " + pending.map(x => x.label).join(
-", ") : "";
-if (reloadNotice.textContent !== text) reloadNotice.textContent = text;
-reloadNotice.classList.toggle("ssb-reload-pending", !!pending.length);
+_reloadSeen.forEach(k => {
+if (!pending.some(x => x.key === k)) _reloadSeen.delete(k);
+});
+if (pending.some(x => !_reloadSeen.has(x.key)) && !_reloadT) _reloadT = setTimeout(askReload, 350);
 };
 window.__ssbSettingsFeedback = showFeedback;
 showFeedback();
@@ -8943,8 +8920,6 @@ n += c;
 emp.style.display = e && !n ? "" : "none";
 emp.textContent = e && !n ?
 "No settings match “" + k.value.trim() + "”" : "";
-resultCount.textContent = e ? n + (
-n === 1 ? " result" : " results") : "";
 if (!e) syncChips();
 if (window
 .__ssbRequestLayout) window.__ssbRequestLayout();
@@ -8960,6 +8935,12 @@ k.value = "";
 E();
 }
 });
+window.__ssbClearModSearch = () => {
+if (k.value) {
+k.value = "";
+E();
+}
+};
 kx.addEventListener("click", () => {
 k.value = "";
 E();
@@ -9989,6 +9970,12 @@ true);
 localStorage.setItem("tp-chatBypass", JSON.stringify(on));
 return "Chat Filter Bypass is " + (on ? "ON" : "OFF") +
 ".\nFully reload the page (F5) for this to take effect — leaving and rejoining a match is not enough.";
+}],
+[/^block ads$/i, () => {
+let on = !(JSON.parse(localStorage.getItem("tp-adBypass") || "false") === true);
+localStorage.setItem("tp-adBypass", JSON.stringify(on));
+return "Block Ads is " + (on ? "ON" : "OFF") +
+".\nReload the page (F5) for this to take effect: leaving and rejoining a match is not enough.";
 }],
 [/^setfps\s+(\d+)(?:\s+(\d+))?$/i, fpsCmd => {
 let min = Math.max(1, Math.min(999, parseInt(fpsCmd[1], 10))),
@@ -12528,6 +12515,7 @@ localStorage.setItem("ch2-lastTab", "native");
 e.addEventListener("click", e.__ssbNativeTabClick);
 });
 e_(ey, i, "mods", () => {
+if (window.__ssbClearModSearch) window.__ssbClearModSearch();
 if (window.__ssbSyncModChips) window.__ssbSyncModChips();
 _ssbFocusSettingsSearch(true);
 if (window
@@ -15598,8 +15586,6 @@ el.textContent += `
                 #mod-top-bar { min-width:0; }
                 .ssb-settings-feedback:not(:has(> :not(:empty))) { display:none; }
                 .ssb-settings-feedback { flex-basis:100%; display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px; font-size:12px; font-weight:700; color:var(--ssb-ink); }
-                .ssb-reload-notice { margin-left:auto; }
-                .ssb-reload-pending { background:#fff1c2; color:#653c00; padding:2px 6px; border-radius:4px; }
                 #mod-crosshair-section .ch2-control-row, #mod-crosshair-section .ch2-control-right { flex-wrap:wrap; }
                 #mod-crosshair-section .ch2-label { white-space:normal; }
                 #mod-crosshair-section .ch2-check-label { position:relative; }
