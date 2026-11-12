@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.5.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.5.2-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -68,7 +68,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 ## What's new in v6.5
 
 - **Reload pop-up:** a setting that needs a page reload (Disable Anti-Aliasing, for one) now opens a small pop-up with **Reload now** and **Later**. The "Reload required" line in the sidebar, which covered the section buttons, is gone.
-- **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls, and the search box is empty again each time you reopen the menu.
+- **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls and has more room at the bottom, and the search box is empty again each time you reopen the menu.
 - **Block Ads:** the switch is removed from **MODS ▸ Menus**. It is now a command: type `block ads` in **Import Settings Code** to turn it on or off, then reload (F5). Your saved choice is kept.
 - **Game Fixes:** a new switch in **MODS ▸ Gameplay**, on by default. Its gear opens each fix on its own: **Chick'n Winner Fix**, **Early Respawn Guard** and the new **Blank Egg Fix**. Press the confirm button on Leave Game twice, too fast, and the egg on the home screen could go blank; Blank Egg Fix ignores the extra press and redraws the egg if it still comes back blank. The Fixes tab is gone, because the fixes live under Game Fixes now.
 - **Advanced Settings:** a new switch in **MODS ▸ Menus**, off by default. It shows the **Effects** and **Gameplay** tabs and, on **MODS ▸ Manage**, a line under each button saying what it does. Until it is on, those tabs are hidden and the Manage buttons show just a larger icon and a name (hover for the description). Their settings keep working, and search still finds them. Settings codes and backups include the preference.
@@ -265,7 +265,11 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.5.1 — current
+#### v6.5.2 — current
+
+- **Sidebar:** more space under the last section button.
+
+#### v6.5.1
 
 - **Reload pop-up:** a setting that needs a page reload (Disable Anti-Aliasing, for one) now opens a small pop-up with **Reload now** and **Later**. The "Reload required" line in the sidebar, which covered the section buttons, is gone.
 - **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls, and the search box is empty again each time you reopen the menu.

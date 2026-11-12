@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.5.1
+// @version      6.5.2
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.1";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.2";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.5.1");
+.version) || "6.5.2");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.1",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.2",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1476,7 +1476,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.5.1",
+version: "6.5.2",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -7803,7 +7803,7 @@ display:grid !important; grid-template-columns:minmax(150px, 10.5em) minmax(0, 1
 /* Sidebar: a frosted panel holding search and the section list */
 #popupInnards.mod-tab-active:has(> #mod-settings-section:not([style*="display: none"])) > #mod-top-bar {
 grid-column:1; grid-row:1; flex-direction:column; flex-wrap:nowrap; align-items:stretch; align-self:stretch; gap:14px; min-height:0; overflow:visible;
-margin:0 0 2px; padding:12px; border:1px solid var(--pm-edge); border-radius:18px;
+margin:0 0 2px; padding:12px 12px 28px; border:1px solid var(--pm-edge); border-radius:18px;
 background:linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.14));
 box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), var(--pm-lift);
 }
