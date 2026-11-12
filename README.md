@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.4.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.5.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -65,19 +65,11 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.4
+## What's new in v6.5
 
-- **Presets:** MODS ▸ Manage loads Performance, Clean HUD or Default, or saves your current settings under a name. Every load lists its changes and asks first. Up to 10 saved presets; backup files include them. Failed storage writes now report an error instead of claiming the preset was saved or deleted.
-- **Changed tab:** optional and off by default. Turn on **Show Changed Tab** in **MODS ▸ Menus** to use it; settings codes and backups include the preference
-- **Keep Matches:** Keep on a Match History row protects it from the 40-match limit, with up to 20 kept matches in addition. Clear History leaves kept matches.
-- **Personal Records:** your most kills and best KDR, with at least 10 kills, for each mode and map. Match History shows the records, and a message at match end announces a new best. On by default; needs Stats Tracker.
-- **Show Match FPS:** an off-by-default Stats switch shows average and lowest four-second FPS in Match History and adds performance columns to CSV. Match details can also show freezes and the lowest resolution used. Earlier matches without measurements show no value.
-- **FPS Check:** counts short stutters and freezes over 150 ms. Where applicable, its recommendations can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.
-- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. **Copy Chat** in **MODS ▸ Chat** copies every retained line as plain text, including available timestamps; typing `copy chat` in **Import Settings Code** does the same.
-- **Session Time:** Session Time Counts From can use Page Load or Match Start. Outside a match it uses page time.
-- **Fixes:** Chick'n Winner Fix and Early Respawn Guard now have their own MODS ▸ Fixes page. Early Respawn Guard explains why an early Play click did nothing.
-- **Hotkeys:** Stats Hotkey and Tab Out Key warn when they overlap each other or a game control.
-- **Match History:** individual match headers stay on one row and the panel widens to fit. Unknown servers are saved as a dash instead of reusing an old connection, and region names use the game's own list.
+- **Game Fixes:** a new switch in **MODS ▸ Gameplay**, on by default. Its gear opens each fix on its own: **Chick'n Winner Fix**, **Early Respawn Guard** and the new **Blank Egg Fix**. Press the confirm button on Leave Game twice, too fast, and the egg on the home screen could go blank; Blank Egg Fix ignores the extra press and redraws the egg if it still comes back blank. The Fixes tab is gone, because the fixes live under Game Fixes now.
+- **Advanced Settings:** a new switch in **MODS ▸ Menus**, off by default. It shows the **Effects** and **Gameplay** tabs and, on **MODS ▸ Manage**, a line under each button saying what it does. Until it is on, those tabs are hidden and the Manage buttons show just a larger icon and a name (hover for the description). Their settings keep working, and search still finds them. Settings codes and backups include the preference.
+- **Cleaner look:** the **NEW** tags are gone, and the Search settings box no longer draws an outline around itself.
 
 [Full changelog ↓](#changelog)
 
@@ -154,7 +146,9 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
 - **Inventory Count**: a card with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default (**MODS ▸ Menus**)
-- Searchable settings, with a sidebar of sections (HUD, Chat, Effects, FPS & Ping, Menus, Fixes, Stats, Gameplay, Other Mods, Manage, Changed). Open Settings and just start typing to search
+- Searchable settings, with a sidebar of sections (HUD, Chat, FPS & Ping, Menus, Stats, Other Mods, Manage). **Effects** and **Gameplay** appear once **MODS ▸ Menus ▸ Advanced Settings** is on, and **Changed** once **Show Changed Tab** is. Open Settings and just start typing to search; search also finds settings on hidden tabs
+- **Advanced Settings**: off by default. Shows the Effects and Gameplay tabs, and explanations under the **MODS ▸ Manage** buttons
+- **Game Fixes**: workarounds for bugs in the game itself, in **MODS ▸ Gameplay**. One switch for all, and a gear that opens **Chick'n Winner Fix**, **Early Respawn Guard** and **Blank Egg Fix** one by one
 - **Changed** page (optional): only the settings you've changed, each with its own Reset. Enable **MODS ▸ Menus ▸ Show Changed Tab** to show it; off by default
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - **Welcome Guide**: the three-step setup a new install opens with; open it again from **MODS ▸ Manage**
@@ -268,7 +262,13 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.4.1 — current
+#### v6.5.0 — current
+
+- **Game Fixes:** a new switch in **MODS ▸ Gameplay**, on by default. Its gear opens each fix on its own: **Chick'n Winner Fix**, **Early Respawn Guard** and the new **Blank Egg Fix**. Press the confirm button on Leave Game twice, too fast, and the egg on the home screen could go blank; Blank Egg Fix ignores the extra press and redraws the egg if it still comes back blank. The Fixes tab is gone, because the fixes live under Game Fixes now.
+- **Advanced Settings:** a new switch in **MODS ▸ Menus**, off by default. It shows the **Effects** and **Gameplay** tabs and, on **MODS ▸ Manage**, a line under each button saying what it does. Until it is on, those tabs are hidden and the Manage buttons show just a larger icon and a name (hover for the description). Their settings keep working, and search still finds them. Settings codes and backups include the preference.
+- **Cleaner look:** the **NEW** tags are gone, and the Search settings box no longer draws an outline around itself.
+
+#### v6.4.1
 
 - **Patch release:** the final 6.4 build under a new version number, so every install updates to it. New: a **Copy Chat** button in **MODS ▸ Chat** (the in-game chat itself gets no button). It also carries the preset icons on the MODS ▸ Manage page, sounds when the changelog opens and closes, and the Changed tab off by default (turn it on with **MODS ▸ Menus ▸ Show Changed Tab**).
 

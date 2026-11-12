@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.4.1
+// @version      6.5.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.1";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.4.1");
+.version) || "6.5.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.1",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -393,7 +393,6 @@ var CSS = `#ssb-dialog-overlay { position:fixed; inset:0; z-index:2147483647; di
 #ssb-toast-stack .ssb-toast-error { background:#ffe1e1; border-color:var(--ssb-red); color:#8a1414; }
 #ssb-toast-stack .ssb-toast-code { margin-top:6px; padding:5px 8px; border-radius:6px; background:rgba(255,255,255,0.75); font-family:Consolas,"Courier New",monospace; font-size:13px; font-weight:700; white-space:normal; overflow-wrap:anywhere; user-select:text; cursor:text; }
 #ssb-toast-stack .ssb-toast-out { opacity:0; }
-.ssb-new-pill { display:inline-block; margin-left:8px; padding:0; background:none; color:#e8590c; font-family:"Nunito",system-ui,sans-serif; font-size:11px; font-weight:900; font-style:italic; letter-spacing:0.6px; line-height:1; vertical-align:super; pointer-events:none; cursor:default; flex-shrink:0; }
 @keyframes ssb-pop-in { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:none; } }
 @keyframes ssb-toast-in { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
 `;
@@ -1110,7 +1109,6 @@ key: def.key,
 label: def.label,
 tip: def.tip,
 keywords: def.keywords,
-since: def.since,
 cls: def.cls,
 get: def.get,
 onChange: function(v) {
@@ -1121,9 +1119,15 @@ if (def.onToggle) def.onToggle(v);
 });
 var after = def.after && grid.querySelector('[data-setting="' + def.after + '"]');
 grid.insertBefore(row, after ? after.nextSibling : null);
+if (def.onMount) {
+try {
+def.onMount(row, grid);
+} catch (e) {
+window.__ssbErr("registry#3", e);
+}
+}
 }
 var api = {
-NEW_SINCE: "6.1",
 items: items,
 row: function(o) {
 var row = document.createElement("label");
@@ -1146,16 +1150,7 @@ changed();
 row.appendChild(cb);
 row.appendChild(box);
 row.appendChild(lab);
-if (o.since && o.since === api.NEW_SINCE) row.appendChild(api.newPill());
 return row;
-},
-newPill: function() {
-if (window.__ssbUI) window.__ssbUI
-.ensureCss();
-var p = document.createElement("span");
-p.className = "ssb-new-pill";
-p.textContent = "NEW";
-return p;
 },
 add: function(def) {
 if (items.some(function(item) {
@@ -1276,23 +1271,6 @@ changed.push(s.key);
 }
 });
 return changed;
-},
-newSeen: function(tab) {
-try {
-return (JSON.parse(localStorage.getItem("ssb-new-seen") || "{}") || {})[tab] === api
-.NEW_SINCE;
-} catch (e) {
-return false;
-}
-},
-markNewSeen: function(tab) {
-try {
-var o = JSON.parse(localStorage.getItem("ssb-new-seen") || "{}") || {};
-o[tab] = api.NEW_SINCE;
-localStorage.setItem("ssb-new-seen", JSON.stringify(o));
-} catch (e) {
-window.__ssbErr("registry#2", e)
-}
 }
 };
 return api;
@@ -1530,7 +1508,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.4.1",
+version: "6.5.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -2991,6 +2969,7 @@ const _ssbCore = [
 ["ui", "showVolumeSlider", "tp-showVolumeSlider", "Uv", true, "b", "Pause-Menu Volume Slider"],
 ["ui", "showServerList", "tp-showServerList", "Ul", false, "b", "Server Picker"],
 ["ui", "showChangedTab", "tp-showChangedTab", "Uz", false, "b", "Show Changed Tab"],
+["ui", "advancedSettings", "tp-advancedSettings", "Uy", false, "b", "Advanced Settings"],
 ["ui", "guiScale", "tp-guiScale", "Ui", 1, "n", "GUI Scale"],
 ["gameplay", "tabOutKey", "tp-tabOutKey", "Gt", "Tab", "key", "Tab Out Key"],
 ["gameplay", "noExplosionSmoke", "tp-noExplosionSmoke", "Gs", false, "b"],
@@ -7685,6 +7664,7 @@ let o = {
 "Auto-pick Best Server": "When the region list shows ping times, waits for them all (up to 5 seconds) and switches to the lowest, if it beats your region by at least 15 ms or 20%, whichever is more. A region you pick yourself stays until you turn this off and on again.",
 "Pause-Menu Volume Slider": "Adds an extra master volume slider directly under the pause weapon selection.",
 "Show Changed Tab": "Shows the Changed tab in the MODS sidebar, listing settings that differ from their defaults with a Reset for each. Off by default.",
+"Advanced Settings": "Shows the Effects and Gameplay tabs in the MODS sidebar, and what each Manage button does under it. Off by default. The settings on the hidden tabs keep working, and searching still finds them.",
 "King of the Coop Stats": "Adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard and match history. Needs Stats Tracker on.",
 "When King of the Coop Ends": "When a team wins a King of the Coop game, copies the scoreboard picture to your clipboard or downloads it. It's the picture Copy Image and Download make in the stats window. Needs Stats Tracker on.",
 "Stats Tracker": "Tracks kills, deaths, KDR and local match history.",
@@ -7832,6 +7812,7 @@ wider-than-tall screens; all five tabs share the strip equally and may shrink be
 #mod-top-bar .mod-search-wrap { position:relative; flex:1 1 200px; min-width:170px; }
 #mod-top-bar .mod-search { display:block; width:100%; height:38px; box-sizing:border-box; margin:0; padding:0 34px 0 36px; border:3px solid var(--ssb-blue) !important; border-radius:8px; background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230E7697' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 21 21'/%3E%3C/svg%3E") no-repeat 11px 50% / 16px 16px !important; color:var(--ssb-ink) !important; font-family:"Nunito",system-ui,sans-serif !important; font-size:16px; font-weight:700; text-align:left; outline:none; }
 #mod-top-bar .mod-search::placeholder { color:#5d98a8; }
+#mod-top-bar .mod-search:focus, #mod-top-bar .mod-search:focus-visible { outline:none !important; } /* the shared keyboard focus ring (--ssb-focus) is left off the search box, which is focused on opening */
 #mod-top-bar .mod-search-clear { position:absolute; right:7px; top:50%; transform:translateY(-50%); width:22px; height:22px; margin:0; padding:0; border:none; border-radius:50%; background:var(--ssb-blue); color:#fff; font-family:"Nunito",system-ui,sans-serif; font-size:16px; font-weight:900; line-height:22px; text-align:center; cursor:pointer; visibility:hidden; }
 #mod-top-bar .mod-search-clear:hover { background:var(--ssb-blue-hi); }
 #mod-top-bar .mod-jump-bar { display:flex; flex-wrap:wrap; gap:6px; }
@@ -7919,9 +7900,8 @@ font-size:22px; letter-spacing:0.5px; line-height:1.1;
 #mod-settings-section.ssb-paged .mod-header[data-section="effects"]::after { content:"Turn off visual effects for a cleaner, faster game."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Raise your frame rate, and set up the FPS and ping readout."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="menus"]::after { content:"Extras for the home screen, pause menu and inventory."; }
-#mod-settings-section.ssb-paged .mod-header[data-section="fixes"]::after { content:"Workarounds for bugs in the game itself. Each says which bug it works around; turn one off if the game fixes it."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="stats"]::after { content:"Track your kills, deaths and KDR in every match."; }
-#mod-settings-section.ssb-paged .mod-header[data-section="gameplay"]::after { content:"Classic skins and sounds, keys and field of view."; }
+#mod-settings-section.ssb-paged .mod-header[data-section="gameplay"]::after { content:"Classic skins and sounds, keys, field of view and fixes for bugs in the game."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="manage"]::after { content:"Back up, share or reset your MODS settings, or everything at once with a backup file."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="changed"]::after { content:"Settings you've changed from their defaults. Reset puts one back."; }
 #mod-settings-section.ssb-paged.mod-searching .mod-header::after { display:none; }
@@ -7948,11 +7928,6 @@ font-size:12.5px; font-weight:600; line-height:1.35; color:var(--pm-sub);
 display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 #mod-settings-section.ssb-paged .mod-search-tip { display:none !important; }
-#mod-settings-section.ssb-paged .mod-item .ssb-new-pill {
-position:absolute; top:-8px; left:12px; margin:0; padding:3px 8px; border-radius:999px;
-background:linear-gradient(180deg,#ff7a3d,#e8590c); color:#fff; font-size:10px; font-style:normal; letter-spacing:0.8px;
-box-shadow:0 3px 8px rgba(232,89,12,0.35);
-}
 
 /* Toggle switch in place of the checkbox */
 #mod-settings-section.ssb-paged .mod-box {
@@ -8037,6 +8012,14 @@ font-size:15px !important; font-weight:900 !important; line-height:1.2;
 }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button::before { content:""; flex:none; width:22px; height:22px; margin-bottom:3px; background:currentColor; -webkit-mask:var(--pm-mask) center / contain no-repeat; mask:var(--pm-mask) center / contain no-repeat; }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button::after { content:attr(data-tooltip); font-size:12.5px; font-weight:700; line-height:1.35; opacity:0.88; text-shadow:none; white-space:normal; }
+/* Without Advanced Settings the Manage tiles are an icon and a title; hovering one still shows what it does */
+#mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button { min-height:76px; justify-content:center; }
+#mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button[data-pm="support"],
+#mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button[data-pm="intro"] { min-height:76px; }
+#mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button::before { width:30px; height:30px; margin-bottom:4px; }
+#mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button::after { display:none; }
+/* Game Fixes (MODS > Gameplay): the fixes under the gear look off while the Game Fixes switch is off */
+#mod-settings-section .mod-grid.ssb-gf-off > .ssb-gf-sub { opacity:0.55; }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button:nth-child(1) { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button:nth-child(2) { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M4 20h16'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="bsave"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='5' rx='1'/%3E%3Cpath d='M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4'/%3E%3C/svg%3E"); }
@@ -8087,7 +8070,6 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,0.6); transition:background 0.15s, tra
 #mod-settings-section.ssb-paged[data-page="effects"]:not(.mod-searching) > [data-section]:not([data-section="effects"]),
 #mod-settings-section.ssb-paged[data-page="fps"]:not(.mod-searching) > [data-section]:not([data-section="fps"]),
 #mod-settings-section.ssb-paged[data-page="menus"]:not(.mod-searching) > [data-section]:not([data-section="menus"]),
-#mod-settings-section.ssb-paged[data-page="fixes"]:not(.mod-searching) > [data-section]:not([data-section="fixes"]),
 #mod-settings-section.ssb-paged[data-page="stats"]:not(.mod-searching) > [data-section]:not([data-section="stats"]),
 #mod-settings-section.ssb-paged[data-page="gameplay"]:not(.mod-searching) > [data-section]:not([data-section="gameplay"]),
 #mod-settings-section.ssb-paged[data-page="manage"]:not(.mod-searching) > [data-section]:not([data-section="manage"]) { display:none !important; }
@@ -8366,7 +8348,6 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #popupInnards > #mod-crosshair-section .ch2-preview-wrap { flex:none; height:160px !important; }
 }
 #mod-settings-section .mod-search-empty { padding:30px 10px 10px; text-align:center; font-size:17px; font-weight:800; color:var(--ssb-ink); }
-#mod-settings-section .mod-item .ssb-new-pill { margin-left:-8px; }
 #mod-settings-footer { flex-wrap:wrap; gap:10px 14px; }
 #mod-settings-footer .mod-footer-mid { display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:8px; }
 /* Update status beside "Check for updates": a quiet pill when current, the orange game button when there's an update. */
@@ -8400,8 +8381,6 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #mod-settings-footer .mod-footer-update:disabled { cursor:default; }
 #mod-settings-footer .mod-footer-update:disabled svg { animation:ssb-upd-spin 0.8s linear infinite; }
 @keyframes ssb-upd-spin { to { transform:rotate(360deg); } }
-/* NEW-items dot on the MODS / CROSSHAIR tab, until the tab is opened */
-.ssb-tab-dot { position:absolute; top:calc(6px * var(--ssb-ui-scale, 1)); right:calc(8px * var(--ssb-ui-scale, 1)); width:calc(12px * var(--ssb-ui-scale, 1)); height:calc(12px * var(--ssb-ui-scale, 1)); border-radius:50%; background:#e81616; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.35); pointer-events:none; }
 
 /* Key-binding buttons: listening state and the Clear link */
 #mod-settings-section .mod-key-btn.mod-key-listening { width:auto !important; min-width:120px; border:none !important; background:var(--ssb-card) !important; box-shadow:inset 0 0 0 2px var(--ssb-muted); text-transform:none !important; }
@@ -8471,6 +8450,7 @@ let kw = {
 "Auto-pick Best Server": "auto best lowest ping region server select",
 "Pause-Menu Volume Slider": "show volume slider sound audio",
 "Show Changed Tab": "changed settings modified defaults reset sidebar tab optional",
+"Advanced Settings": "advanced extra effects gameplay game fixes sidebar tabs pages explanations manage show hide more options",
 "Stats Tracker": "enable stats kdr kills deaths",
 "Kill Bars": "scoreboard row fill kills team bar graph",
 "Highlight Your Name": "stats scoreboard own player me highlight row",
@@ -8501,26 +8481,25 @@ o.setAttribute("data-section", id);
 i.appendChild(o);
 return o;
 }
-function r(e, t, n, k, sn) {
+function r(e, t, n, k) {
 return window.__ssbSettings.row({
 key: k,
 label: e,
 checked: t,
 tip: o[e],
 keywords: kw[e],
-since: sn,
 onChange: (v, ev) => {
 ef("ui_onchange");
 n(ev);
 }
 })
 }
-function s(e, t, o, n, i, a, sn) {
+function s(e, t, o, n, i, a) {
 let s = r(t, o[n], function(e) {
 o[n] = e.target.checked;
 localStorage.setItem(i, JSON.stringify(o[n]));
 if (a) a();
-}, i, sn);
+}, i);
 e.appendChild(s);
 return s;
 }
@@ -8739,8 +8718,11 @@ jb.setAttribute("aria-label",
 "MODS sections");
 let _jmp =
 0;
-let _pages = ["hud", "chat", "effects", "fps", "menus", "fixes", "stats", "gameplay", "others",
+let _pages = ["hud", "chat", "effects", "fps", "menus", "stats", "gameplay", "others",
 "manage", "changed"
+],
+_advPages = ["effects",
+"gameplay"
 ],
 _ico = {
 others: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='3.5' y='3.5' width='7' height='7' rx='1.5'/><rect x='13.5' y='3.5' width='7' height='7' rx='1.5'/><rect x='3.5' y='13.5' width='7' height='7' rx='1.5'/><path d='M17 13.5v7M13.5 17h7'/></svg>",
@@ -8749,7 +8731,6 @@ chat: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor'
 effects: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 3l1.8 4.9L19 9.5l-5.2 1.6L12 16l-1.8-4.9L5 9.5l5.2-1.6z'/><path d='M19 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'/></svg>",
 fps: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4.5 18a8.5 8.5 0 1 1 15 0'/><path d='M12 14.5l3.5-4.5'/><circle cx='12' cy='14.5' r='1.3'/></svg>",
 menus: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01'/></svg>",
-fixes: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M14.7 6.3a4 4 0 0 0-5.4 5.2L4 16.8V20h3.2l5.3-5.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.5-.5-2.3z'/></svg>",
 stats: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 20h16'/><path d='M7 16v-5M12 16V6M17 16v-8'/></svg>",
 gameplay: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M7 8h10a5 5 0 0 1 4.8 6.3l-.6 2.2a2.3 2.3 0 0 1-4 .8L15.5 15h-7l-1.7 2.3a2.3 2.3 0 0 1-4-.8l-.6-2.2A5 5 0 0 1 7 8z'/><path d='M8 10.5v3M6.5 12h3M15.5 11.5h.01M17.5 13h.01'/></svg>",
 manage: "<svg class='pm-ico' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 7h9M17 7h3M4 17h3M11 17h9'/><circle cx='15' cy='7' r='2'/><circle cx='9' cy='17' r='2'/></svg>",
@@ -8760,8 +8741,10 @@ try {
 _pg0 = localStorage.getItem("ssb-modsPage")
 } catch (x) {}
 i.classList.add("ssb-paged");
+i.classList.toggle("ssb-adv", !!d.ui.advancedSettings);
 function pageAllowed(id) {
-return _pages.includes(id) && (id !== "changed" || d.ui.showChangedTab);
+return _pages.includes(id) && (id !== "changed" || d.ui.showChangedTab) && (!_advPages
+.includes(id) || d.ui.advancedSettings);
 }
 i.dataset.page = pageAllowed(_pg0) ? _pg0 : "hud";
 function paintPage() {
@@ -8791,12 +8774,16 @@ if (id === "changed" && window.__ssbPaintChanged) window.__ssbPaintChanged();
 if (id === "others" && window.__ssbPaintOthers) window.__ssbPaintOthers();
 if (window.__ssbRequestLayout) window.__ssbRequestLayout();
 }
-function syncChangedTab() {
-const button = jb.querySelector('[data-jump="changed"]');
-if (button) button.hidden = !d.ui.showChangedTab;
-if (!d.ui.showChangedTab && i.dataset.page === "changed") {
+function syncTabs() {
+i.classList.toggle("ssb-adv", !!d.ui.advancedSettings);
+jb.querySelectorAll("[data-jump]").forEach(b => {
+const id = b.getAttribute("data-jump");
+if (id === "changed" || _advPages.includes(id)) b.hidden = !pageAllowed(id);
+});
+if (!pageAllowed(i.dataset.page)) {
+const own = i.dataset.page === "changed" ? "tp-showChangedTab" : "tp-advancedSettings";
 setPage("menus");
-i.querySelector('[data-setting="tp-showChangedTab"] input')?.focus({preventScroll: true});
+i.querySelector('[data-setting="' + own + '"] input')?.focus({preventScroll: true});
 }
 }
 function jump(id) {
@@ -8833,7 +8820,6 @@ if (i.scrollTop === from && from !== top) i.scrollTop = top;
 ["effects", "Effects"],
 ["fps", "FPS & Ping"],
 ["menus", "Menus"],
-["fixes", "Fixes"],
 ["stats", "Stats"],
 ["gameplay", "Gameplay"],
 ["others", "Other Mods"],
@@ -8847,7 +8833,7 @@ b.textContent = t;
 if (_ico[id]) b
 .insertAdjacentHTML("afterbegin", _ico[id]);
 b.setAttribute("data-jump", id);
-if (id === "changed") b.hidden = !d.ui.showChangedTab;
+if (id === "changed" || _advPages.includes(id)) b.hidden = !pageAllowed(id);
 b
 .setAttribute("role", "tab");
 b.addEventListener("click", () => {
@@ -9021,7 +9007,6 @@ if (_guTt) {
 _guL.setAttribute("data-tooltip", _guTt);
 _guL.style.cursor = "default";
 }
-if (window.__ssbSettings.NEW_SINCE === "6.1") _guL.appendChild(window.__ssbSettings.newPill());
 let _guIW = document.createElement("div");
 _guIW.className = "mod-slider-inner-wrap";
 _guIW.style.cssText =
@@ -9301,7 +9286,6 @@ if (_rsTt) {
 _rsL.setAttribute("data-tooltip", _rsTt);
 _rsL.style.cursor = "default";
 }
-if (window.__ssbSettings.NEW_SINCE === "6.1") _rsL.appendChild(window.__ssbSettings.newPill());
 let _rsIW = document.createElement("div");
 _rsIW.className = "mod-slider-inner-wrap";
 _rsIW.style.cssText =
@@ -9385,11 +9369,11 @@ _apT0 = 0;
 localStorage.removeItem(
 "tp-autoPickHeld");
 }
-}, "5.2");
+});
 s(P, "Pause-Menu Volume Slider", d.ui, "showVolumeSlider", "tp-showVolumeSlider",
 ei);
-s(P, "Show Changed Tab", d.ui, "showChangedTab", "tp-showChangedTab", syncChangedTab);
-a("Fixes", "fixes");
+s(P, "Show Changed Tab", d.ui, "showChangedTab", "tp-showChangedTab", syncTabs);
+s(P, "Advanced Settings", d.ui, "advancedSettings", "tp-advancedSettings", syncTabs);
 let St = a("Stats", "stats");
 s(St, "Stats Tracker", d.stats, "enabled", "tp-statsEnabled");
 s(St, "King of the Coop Stats", d
@@ -10852,8 +10836,6 @@ fm.insertBefore(us, ecu);
 if (window
 .__ssbPaintUpdateStatus) window.__ssbPaintUpdateStatus(us);
 }());
-if (window.__ssbSettings.NEW_SINCE === "5.1") fm.appendChild(window.__ssbSettings
-.newPill());
 (function() {
 let dc = document.createElement("a");
 dc.className = "mod-footer-btn mod-footer-discord";
@@ -11111,8 +11093,6 @@ previewCard.appendChild(h);
 d.appendChild(previewCard);
 let bgSw = document.createElement("div");
 bgSw.className = "ch2-bg-swatches";
-if (window.__ssbSettings.NEW_SINCE === "5.1") bgSw.appendChild(window.__ssbSettings
-.newPill());
 [
 ["#87ceeb", "Sky"],
 ["#808080", "Grey"],
@@ -12566,22 +12546,6 @@ if (window.__ssbRenderMini) window.__ssbRenderMini();
 });
 eh.appendChild(ey);
 eh.appendChild(ex);
-[
-[ey, "mods", i],
-[ex, "crosshair", ep]
-].forEach(([tb, key, sec]) => {
-if (window.__ssbSettings.newSeen(key) || !sec.querySelector(".ssb-new-pill"))
-return;
-let dt = document.createElement("span");
-dt.className = "ssb-tab-dot";
-tb.style.position = "relative";
-tb.appendChild(
-dt);
-tb.addEventListener("click", () => {
-window.__ssbSettings.markNewSeen(key);
-dt.remove();
-});
-});
 let e0 = false;
 function ew() {
 let e = localStorage.getItem("ch2-lastTab");
@@ -13834,7 +13798,6 @@ margin-bottom: 0px !important;
 
 /* Preview background swatches (Preview card title row) */
 #mod-crosshair-section .ch2-bg-swatches { display:flex; align-items:center; gap:5px; }
-#mod-crosshair-section .ch2-bg-swatches .ssb-new-pill { margin:0 3px 0 0; font-size:10px; vertical-align:baseline; }
 #mod-crosshair-section .ch2-bg-swatch { width:18px; height:18px; margin:0; padding:0; border:2px solid #fff; border-radius:50%; box-shadow:0 0 0 1.5px rgba(12,87,111,0.45); cursor:pointer; transition:transform 0.1s; }
 #mod-crosshair-section .ch2-bg-swatch:hover { transform:scale(1.15); }
 
@@ -14116,8 +14079,8 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.4";
-const changelogVersion = "6.4";
+const displayVersion = "6.5";
+const changelogVersion = "6.5";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
 try {
@@ -14126,6 +14089,19 @@ window.BAWK?.play?.(name);
 window.__ssbErr("changelog.sound", err);
 }
 }
+const v65Items = [{
+label: "Game Fixes",
+text: "A new switch in MODS ▸ Gameplay, on by default, with a gear that opens each fix: Chick'n Winner Fix, Early Respawn Guard and the new Blank Egg Fix, which stops the home-screen egg going blank when you press the confirm button on Leave Game twice, too fast. There is no Fixes tab any more.",
+group: "v6.5"
+}, {
+label: "Advanced Settings",
+text: "A new switch in MODS ▸ Menus, off by default, that shows the Effects and Gameplay tabs, and what each Manage button does under it. Until it is on they are hidden; their settings keep working, and search still finds them.",
+group: "v6.5"
+}, {
+label: "Cleaner Look",
+text: "The NEW tags are gone, and the Search settings box no longer draws an outline around itself.",
+group: "v6.5"
+}];
 const v64Items = [{
 label: "Presets",
 text: "MODS ▸ Manage ▸ Presets loads a ready set of settings (Performance, Clean HUD or Default) or one you saved with Save Settings as Preset. It lists what will change before anything does.",
@@ -14155,8 +14131,8 @@ label: "Session Time",
 text: "Session Time Counts From can start the TIME in the FPS box when the match starts, instead of when the page loaded.",
 group: "v6.4"
 }, {
-label: "Fixes Page",
-text: "Chick'n Winner Fix and Early Respawn Guard have their own Fixes page in MODS. Early Respawn Guard now says why a Play click did nothing.",
+label: "Fixes",
+text: "Chick'n Winner Fix and Early Respawn Guard can be switched off on their own. Early Respawn Guard now says why a Play click did nothing.",
 group: "v6.4"
 }, {
 label: "Hotkeys",
@@ -14167,23 +14143,14 @@ label: "Match History",
 text: "An unknown server is saved as a dash instead of the last server you ever connected to, and server names come from the game's own list.",
 group: "v6.4"
 }];
-const v63Items = [{
-label: "Inventory Count",
-text: "A new switch in MODS ▸ Menus adds a card under it with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default.",
-group: "v6.3"
-}, {
-label: "Match History",
-text: "The map name saved with each match now comes only from the game's own map list. Better HUD no longer keeps a copy of the names, which a game update could leave out of date and name a map wrongly.",
-group: "v6.3"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.4:",
-items: v64Items
+intro: "Here's what's new in v6.5:",
+items: v65Items
 }, {
-version: "6.3",
-intro: "Previously in v6.3:",
-items: v63Items
+version: "6.4",
+intro: "Previously in v6.4:",
+items: v64Items
 }];
 function hasSeenChangelog() {
 try {
@@ -16508,6 +16475,81 @@ else boot();
 })();
 (function() {
 "use strict";
+const KEY = "tp-gameFixes";
+const isOn = () => {
+try {
+const v = localStorage.getItem(KEY);
+return v === null ? true : JSON.parse(v) === true;
+} catch (e) {
+return true;
+}
+};
+const setOn = (v) => {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("gamefixes#1", e);
+}
+};
+window.__ssbGameFixesOn = isOn;
+let _grid = null;
+const dim = () => {
+if (_grid) _grid.classList[isOn() ? "remove" : "add"]("ssb-gf-off");
+};
+function gear(row, grid) {
+const b = document.createElement("button");
+b.type = "button";
+b.className = "ssb-uc-gear";
+b.setAttribute("aria-label", "Game Fixes options");
+b.setAttribute("data-tooltip", "Switch each game fix on or off on its own");
+b.setAttribute("aria-expanded", "false");
+b.addEventListener("click", ev => {
+ev.preventDefault();
+ev.stopPropagation();
+try {
+if (window.BAWK && window.BAWK.play) window.BAWK.play("ui_click");
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("gamefixes#2", e);
+}
+const subs = Array.from(grid.querySelectorAll(".ssb-gf-sub"));
+subs.forEach(el => {
+if (!el.id) el.id = "ssb-gf-" + el.getAttribute("data-setting");
+});
+b.setAttribute("aria-controls", subs.map(el => el.id).join(" "));
+const open = grid.classList.toggle("ssb-uc-open");
+b.setAttribute("aria-expanded", String(open));
+if (open && subs.length) subs[subs.length - 1].scrollIntoView({
+block: "nearest",
+behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+});
+});
+row.classList.add("ssb-uc-has-gear");
+row.appendChild(b);
+_grid = grid;
+dim();
+}
+function boot() {
+window.__ssbSettings.add({
+key: KEY,
+section: "gameplay",
+label: "Game Fixes",
+code: "Gx",
+def: true,
+tip: "Workarounds for bugs in the game itself: Chick'n Winner Fix, Early Respawn Guard and Blank Egg Fix. Turns them all on or off together. Click the gear to switch each one on its own. Turn one off if the game fixes it.",
+keywords: "game fixes fix bugs workarounds repair chicken winner respawn guard blank egg leave glitch gear",
+get: isOn,
+set: (v) => {
+setOn(v);
+dim();
+},
+onMount: gear
+});
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
 const KEY = "tp-fixChickenWinner";
 const isOn = () => {
 try {
@@ -16524,6 +16566,7 @@ localStorage.setItem(KEY, JSON.stringify(!!v));
 if (window.__ssbErr) window.__ssbErr("chwfix#1", e);
 }
 };
+const active = () => isOn() && (!window.__ssbGameFixesOn || window.__ssbGameFixesOn());
 const NO_POPUP_MS = 25000,
 AFTER_POPUP_MS = 4000;
 let _since = 0,
@@ -16544,7 +16587,7 @@ if (typeof v.showGameMenu === "function") v.showGameMenu();
 function tick() {
 try {
 const v = window.vueApp;
-if (!isOn() || !v || !v.chw || typeof v.chwOnClick !== "function") {
+if (!active() || !v || !v.chw || typeof v.chwOnClick !== "function") {
 _since = 0;
 return;
 }
@@ -16571,7 +16614,9 @@ if (window.__ssbErr) window.__ssbErr("chwfix#2", e);
 function boot() {
 window.__ssbSettings.add({
 key: KEY,
-section: "fixes",
+section: "gameplay",
+after: "tp-gameFixes",
+cls: "ssb-uc-sub ssb-gf-sub",
 label: "Chick'n Winner Fix",
 code: "Cw",
 def: true,
@@ -16606,6 +16651,7 @@ localStorage.setItem(KEY, JSON.stringify(!!v));
 if (window.__ssbErr) window.__ssbErr("respawnguard#1", e);
 }
 };
+const active = () => isOn() && (!window.__ssbGameFixesOn || window.__ssbGameFixesOn());
 function onClick(ev) {
 try {
 const t = ev.target;
@@ -16613,7 +16659,7 @@ const btn = t && t.closest && t.closest(".btn-respawn.btn_big");
 if (!btn || btn.classList.contains("btn_team_switch")) return;
 const v = window.vueApp,
 gs = v && v.$refs && v.$refs.gameScreen;
-if (!v || !v.game || !isOn()) return;
+if (!v || !v.game || !active()) return;
 const ready = !gs || typeof gs.delayTheCracking !== "boolean" || gs.delayTheCracking;
 if (!(v.game.respawnTime > 0) && ready && !v.game.disableRespawnButton) return;
 ev.stopImmediatePropagation();
@@ -16636,8 +16682,9 @@ ms: 4500
 function boot() {
 window.__ssbSettings.add({
 key: KEY,
-section: "fixes",
+section: "gameplay",
 after: "tp-fixChickenWinner",
+cls: "ssb-uc-sub ssb-gf-sub",
 label: "Early Respawn Guard",
 code: "Rw",
 def: true,
@@ -17371,6 +17418,23 @@ else boot();
 })();
 (function() {
 "use strict";
+const KEY = "tp-cleanLeave";
+const isOn = () => {
+try {
+const v = localStorage.getItem(KEY);
+return v === null ? true : JSON.parse(v) === true;
+} catch (e) {
+return true;
+}
+};
+const setOn = (v) => {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("cleanleave#5", e);
+}
+};
+const active = () => isOn() && (!window.__ssbGameFixesOn || window.__ssbGameFixesOn());
 let leaves = 0;
 let run = 0;
 let lastLeave = 0;
@@ -17410,7 +17474,7 @@ const at = [300, 1500, 3300, 5000, 7000];
 let i = 0,
 lastFrame = -1;
 const check = () => {
-if (id !== run) return;
+if (id !== run || !active()) return;
 const en = engine(),
 frame = en && typeof en.frameId === "number" ? en.frameId : -1;
 if (homeShown() && !document.hidden) {
@@ -17433,6 +17497,7 @@ if (ex.__ssbCleanLeave) return true;
 ex.__ssbCleanLeave = true;
 const leave = ex.leaveGame;
 ex.leaveGame = function() {
+if (!active()) return leave.apply(this, arguments);
 const was = !!ex.inGame;
 if (!was && Date.now() - lastLeave < 3000) return;
 const id = ++run;
@@ -17448,6 +17513,7 @@ afterLeave(id);
 };
 const delay = gs.delayGameMenuPlayButtons;
 gs.delayGameMenuPlayButtons = function() {
+if (!active()) return delay.apply(this, arguments);
 const n = leaves,
 out = delay.apply(this, arguments);
 setTimeout(() => {
@@ -17461,11 +17527,24 @@ return out;
 };
 const prep = ex.prepRespawnButton;
 if (typeof prep === "function") ex.prepRespawnButton = function() {
-if (ex.inGame) return prep.apply(this, arguments);
+if (!active() || ex.inGame) return prep.apply(this, arguments);
 };
 return true;
 }
 function boot() {
+window.__ssbSettings.add({
+key: KEY,
+section: "gameplay",
+after: "tp-earlyRespawnGuard",
+cls: "ssb-uc-sub ssb-gf-sub",
+label: "Blank Egg Fix",
+code: "Cl",
+def: true,
+tip: "If you press the confirm button on Leave Game twice, too fast, the egg on the home screen can go blank. This ignores the extra press and redraws the egg if it still comes back blank. It also stops a match you already left from letting Play through too early on the next one.",
+keywords: "leave quit game home screen homescreen egg blank empty frozen invisible double click twice confirm yes fix",
+get: isOn,
+set: setOn
+});
 if (install()) return;
 const stop = window.__ssbMenuPoll(() => {
 try {
