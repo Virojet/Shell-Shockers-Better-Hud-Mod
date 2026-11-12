@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.4.0
+// @version      6.4.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.1";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.4.0");
+.version) || "6.4.1");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.4.1",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1530,7 +1530,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.4.0",
+version: "6.4.1",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -7915,7 +7915,7 @@ font-size:22px; letter-spacing:0.5px; line-height:1.1;
 }
 #mod-settings-section.ssb-paged .mod-header::after { display:block; margin-top:5px; font-family:"Nunito",system-ui,sans-serif; font-size:13.5px; font-weight:700; letter-spacing:0; line-height:1.3; text-transform:none; color:var(--pm-sub); }
 #mod-settings-section.ssb-paged .mod-header[data-section="hud"]::after { content:"Choose which parts of the in-game HUD you see."; }
-#mod-settings-section.ssb-paged .mod-header[data-section="chat"]::after { content:"Hide the chat, keep its whole history, or show when each message arrived."; }
+#mod-settings-section.ssb-paged .mod-header[data-section="chat"]::after { content:"Hide the chat, keep its whole history, show when each message arrived, or copy it."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="effects"]::after { content:"Turn off visual effects for a cleaner, faster game."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="fps"]::after { content:"Raise your frame rate, and set up the FPS and ping readout."; }
 #mod-settings-section.ssb-paged .mod-header[data-section="menus"]::after { content:"Extras for the home screen, pause menu and inventory."; }
@@ -9094,6 +9094,7 @@ _guN);
 C.appendChild(_guC);
 let Ch = a("Chat", "chat");
 s(Ch, "Hide Chat", d.ui, "hideChat", "tp-hideChat", ei);
+if (window.__ssbChatCopyRow) Ch.appendChild(window.__ssbChatCopyRow());
 let Ef = a("Effects", "effects");
 Ef.appendChild(window.__ssbEffects60.row(d.perf));
 s(Ef, "Hide Explosion Fire", d.gameplay, "noExplosionFire", "tp-noExplosionFire", g);
@@ -14147,7 +14148,7 @@ text: "Now counts stutters and freezes in your match, and its tips can turn on S
 group: "v6.4"
 }, {
 label: "Chat",
-text: "With Infinite Chat History off, the chat keeps the game's own 5 messages again. Chat Timestamps (MODS ▸ Chat, off by default) shows when each message arrived while you're paused. Type copy chat in MODS ▸ Manage ▸ Import Settings Code to copy every retained line as text.",
+text: "With Infinite Chat History off, the chat keeps the game's own 5 messages again. Chat Timestamps (MODS ▸ Chat, off by default) shows when each message arrived while you're paused. Copy Chat in MODS ▸ Chat copies every retained line as text.",
 group: "v6.4"
 }, {
 label: "Session Time",
@@ -15997,6 +15998,34 @@ return window.__ssbUI.copyText("Shell Shockers chat" + when + "\n" + rows.join("
 "Copied " + rows.length + (rows.length === 1 ? " chat message." : " chat messages."));
 }
 window.__ssbCopyChat = () => copyChat(document.getElementById("chatOut"));
+window.__ssbChatCopyRow = () => {
+const c = document.createElement("div");
+c.className = "mod-slider-container";
+c.setAttribute("data-setting", "ssb-copyChat");
+c.setAttribute("data-keywords", "chat copy export save text log history messages clipboard");
+const l = document.createElement("div");
+l.className = "mod-slider-label";
+l.textContent = "Copy Chat";
+l.setAttribute("data-tooltip",
+"Copies every chat message the game still has, oldest first, as plain text. With Infinite Chat History on that is the whole match. Chat Timestamps adds the times.");
+l.style.cursor = "default";
+const b = document.createElement("button");
+b.type = "button";
+b.className = "mod-num-input mod-key-btn";
+b.style.cssText = "width: 120px; padding: 6px 10px; cursor: pointer; font-weight: 700;";
+b.textContent = "Copy";
+b.addEventListener("click", () => {
+try {
+if (window.BAWK && window.BAWK.play) window.BAWK.play("ui_click");
+} catch (e) {
+window.__ssbErr("copychat#1", e);
+}
+window.__ssbCopyChat();
+});
+c.appendChild(l);
+c.appendChild(b);
+return c;
+};
 function scheduleChat(added) {
 pendingMessages = pendingMessages || added === true;
 if (!document.hidden && frame === null) frame = nativeFrame.request(flushChat);
@@ -16151,7 +16180,7 @@ after: "tp-hideChat",
 label: "Infinite Chat History",
 code: "Ai",
 def: false,
-tip: "Stops the game deleting old chat messages, so the whole match's chat is kept. Pause or open chat and scroll up to read it back. Type copy chat into MODS ▸ Manage ▸ Import Settings Code to copy every retained line as text. Off, the chat keeps the game's newest 5 messages.",
+tip: "Stops the game deleting old chat messages, so the whole match's chat is kept. Pause or open chat and scroll up to read it back. Copy Chat, below, copies every retained line as text. Off, the chat keeps the game's newest 5 messages.",
 keywords: "chat log scroll back messages",
 get: isOn,
 set: (v) => {

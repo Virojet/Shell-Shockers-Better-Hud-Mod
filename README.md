@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.4.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.4.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -73,7 +73,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Personal Records:** your most kills and best KDR, with at least 10 kills, for each mode and map. Match History shows the records, and a message at match end announces a new best. On by default; needs Stats Tracker.
 - **Show Match FPS:** an off-by-default Stats switch shows average and lowest four-second FPS in Match History and adds performance columns to CSV. Match details can also show freezes and the lowest resolution used. Earlier matches without measurements show no value.
 - **FPS Check:** counts short stutters and freezes over 150 ms. Where applicable, its recommendations can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.
-- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. Type `copy chat` in **MODS ▸ Manage ▸ Import Settings Code** to copy every retained line as plain text, including available timestamps.
+- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. **Copy Chat** in **MODS ▸ Chat** copies every retained line as plain text, including available timestamps; typing `copy chat` in **Import Settings Code** does the same.
 - **Session Time:** Session Time Counts From can use Page Load or Match Start. Outside a match it uses page time.
 - **Fixes:** Chick'n Winner Fix and Early Respawn Guard now have their own MODS ▸ Fixes page. Early Respawn Guard explains why an early Play click did nothing.
 - **Hotkeys:** Stats Hotkey and Tab Out Key warn when they overlap each other or a game control.
@@ -104,6 +104,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **GUI Scale**: a slider for the size of the HUD, menus and chat, weighted toward making them smaller. The crosshair keeps its size
 - **Hide individual HUD elements**: chat, kill feed, egg count, player list, ammo, grenade count, HP bar, scope lines, best-streak counters, challenges, the Chick'n Winner button
 - **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest 5 messages
+- **Copy Chat**: a button under **MODS ▸ Chat** that copies the chat the game still has as plain text
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
@@ -267,7 +268,11 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.4.0 — current
+#### v6.4.1 — current
+
+- **Patch release:** the final 6.4 build under a new version number, so every install updates to it. New: a **Copy Chat** button in **MODS ▸ Chat** (the in-game chat itself gets no button). It also carries the preset icons on the MODS ▸ Manage page, sounds when the changelog opens and closes, and the Changed tab off by default (turn it on with **MODS ▸ Menus ▸ Show Changed Tab**).
+
+#### v6.4.0
 
 - **Presets:** MODS ▸ Manage loads Performance, Clean HUD or Default, or saves your current settings under a name. Every load lists its changes and asks first. Up to 10 saved presets; backup files include them. Failed storage writes now report an error instead of claiming the preset was saved or deleted.
 - **Changed tab:** optional and off by default. Turn on **Show Changed Tab** in **MODS ▸ Menus** to use it; settings codes and backups include the preference
@@ -275,7 +280,7 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 - **Personal Records:** your most kills and best KDR, with at least 10 kills, for each mode and map. Match History shows the records, and a message at match end announces a new best. On by default; needs Stats Tracker.
 - **Show Match FPS:** an off-by-default Stats switch shows average and lowest four-second FPS in Match History and adds performance columns to CSV. Match details can also show freezes and the lowest resolution used. Earlier matches without measurements show no value.
 - **FPS Check:** counts short stutters and freezes over 150 ms. Where applicable, its recommendations can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.
-- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. Type `copy chat` in **MODS ▸ Manage ▸ Import Settings Code** to copy every retained line as plain text, including available timestamps.
+- **Chat:** Infinite Chat History off keeps the game's own newest 5 messages again. Chat Timestamps is off by default and displays arrival times while paused. **Copy Chat** in **MODS ▸ Chat** copies every retained line as plain text, including available timestamps; typing `copy chat` in **Import Settings Code** does the same.
 - **Session Time:** Session Time Counts From can use Page Load or Match Start. Outside a match it uses page time.
 - **Fixes:** Chick'n Winner Fix and Early Respawn Guard now have their own MODS ▸ Fixes page. Early Respawn Guard explains why an early Play click did nothing.
 - **Hotkeys:** Stats Hotkey and Tab Out Key warn when they overlap each other or a game control.
