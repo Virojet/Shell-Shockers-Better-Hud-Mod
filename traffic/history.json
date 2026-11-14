@@ -179,14 +179,24 @@
     "2026-11-12": {
       "count": 64,
       "uniques": 25
+    },
+    "2026-11-13": {
+      "count": 14,
+      "uniques": 9
     }
   },
   "popular_paths": [
     {
-      "count": 91,
+      "count": 93,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 54
+      "uniques": 55
+    },
+    {
+      "count": 5,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
+      "uniques": 3
     },
     {
       "count": 5,
@@ -207,12 +217,6 @@
       "uniques": 2
     },
     {
-      "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
-      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
-      "uniques": 2
-    },
-    {
       "count": 2,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
@@ -226,14 +230,14 @@
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/archive",
-      "title": "/tree/main/archive",
-      "uniques": 2
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
+      "title": "/blob/main/LICENSE",
+      "uniques": 1
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
-      "title": "/blob/main/LICENSE",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
+      "title": "/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
       "uniques": 1
     },
     {
@@ -277,12 +281,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 1050,
-      "uniques": 524
+      "count": 1064,
+      "uniques": 533
     },
     "views": {
-      "count": 400,
-      "uniques": 232
+      "count": 409,
+      "uniques": 235
     }
   },
   "views": {
@@ -465,6 +469,10 @@
     "2026-11-12": {
       "count": 12,
       "uniques": 6
+    },
+    "2026-11-13": {
+      "count": 9,
+      "uniques": 3
     }
   }
 }
