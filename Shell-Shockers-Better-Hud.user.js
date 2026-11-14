@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.5.3
+// @version      6.6.0
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.3";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.5.3");
+.version) || "6.6.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.5.3",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -230,10 +230,47 @@ var patches = [];
 var originals = new WeakMap();
 var nodeText = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
 var nativeAppend = HTMLElement.prototype.appendChild;
+var gameSeen = false,
+broken = "";
+function noteBroken(why, line) {
+if (broken) return;
+broken = why;
+window.__ssbBrokenGame = why;
+console.warn("[Better HUD] " + line);
+var t0 = Date.now(),
+check = function() {
+if (window.vueApp && window.extern) return;
+if (document.readyState !== "complete" || Date.now() - t0 < 20000) return void setTimeout(check, 2000);
+console.warn("[Better HUD] The game didn't start: another userscript changed the game's code. Turn your other userscripts off one at a time and reload to find it.");
+try {
+if (document.body && /The game didn't start/.test(document.body.innerText || "")) return;
+window.__ssbUI && window.__ssbUI.dialog({
+title: "The game didn't start",
+text: "Another userscript changed the game's code, so the game can't start.\nTurn your other userscripts off one at a time and reload to find the one that does it. Better HUD itself is fine to keep on.",
+buttons: [{
+label: "OK",
+kind: "green",
+value: true,
+primary: true
+}]
+});
+} catch (e) {
+window.__ssbErr("boot#broken", e)
+}
+};
+setTimeout(check, 20000);
+}
 HTMLElement.prototype.appendChild = function(node) {
-if (patches.length && node && node.tagName === "SCRIPT" && !node.src && !originals.has(node)) {
+var wrote = null;
+if (node && node.tagName === "SCRIPT" && !node.src && !originals.has(node) && !gameSeen) {
 var src = nodeText.get.call(node);
-if (src && src.length > 100000 && src.startsWith("(()=>{")) {
+var isGame = !!src && src.length > 100000 && src.startsWith("(()=>{");
+if (isGame) gameSeen = true;
+else if (src && (src.length > 1000000 || /^\s*(undefined|null)\s*$/.test(src))) noteBroken("arrived-broken",
+"The game's code reached Better HUD already changed by another script (" + (src.length > 1000000 ?
+"it no longer starts the usual way" : "it reads \"" + src.trim() + "\"") + "), so Better HUD's game patches were skipped.");
+if (isGame && !patches.length) wrote = src;
+if (isGame && patches.length) {
 var orig = src,
 applied = [],
 missed = [],
@@ -263,9 +300,15 @@ console.log("[Better HUD] Game patches: " + applied.length + " applied" + (appli
 " (" + applied.join(", ") + ")" : "") +
 (missed.length ? "; NOT applied: " + missed.join(", ") + " (game updated?)" : "") +
 " in " + ms + " ms");
+wrote = src;
 }
 }
-return nativeAppend.call(this, node);
+var r = nativeAppend.call(this, node);
+if (wrote !== null) try {
+if (nodeText.get.call(node) !== wrote) noteBroken("replaced",
+"Another script replaced the game's code after Better HUD patched it, so Better HUD's game patches may not apply.");
+} catch (e) {}
+return r;
 };
 var scriptText = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, "textContent") || nodeText;
 Object.defineProperty(HTMLScriptElement.prototype, "textContent", {
@@ -1476,7 +1519,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.5.3",
+version: "6.6.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -4205,14 +4248,84 @@ K.textContent = confirmed ?
 }, 2e3, {
 inMatch: true
 });
+window.__ssbPerWeapon = (function _ssbPerWeapon() {
+const WEAPONS = [
+["EggK-47", "Soldier"],
+["Dozen Gauge", "Scrambler"],
+["CSG-1", "Free Ranger"],
+["RPEGG", "Eggsploder"],
+["SMEGG", "Whipper"],
+["M2DZ", "Crackshot"],
+["TriHard", ""],
+["Cluck 9mm", "pistol"]
+];
+let base = null,
+cur = "";
+const on = () => {
+try {
+return JSON.parse(localStorage.getItem("ch2-perWeapon") || "false") === true
+} catch (e) {
+return false
+}
+},
+map = () => {
+try {
+let m = JSON.parse(localStorage.getItem("ch2-perWeaponMap") || "{}");
+return m && typeof m == "object" && !Array.isArray(m) ? m : {}
+} catch (e) {
+return {}
+}
+},
+restore = () => {
+if (!base) return false;
+Object.assign(A, base);
+base = null;
+cur = "";
+return true
+},
+apply = w => {
+try {
+let own = base || A,
+name = w && document.pointerLockElement ? String(w.textContent || "").trim() : "",
+want = own.enabled && name && on() ? String(map()[name] || "") : "";
+if (want === cur) return;
+let p = want && N()[want];
+if (!p || typeof p != "object") {
+if (restore()) G();
+return
+}
+if (!base) base = Object.assign({}, A);
+Object.assign(A, base, _withDot(p), {
+enabled: true
+});
+cur = want;
+G();
+} catch (e) {
+window.__ssbErr("perweapon#1", e)
+}
+};
+document.addEventListener("pointerlockchange", () => {
+if (document.pointerLockElement) apply(document.getElementById("weaponName"));
+else if (restore()) G();
+});
+return {
+weapons: WEAPONS,
+on: on,
+map: map,
+setMap: m => localStorage.setItem("ch2-perWeaponMap", JSON.stringify(m)),
+apply: apply,
+active: () => cur
+};
+})();
 (function _ssbShotgunDot() {
 let on = false,
 lbl = null,
 obs = null;
 const apply = function() {
 try {
-let w = lbl && lbl.isConnected ? lbl : document.getElementById("weaponName"),
-want = !!(A.enabled && A.hideDotShotgun && w && /^\s*Dozen Gauge\s*$/i.test(w
+let w = lbl && lbl.isConnected ? lbl : document.getElementById("weaponName");
+window.__ssbPerWeapon.apply(w);
+let want = !!(A.enabled && A.hideDotShotgun && w && /^\s*Dozen Gauge\s*$/i.test(w
 .textContent || ""));
 if (want !== on) {
 on = want;
@@ -8187,6 +8300,10 @@ letter-spacing:0 !important; line-height:1.3; text-transform:none !important; co
 }
 #popupInnards > #mod-crosshair-section .ch2-card-arms > .ch2-card-title::after { content:"Color, size and angle of the four arms."; }
 #popupInnards > #mod-crosshair-section .ch2-card-dot > .ch2-card-title::after { content:"The dot, plus or still cross in the middle."; }
+#popupInnards > #mod-crosshair-section .ch2-card-weapon > .ch2-card-title::after { content:"Use one of your saved profiles while you hold a weapon."; }
+#popupInnards > #mod-crosshair-section .ch2-card-weapon .ch2-collapse-body { border-top:1px solid var(--pm-line); }
+#popupInnards > #mod-crosshair-section .ch2-pw-select { width:190px; max-width:100%; height:28px; padding:0 4px !important; border:0 !important; border-radius:6px !important; background:transparent !important; color:var(--ssb-ink) !important; font-family:"Nunito",system-ui,sans-serif !important; font-size:14px !important; font-weight:700 !important; cursor:pointer; outline:none; text-overflow:ellipsis; }
+#popupInnards > #mod-crosshair-section .ch2-control-right:has(.ch2-pw-select:focus-visible) { outline:2px solid var(--ssb-focus); outline-offset:1px; }
 
 /* Rows: one line each, a hairline between them, every control ending on the same right edge */
 #popupInnards > #mod-crosshair-section .ch2-right-col :is(.ch2-check-label, .ch2-control-row, .ch2-slider-wrap) { box-sizing:border-box; min-height:52px; margin:0 !important; padding:8px 0 !important; border-top:1px solid var(--pm-line) !important; }
@@ -9508,9 +9625,24 @@ window.ssGunSounds && (window.ssGunSounds.version || true)
 .ssModMenu ? (window.ssModMenu.version || true) : !!document.getElementById(
 "ssmm-root")
 ],
+["Smoke Logo",
+"Put your own picture on the smoke of grenade and rocket blasts. Only you see it.",
+"Shell-Shockers-Smoke-Logo", "Shell-Shockers-Smoke-Logo.user.js", () => window
+.ssSmokeLogo && (window.ssSmokeLogo.version || true)
+],
+["Shellstrike Mod",
+"Shellstrike logos on blast smoke, yolk bursts and shell fragments. Only you see them.",
+"Shell-Shockers-Shellstrike-Mod", "Shell-Shockers-Shellstrike-Mod.user.js", () => window
+.ssShellstrike && (window.ssShellstrike.version || true)
+],
 ["Stats Mod",
 "Better HUD's Match History on its own. You already have it in Better HUD.",
 "Shell-Shockers-Stats-Mod", "Shell-Shockers-Stats-Mod.user.js", () => false,
+1
+],
+["Crosshair Mod",
+"Better HUD's crosshair editor on its own. You already have it in Better HUD.",
+"Shell-Shockers-Crosshair-Mod", "Shell-Shockers-Crosshair-Mod.user.js", () => false,
 1
 ],
 ["Blossom V4 Theme",
@@ -10406,8 +10538,13 @@ type: "success"
 });
 _rebuild();
 });
-let _bkOk = k => /^(tp|ch2)-/.test(k) && !
-/^tp-(chatBypass|skinUnlocker|hideScopeFrame|hideScopeFrameMigrated|randomFPS|minFPS|maxFPS|randomPing|minPing|maxPing|noExplosionSmoke|statsDebug|statsLifetime|statsSession|lastSkinCache|schema|chwAuto|chwAutoMax|chwAutoDay|chwAutoWins)$/
+let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatJoin chatTimes cleanLeave earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noYolk perfPriority personalRecords pinned preconnect presets random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsHistory statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsShowFps tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
++ " adBypass chatBypass chwAuto chwAutoDay chwAutoMax chwAutoWins hideScopeFrame hideScopeFrameMigrated lastSkinCache maxFPS maxPing minFPS minPing noExplosionSmoke randomFPS randomPing skinUnlocker"
+).split(" ")),
+_ssbIsOwnTp = k => k.slice(0, 3) === "tp-" && _ssbOwnTp.has(k.slice(3)),
+_ssbOwnKey = k => _ssbIsOwnTp(k) || /^(ch2|ssb)-/.test(k) || k === "mod-server-hosts";
+let _bkOk = k => (_ssbIsOwnTp(k) || /^ch2-/.test(k)) && !
+/^tp-(chatBypass|adBypass|skinUnlocker|hideScopeFrame|hideScopeFrameMigrated|randomFPS|minFPS|maxFPS|randomPing|minPing|maxPing|noExplosionSmoke|statsDebug|statsLifetime|statsSession|lastSkinCache|schema|chwAuto|chwAutoMax|chwAutoDay|chwAutoWins)$/
 .test(k),
 _bkPj = (v, fb) => {
 try {
@@ -10508,6 +10645,10 @@ Object.keys(b.keys).forEach(k => {
 if (_bkOk(k) && typeof b.keys[k] == "string") src[k] = b
 .keys[k];
 });
+let foreign = Object.keys(b.keys).filter(k => k.slice(0, 3) === "tp-" && !_ssbIsOwnTp(k)),
+foreignNote = foreign.length ? "\nLeft out " + foreign.length + (foreign.length === 1 ?
+" key that belongs to another script: " : " keys that belong to other scripts: ") +
+foreign.slice(0, 3).map(k => String(k).slice(0, 40)).join(", ") + (foreign.length > 3 ? ", …" : "") + "." : "";
 let profIn = _bkPj(src["ch2-profiles"], {}),
 profHave = _bkPj(localStorage.getItem("ch2-profiles"), {});
 if (!_bkObj(profIn)) profIn = {};
@@ -10553,7 +10694,7 @@ if (histAdd.length) parts.push(pl(histAdd.length,
 "match added to your history",
 "matches added to your history"));
 if (!parts.length) {
-U.toast("That backup matches what you have. Nothing to change.", {
+U.toast("That backup matches what you have. Nothing to change." + foreignNote, {
 type: "success"
 });
 return
@@ -10565,8 +10706,8 @@ title: "Load Backup",
 text: "Backup from " + when + (b.mod ?
 " (Better HUD v" + String(b.mod).slice(0,
 12) + ")" : "") + ".\nIt changes: " +
-parts.join(", ") +
-".\nThe page reloads afterwards.",
+parts.join(", ") + "." + foreignNote +
+"\nThe page reloads afterwards.",
 ok: "Load",
 danger: true
 }))) return;
@@ -10707,7 +10848,7 @@ ok: "Remove",
 danger: true
 }))) return;
 try {
-let mine = k => /^(tp|ch2|ssb)-/.test(k) || k === "mod-server-hosts",
+let mine = _ssbOwnKey,
 drop = k => mine(k) && k !== "ssb-install-counted",
 gone = [],
 was = Storage.prototype.setItem;
@@ -12291,6 +12432,52 @@ dotBody.classList.add("collapsed");
 }
 dotList.appendChild(dotBody);
 f.appendChild(dotCard);
+let pwApi = window.__ssbPerWeapon,
+pwCard = document.createElement("div");
+pwCard.className = "ch2-group-card ch2-card-weapon";
+let pwTitle = document.createElement("div");
+pwTitle.className = "ch2-card-title";
+pwTitle.textContent = "Per Weapon";
+pwCard.appendChild(pwTitle);
+let pwList = document.createElement("div");
+pwList.className = "ch2-card-list";
+pwCard.appendChild(pwList);
+let pwState = {
+perWeapon: pwApi.on()
+},
+pwBody = document.createElement("div");
+pwBody.className = "ch2-collapse-body";
+let pwSw = a("Crosshair Per Weapon", "perWeapon", pwState, () => _fold(pwBody, !pwState.perWeapon));
+pwSw.style.marginBottom = "10px";
+pwList.appendChild(pwSw);
+let pwNames = PO(N()),
+pwMap = pwApi.map();
+pwApi.weapons.forEach(([wn, cls]) => {
+let sel = document.createElement("select");
+sel.className = "ch2-pw-select";
+sel.setAttribute("data-weapon", wn);
+sel.setAttribute("aria-label", "Crosshair for the " + wn);
+[
+["", "Same as now"]
+].concat(pwNames.map(nm => [nm, nm])).forEach(([v, l]) => {
+let op = document.createElement("option");
+op.value = v;
+op.textContent = l;
+sel.appendChild(op);
+});
+sel.value = pwNames.includes(pwMap[wn]) ? pwMap[wn] : "";
+sel.addEventListener("change", () => {
+let m = pwApi.map();
+if (sel.value) m[wn] = sel.value;
+else delete m[wn];
+pwApi.setMap(m);
+ef("ui_onchange");
+});
+pwBody.appendChild(o(cls ? wn + " (" + cls + ")" : wn, sel));
+});
+if (!pwState.perWeapon) pwBody.classList.add("collapsed");
+pwList.appendChild(pwBody);
+f.appendChild(pwCard);
 window.__ssbChRebuild = () => {
 let scrollers = () => [t, t.querySelector(".ch2-right-col"), t.querySelector(
 ".ch2-preview-col")],
@@ -14072,8 +14259,8 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.5";
-const changelogVersion = "6.5";
+const displayVersion = "6.6";
+const changelogVersion = "6.6";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
 try {
@@ -14082,6 +14269,23 @@ window.BAWK?.play?.(name);
 window.__ssbErr("changelog.sound", err);
 }
 }
+const v66Items = [{
+label: "Crosshair Per Weapon",
+text: "A new card in the Crosshair tab, off by default: pick one of your saved profiles for each weapon, and it's used while you hold that weapon. Your own crosshair stays as it is.",
+group: "v6.6"
+}, {
+label: "Other Mods",
+text: "Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.",
+group: "v6.6"
+}, {
+label: "Your Data",
+text: "Remove All Mod Data and backup files now touch only Better HUD's own settings, so what other scripts saved stays put.",
+group: "v6.6"
+}, {
+label: "Game Didn't Start",
+text: "If another userscript breaks the game's code so the game can't start, a message now says so.",
+group: "v6.6"
+}];
 const v65Items = [{
 label: "Game Fixes",
 text: "A new switch in MODS ▸ Gameplay, on by default, with a gear that opens each fix: Chick'n Winner Fix, Early Respawn Guard and the new Blank Egg Fix, which stops the home-screen egg going blank when you press the confirm button on Leave Game twice, too fast. There is no Fixes tab any more.",
@@ -14095,55 +14299,14 @@ label: "Cleaner Look",
 text: "The NEW tags are gone, and the Search settings box no longer draws an outline around itself.",
 group: "v6.5"
 }];
-const v64Items = [{
-label: "Presets",
-text: "MODS ▸ Manage ▸ Presets loads a ready set of settings (Performance, Clean HUD or Default) or one you saved with Save Settings as Preset. It lists what will change before anything does.",
-group: "v6.4"
-}, {
-label: "Keep Matches",
-text: "Keep, on a match in Match History, saves it from the 40-match limit (up to 20 kept). Clear History leaves kept matches.",
-group: "v6.4"
-}, {
-label: "Personal Records",
-text: "A new switch in MODS ▸ Stats, on by default: your most kills and best KDR for each mode and map, shown above Match History, and a message at the end of a match that beats one.",
-group: "v6.4"
-}, {
-label: "Show Match FPS",
-text: "A new switch in MODS ▸ Stats, off by default: Match History shows each match's average and lowest FPS.",
-group: "v6.4"
-}, {
-label: "FPS Check",
-text: "Now counts stutters and freezes in your match, and its tips can turn on Smart Auto Detail or Disable Anti-Aliasing with one click.",
-group: "v6.4"
-}, {
-label: "Chat",
-text: "With Infinite Chat History off, the chat keeps the game's own 5 messages again. Chat Timestamps (MODS ▸ Chat, off by default) shows when each message arrived while you're paused. Copy Chat in MODS ▸ Chat copies every retained line as text.",
-group: "v6.4"
-}, {
-label: "Session Time",
-text: "Session Time Counts From can start the TIME in the FPS box when the match starts, instead of when the page loaded.",
-group: "v6.4"
-}, {
-label: "Fixes",
-text: "Chick'n Winner Fix and Early Respawn Guard can be switched off on their own. Early Respawn Guard now says why a Play click did nothing.",
-group: "v6.4"
-}, {
-label: "Hotkeys",
-text: "Stats Hotkey and Tab Out Key say so when the key you pick is also the other one, or one the game uses.",
-group: "v6.4"
-}, {
-label: "Match History",
-text: "An unknown server is saved as a dash instead of the last server you ever connected to, and server names come from the game's own list.",
-group: "v6.4"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.5:",
-items: v65Items
+intro: "Here's what's new in v6.6:",
+items: v66Items
 }, {
-version: "6.4",
-intro: "Previously in v6.4:",
-items: v64Items
+version: "6.5",
+intro: "Previously in v6.5:",
+items: v65Items
 }];
 function hasSeenChangelog() {
 try {

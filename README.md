@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.5.3-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.6.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -65,16 +65,12 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.5
+## What's new in v6.6
 
-- **Sidebar fix:** with the Changed button showing, the section buttons no longer run over the bottom bar; they shrink to fit.
-- **Session Time:** **Session Time Counts From** only shows while **Show Session Time** is on.
-- **Reload pop-up:** a setting that needs a page reload (Disable Anti-Aliasing, for one) now opens a small pop-up with **Reload now** and **Later**. The "Reload required" line in the sidebar, which covered the section buttons, is gone.
-- **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls and has more room at the bottom, and the search box is empty again each time you reopen the menu.
-- **Block Ads:** the switch is removed from **MODS ▸ Menus**. It is now a command: type `block ads` in **Import Settings Code** to turn it on or off, then reload (F5). Your saved choice is kept.
-- **Game Fixes:** a new switch in **MODS ▸ Gameplay**, on by default. Its gear opens each fix on its own: **Chick'n Winner Fix**, **Early Respawn Guard** and the new **Blank Egg Fix**. Press the confirm button on Leave Game twice, too fast, and the egg on the home screen could go blank; Blank Egg Fix ignores the extra press and redraws the egg if it still comes back blank. The Fixes tab is gone, because the fixes live under Game Fixes now.
-- **Advanced Settings:** a new switch in **MODS ▸ Menus**, off by default. It shows the **Effects** and **Gameplay** tabs and, on **MODS ▸ Manage**, a line under each button saying what it does. Until it is on, those tabs are hidden and the Manage buttons show just a larger icon and a name (hover for the description). Their settings keep working, and search still finds them. Settings codes and backups include the preference.
-- **Cleaner look:** the **NEW** tags are gone, and the Search settings box no longer draws an outline around itself.
+- **Crosshair Per Weapon:** a new card at the end of the **Crosshair** tab, off by default. Switch it on and pick one of your saved profiles for each weapon: in a match, that profile is drawn while you hold the weapon, and your own crosshair is back when you pause. **Same as now** keeps your own crosshair for a weapon. Swapping weapons saves nothing, so your own crosshair stays as it is. Backup files carry the choices.
+- **Other Mods:** Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.
+- **Your Data:** **Remove All Mod Data** and backup files now touch only Better HUD's own settings. What other userscripts saved under `tp-` names stays put, and loading a backup that holds some of it says which keys it left out.
+- **Game didn't start:** if another userscript changes the game's code so the game can't start, a message now says so and how to find that script. Better HUD's console line says what happened, too.
 
 [Full changelog ↓](#changelog)
 
@@ -117,6 +113,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - Static (outer) lines, plus-shape dot, rounded dot, and more
 - Live preview with Sky, Grey, Dark and White backgrounds
 - **Undo / Redo / Revert**, with Ctrl+Z and Ctrl+Y
+- **Per Weapon** (off by default): use one of your saved profiles for each weapon, while you hold it
 
 #### Effects & FPS
 - **Uncap FPS** runs frames back to back while playing. Its gear opens **Controlled Uncap**, an optional adaptive limiter, and **Target FPS**, Off or any whole 30–1000 rate. All start off; menus keep their normal rendering rate. A target is a limit, not a guarantee your graphics card can reach it
@@ -144,7 +141,6 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Legacy Sounds**: classic weapon and game sound effects
 
 #### Other
-- **Block Ads**: off by default; type `block ads` in **MODS ▸ Manage ▸ Import Settings Code** to turn it on or off. It hides in-game video and banner ads after a page reload (F5)
 - Export / import settings and inventory favorites as shareable codes
 - **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
@@ -180,12 +176,13 @@ Each one is its own userscript. Install any of them next to Better HUD; they upd
 | Mod | What it does | |
 |---|---|---|
 | **[Smoke Logo](https://github.com/Virojet/Shell-Shockers-Smoke-Logo)** | Add your own logo to grenade and rocket smoke | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Smoke-Logo/main/Shell-Shockers-Smoke-Logo.user.js) |
-| **[Shellstrike Mod](https://github.com/Virojet/Shell-Shockers-Shellstrike-Mod)** | Shellstrike-themed smoke and effects | [Repository](https://github.com/Virojet/Shell-Shockers-Shellstrike-Mod) |
+| **[Shellstrike Mod](https://github.com/Virojet/Shell-Shockers-Shellstrike-Mod)** | Shellstrike-themed smoke and effects | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Shellstrike-Mod/main/Shell-Shockers-Shellstrike-Mod.user.js) |
 | **[Mod Menu](https://github.com/Virojet/Shell-Shockers-Mod-Menu)** | One menu to switch your mods and themes on or off, with game sounds on every control | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Mod-Menu/main/Shell-Shockers-Mod-Menu.user.js) |
 | **[Gun Sounds](https://github.com/Virojet/Shell-Shockers-Gun-Sounds)** | Pick weapon, meme or your own sounds for shots, melee swings, reloads and the empty click | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Gun-Sounds/main/Shell-Shockers-Gun-Sounds.user.js) |
 | **[Valorant Kill Sounds](https://github.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds)** | Valorant-style kill sounds and banners that climb with your streak, from fifteen packs or your own files | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Kill-Sounds/main/Shell-Shockers-Valorant-Kill-Sounds.user.js) |
 | **[Valorant Sensitivity](https://github.com/Virojet/Shell-Shockers-Valorant-Sensitivity)** | Use your Valorant sensitivity, typed in or read from Valorant's settings, from the hip and scoped | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Valorant-Sensitivity/main/Shell-Shockers-Valorant-Sensitivity.user.js) |
 | **[Stats Mod](https://github.com/Virojet/Shell-Shockers-Stats-Mod)** | Better HUD's Match History on its own, for players who don't want the rest. Skip it if you use Better HUD | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Stats-Mod/main/Shell-Shockers-Stats-Mod.user.js) |
+| **[Crosshair Mod](https://github.com/Virojet/Shell-Shockers-Crosshair-Mod)** | Better HUD's crosshair editor on its own, with the same saved crosshairs. It steps aside when Better HUD runs | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Crosshair-Mod/main/Shell-Shockers-Crosshair-Mod.user.js) |
 | **[Blossom V4 Theme](https://github.com/Virojet/Shell-Shockers-Blossom-V4-Theme)** | Black and pink menus over cherry blossom art, a pink HUD and "You blossomed" kill messages | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Blossom-V4-Theme/main/Shell-Shockers-Blossom-V4.user.js) |
 | **[Cherry Blossom Theme](https://github.com/Virojet/Shell-Shockers-Cherry-Blossom-Theme)** | Pink menus, a plum background and falling petals | [Install](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Cherry-Blossom-Theme/main/Shell-Shockers-Cherry-Blossom.user.js) |
 
@@ -212,20 +209,20 @@ Press the **Check for updates** arrows button at the bottom of the MODS tab, or 
 </details>
 
 <details>
-<summary><b>Block Ads didn't change anything</b></summary>
-
-<br>
-
-It takes effect after a full page reload (**F5**). Leaving and rejoining a match isn't enough.
-
-</details>
-
-<details>
 <summary><b>The game runs at a low FPS</b></summary>
 
 <br>
 
 Open **MODS ▸ FPS & Ping** and press **Run Check** at the bottom. It looks for common causes, like the browser not using your graphics card or a battery saver holding the game to 30 FPS, and tells you how to fix each one. Press **Copy** to share a picture of the report when you ask for help.
+
+</details>
+
+<details>
+<summary><b>The game doesn't start, and a message says another userscript changed its code</b></summary>
+
+<br>
+
+Another userscript rewrote the game's code in a way that stops it from loading. Turn your other userscripts off one at a time in Tampermonkey and reload with **F5** each time, until the game starts: the last one you turned off is the cause. Better HUD itself is fine to keep on.
 
 </details>
 
@@ -263,11 +260,18 @@ Better HUD makes three kinds of request, and sends nothing about you or your set
 - **Update check:** it reads the small version file from this repo on GitHub, at most every 30 minutes, to tell you when a new version is out
 - **Pictures:** the first time you take a stats screenshot or an FPS Check picture, it loads the html-to-image library from cdnjs
 
-Your settings, saved presets, crosshairs, personal records and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (everything saved under the `tp-`, `ch2-` and `ssb-` names, and the server list) and reloads the page. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
+Your settings, saved presets, crosshairs, personal records and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (Better HUD's own `tp-` settings, everything under the `ch2-` and `ssb-` names, and the server list) and reloads the page. Other userscripts that also save under `tp-` names keep their data, and backup files leave it out too. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
 
 ## Changelog
 
-#### v6.5.3 — current
+#### v6.6.0 — current
+
+- **Crosshair Per Weapon:** a new card at the end of the **Crosshair** tab, off by default. Switch it on and pick one of your saved profiles for each weapon: in a match, that profile is drawn while you hold the weapon, and your own crosshair is back when you pause. **Same as now** keeps your own crosshair for a weapon. Swapping weapons saves nothing, so your own crosshair stays as it is. Backup files carry the choices.
+- **Other Mods:** Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.
+- **Your Data:** **Remove All Mod Data** and backup files now touch only Better HUD's own settings. What other userscripts saved under `tp-` names stays put, and loading a backup that holds some of it says which keys it left out.
+- **Game didn't start:** if another userscript changes the game's code so the game can't start, a message now says so and how to find that script. Better HUD's console line says what happened, too.
+
+#### v6.5.3
 
 - **Sidebar fix:** with the Changed button showing, the section buttons no longer run over the bottom bar; they shrink to fit.
 - **Session Time:** **Session Time Counts From** only shows while **Show Session Time** is on.
@@ -280,7 +284,6 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 - **Reload pop-up:** a setting that needs a page reload (Disable Anti-Aliasing, for one) now opens a small pop-up with **Reload now** and **Later**. The "Reload required" line in the sidebar, which covered the section buttons, is gone.
 - **Sidebar:** the search result count ("2 results") is removed, the sidebar no longer scrolls, and the search box is empty again each time you reopen the menu.
-- **Block Ads:** the switch is removed from **MODS ▸ Menus**. It is now a command: type `block ads` in **Import Settings Code** to turn it on or off, then reload (F5). Your saved choice is kept.
 
 #### v6.5.0
 
@@ -605,7 +608,7 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 - **Auto-pick Best Server:** now a setting under **MODS ▸ Menus**
 - **Keyboard controls:** MODS and Crosshair checkboxes work with **Tab** and **Space**, with a visible focus outline. Dialog fields are labeled and show clear validation messages
 - **Tidier tabs:** the MODS and CROSSHAIR tab labels are smaller and always fit their tabs at any resolution or zoom
-- **Clearer feedback:** section shortcuts with no search matches are disabled, Block Ads shows a notice until you reload, and narrow settings panels wrap their controls
+- **Clearer feedback:** section shortcuts with no search matches are disabled, and narrow settings panels wrap their controls
 
 **Match History**
 - **Filters and export:** filter by mode or map, see your KDR, and export the matches you see as JSON or CSV
@@ -613,7 +616,6 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 - **Keyboard support:** open matches with **Enter**, and **Esc** closes the stats panel
 
 **Game screen**
-- **Pause menu:** with Block Ads on, the pause menu moves up into the space the banner ad used to take
 - **Chat history:** paused chat keeps your reading position and offers a jump-to-latest button when new messages arrive
 
 **Performance and reliability**
@@ -628,7 +630,7 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 - **New MODS layout:** settings are regrouped into HUD, Chat, Effects, FPS & Ping, Menus, Stats, Gameplay and Manage, with shortcut buttons beside the search box that stay pinned while you scroll. New controls are marked **NEW**
 - **Clearer names:** for example **Hide Scoreboard & Kill Feed** (was Hide Player Readouts), **Server Picker**, **Match History Button** and **Hide Box Background**. Searching for the old names still finds them
 - **Better search:** also searches each setting's description, has a clear button, and tells you when nothing matches. **Esc** clears it
-- **Complete settings codes:** codes now include Block Ads, Infinite Chat History, the Match History button and the favorites options, and **Reset All Mod Settings** resets them too
+- **Complete settings codes:** codes now include Infinite Chat History, the Match History button and the favorites options, and **Reset All Mod Settings** resets them too
 - **Check for updates:** a new button at the bottom of the MODS tab checks GitHub right away
 - **Preview backgrounds:** one-click Sky, Grey, Dark and White backgrounds for the crosshair preview
 - **Update prompt:** the update-available card has a clearer layout, a close button and a **What's new** link
@@ -636,7 +638,6 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 #### v5.0.1
 
-- **Pause menu position:** with Block Ads on, the pause menu no longer sits higher than normal; it stays where the game usually puts it
 - **Hide Chat hides the whole chat:** the chat box in the bottom-left corner is hidden too, not just the messages
 - **No more Server button blink:** the Server selector on the home screen no longer flickers off and on right after the page loads
 - **New crosshair profiles start enabled:** creating a profile turns the Crosshair Customizer on, so you can start editing right away
@@ -649,7 +650,6 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 - **Infinite Chat stays small:** while you play, the chat stays a small box in the corner instead of growing to cover the screen after you pause and resume
 - **Stuck chat box fixed:** the blue paused-chat box no longer stays on screen after you spawn
 - **Chat fixes:** with Infinite Chat History on, the "share game link" line shows once when you join, messages from your last match no longer carry over, and messages that arrive together stay in order
-- **Block Ads:** new toggle under **MODS ▸ Game HUD** that hides in-game video and banner ads and the leftover promo boxes. Off by default; press **F5** after changing it
 - **Tighter settings panel:** the MODS list now reaches down to Cancel / Confirm, so the big empty gap at the bottom is gone
 - **Positional audio:** with Audio Optimization on (the default), sounds above or below you now adjust as you climb or drop
 - **Lighter matches:** Stats History saves at most every 15 seconds mid-match, and always right away when the match ends or you pause
