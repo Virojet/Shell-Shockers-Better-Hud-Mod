@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.6.0
+// @version      6.6.1
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.1";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.6.0");
+.version) || "6.6.1");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.1",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1519,7 +1519,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.6.0",
+version: "6.6.1",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -1936,13 +1936,26 @@ return patched && isOn() && gameAutoDetail() && inGame() && !!engine;
 function scale() {
 try {
 var v = window.__ssbRenderScale ? +window.__ssbRenderScale() : 1;
-return v >= 1 && v <= 4 ? v : 1;
+return v >= 0.25 && v <= 4 ? v : 1;
 } catch (e) {
 return 1;
 }
 }
+function floorLevel() {
+try {
+var c = engine.getRenderingCanvas(),
+caps = engine.getCaps(),
+max = Math.min(+caps.maxTextureSize || Infinity, +caps.maxRenderTextureSize || Infinity),
+side = c ? Math.max(c.clientWidth, c.clientHeight) : 0;
+return side > 0 && isFinite(max) && max > 0 ? side / max : 0;
+} catch (e) {
+return 0;
+}
+}
 function level(s) {
-return (active() ? 1 / STEPS[s] : base) * scale();
+var k = scale(),
+l = (active() ? 1 / STEPS[s] : base) * k;
+return k < 1 ? Math.max(l, floorLevel()) : l;
 }
 function held() {
 return !!document.pointerLockElement;
@@ -2465,6 +2478,10 @@ return turnOn(KEY);
 if (slow && on && !ad) tips.push({
 label: "Turn on the game's Auto Detail",
 text: "Smart Auto Detail only steps in while the game's Auto Detail is on (Settings, monitor tab)."
+});
+if (slow && scale() < 1) tips.push({
+label: "Set Render Scale back to 1",
+text: "It's above, in FPS & Ping, at " + scale() + ". Below 1 the game draws more pixels than your screen has, which costs a lot of FPS."
 });
 if (slow && scale() === 1) tips.push({
 label: "Raise Render Scale",
@@ -3456,7 +3473,7 @@ inMatch: true
 });
 window.__ssbRenderScale = () => {
 let v = +d.perf.renderScale;
-return v >= 1 && v <= 4 ? v : 1
+return v >= .25 && v <= 4 ? v : 1
 };
 window.__ssbGuiScale =
 () => {
@@ -4908,12 +4925,29 @@ if (!now) {
 _histT = setTimeout(() => _ssbHistWrite(1), 2e3);
 return
 }
+for (let tries = 0;; tries++) {
 try {
 if (_histMem && _histMem.length) localStorage.setItem("tp-statsHistory", JSON.stringify(_histMem));
 else localStorage.removeItem("tp-statsHistory");
+return
 } catch (e) {
-window.__ssbErr("stats.histWrite", e)
+if (tries < 40 && _ssbHistUnlimited() && _histMem && _histMem.length > _HIST_MAX && _ssbHistDropOldest(25)) {
+if (!tries && window.__ssbUI) window.__ssbUI.toast("Your browser's storage is full: the oldest matches in Match History were removed to save the newest one.");
+continue
 }
+window.__ssbErr("stats.histWrite", e);
+return
+}
+}
+}
+function _ssbHistDropOldest(n) {
+let gone = 0;
+for (let i = _histMem.length - 1; i >= 0 && gone < n; i--)
+if (!(_histMem[i] && _histMem[i].kept)) {
+_histMem.splice(i, 1);
+gone++
+}
+return gone > 0
 }
 function _ssbHistSet(h) {
 _histMem = Array.isArray(h) ? h : [];
@@ -4928,7 +4962,34 @@ if (!(e.key !== "tp-statsHistory" && e.key !== null || _histT)) _histMem = null;
 });
 const _HIST_MAX = 40,
 _HIST_KEPT = 20;
+function _ssbHistUnlimited() {
+try {
+return JSON.parse(localStorage.getItem("tp-statsUnlimited") || "false") === true
+} catch (e) {
+return false
+}
+}
+window.__ssbHistUnlimited = _ssbHistUnlimited;
+window.__ssbSettings.add({
+key: "tp-statsUnlimited",
+section: "stats",
+after: "tp-statsShowFps",
+label: "Infinite Match History",
+code: "Sx",
+def: false,
+tip: "Match History keeps every match instead of only the last 40. If your browser runs out of storage for the game, the oldest matches you haven't kept are removed to make room. Turning it off trims the history back to the last 40 (plus the ones you kept) after your next match.",
+keywords: "stats history match unlimited infinite limit 40 forty keep all every save more",
+get: _ssbHistUnlimited,
+set: v => {
+try {
+localStorage.setItem("tp-statsUnlimited", JSON.stringify(!!v))
+} catch (e) {
+window.__ssbErr("stats.unlimited", e)
+}
+}
+});
 function _ssbHistTrim(hist) {
+if (_ssbHistUnlimited()) return;
 let kept = 0,
 plain = 0;
 for (let i = 0; i < hist.length; i++) {
@@ -6797,7 +6858,7 @@ let part = hist.length !== all.length,
 keptN = all.filter(h => h.kept).length,
 games = n => n + " " + (n === 1 ? "game" : "games"),
 chips = `<span class="ssb-head-name">Match History</span>` + (all.length ? _stChips([], [part ? hist
-.length + " of " + all.length + " games" : games(all.length) + " &middot; " + (keptN ? "last 40 + " +
+.length + " of " + all.length + " games" : games(all.length) + " &middot; " + (window.__ssbHistUnlimited && window.__ssbHistUnlimited() ? "all saved" : keptN ? "last 40 + " +
 keptN + " kept" : "last 40 saved"), sk +
 " / " + sd
 ]) + `<span class="ssb-chip ssb-chip-strong">KDR ${_stKdr(sk, sd)}</span>` : ""),
@@ -7757,7 +7818,7 @@ let o = {
 "Legacy Sounds": "Restores the classic/old weapon & game sound effects (fire, reload, pickup, grenade, swap). Loads legacy audio on first enable, then toggles live without reload.",
 "Auto Fullscreen": "Goes fullscreen like F11 when you click into a match. In Chrome and Edge, Esc only pauses: hold Esc to leave fullscreen until the next match.",
 "Tab Out Key": "The keyboard key that releases pointer lock so you can tab away without snapping the camera. Clear removes the key.",
-"Render Scale": "Draws the game at a lower resolution for more FPS. 1 is the normal resolution, 2 is half the width and height. Higher looks blurrier. Smart Auto Detail can still lower it further when your FPS drops.",
+"Render Scale": "The resolution the game is drawn at. 1 is normal. Above 1 is a lower resolution for more FPS: 2 is half the width and height, and looks blurrier. Below 1 is a higher resolution for a sharper picture: 0.5 is twice the width and height, and costs a lot of FPS. Type any value from 0.25 to 4. Smart Auto Detail can still lower the resolution when your FPS drops.",
 "GUI Scale": "Makes the game's HUD, menus, chat and scoreboard smaller or larger. 1 is the normal size and most of the range makes things smaller. The crosshair keeps its size. Applies when you let go of the slider.",
 "FOV (Black Bars)": "Widens your view by adding black bars at the top and bottom. The HUD and menus keep their normal size unless Resize Everything is on. Only in matches; 1 turns it off.",
 "Reset All Mod Settings": "Restore every MODS setting to its default, including Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected."
@@ -9397,14 +9458,14 @@ let _rsMn = document.createElement("span");
 _rsMn.className = "mod-slider-limit";
 _rsMn.style.cssText =
 "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: right;";
-_rsMn.textContent = "1";
+_rsMn.textContent = "0.25";
 let _rsR = document.createElement("input");
 Object.assign(_rsR, {
 type: "range",
 className: "mod-slider",
-min: "1",
+min: "0.25",
 max: "4",
-step: "0.25",
+step: "0.05",
 value: window.__ssbRenderScale()
 });
 let _rsMx = document.createElement("span");
@@ -9418,7 +9479,7 @@ _rsIW
 .appendChild(_rsMx);
 let _rsN = document.createElement("input");
 function _rsApply(v) {
-v = Math.max(1, Math.min(4, Math.round(4 * v) / 4));
+v = Math.max(.25, Math.min(4, Math.round(100 * v) / 100));
 _rsR.value = v;
 _rsN.value = v;
 d.perf
@@ -9431,9 +9492,9 @@ ef("ui_onchange");
 Object.assign(_rsN, {
 type: "number",
 className: "mod-num-input",
-min: "1",
+min: "0.25",
 max: "4",
-step: "0.25",
+step: "0.05",
 value: window.__ssbRenderScale()
 });
 _rsR.addEventListener("input", () => {
@@ -9961,6 +10022,11 @@ return;
 }
 if (key === "Fg") {
 res[sec][prop] = _ucClean(_ssbUnpackNum(v, 1));
+return;
+}
+if (key === "Er") {
+const n = Math.round(100 * _ssbUnpackNum(v)) / 100;
+res[sec][prop] = n >= .25 && n <= 4 ? n : 1;
 return;
 }
 if (type === "b") res[sec][prop] = v === "1";
@@ -10538,7 +10604,7 @@ type: "success"
 });
 _rebuild();
 });
-let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatJoin chatTimes cleanLeave earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noYolk perfPriority personalRecords pinned preconnect presets random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsHistory statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsShowFps tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
+let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatCountdown chatJoin chatNoDup chatTimes cleanLeave earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noYolk perfPriority personalRecords pinned preconnect presets quickQuit random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsHistory statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsShowFps statsUnlimited tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
 + " adBypass chatBypass chwAuto chwAutoDay chwAutoMax chwAutoWins hideScopeFrame hideScopeFrameMigrated lastSkinCache maxFPS maxPing minFPS minPing noExplosionSmoke randomFPS randomPing skinUnlocker"
 ).split(" ")),
 _ssbIsOwnTp = k => k.slice(0, 3) === "tp-" && _ssbOwnTp.has(k.slice(3)),
@@ -10721,12 +10787,13 @@ if (favNew) localStorage.setItem("tp-favItems", JSON
 if (histAdd.length) {
 let all = histHave.concat(histAdd).sort((x, y) => (y
 .startMs || 0) - (x.startMs || 0));
+let histMax = window.__ssbHistUnlimited && window.__ssbHistUnlimited() ? Infinity : 40;
 if (api) {
-if (all.length > 40) all.splice(40);
+if (all.length > histMax) all.splice(histMax);
 api.setHist(
 all);
 } else localStorage.setItem("tp-statsHistory", JSON
-.stringify(all.slice(0, 40)));
+.stringify(all.slice(0, histMax)));
 }
 } catch (o) {
 U.toast("Couldn't load the backup: " + o.message, {
@@ -14270,6 +14337,26 @@ window.__ssbErr("changelog.sound", err);
 }
 }
 const v66Items = [{
+label: "Chat Countdown",
+text: "A new switch in MODS ▸ Chat, off by default. When the game makes you wait before your next chat message, the chat box shows how many seconds are left, and you can type anyway: your message sends itself as soon as the game allows it (up to 10 at a time).",
+group: "v6.6.1"
+}, {
+label: "Skip Duplicate Messages",
+text: "A new switch in MODS ▸ Chat, off by default. The game filters out a chat message you already sent, so this stops you sending the same message twice in a match.",
+group: "v6.6.1"
+}, {
+label: "Quick Quit",
+text: "A new switch in MODS ▸ Menus, off by default. Quit in the pause menu leaves the match at once, without the confirm pop-up.",
+group: "v6.6.1"
+}, {
+label: "Infinite Match History",
+text: "A new switch in MODS ▸ Stats, off by default. Match History keeps every match instead of only the last 40.",
+group: "v6.6.1"
+}, {
+label: "Render Scale",
+text: "Now goes from 0.25 to 4, and you can type any value in between. Below 1 draws the game at a higher resolution than normal: sharper, and much heavier on your FPS.",
+group: "v6.6.1"
+}, {
 label: "Crosshair Per Weapon",
 text: "A new card in the Crosshair tab, off by default: pick one of your saved profiles for each weapon, and it's used while you hold that weapon. Your own crosshair stays as it is.",
 group: "v6.6"
@@ -17714,6 +17801,85 @@ else boot();
 })();
 (function() {
 "use strict";
+const KEY = "tp-quickQuit";
+const isOn = () => {
+try {
+return JSON.parse(localStorage.getItem(KEY)) === true;
+} catch (e) {
+return false;
+}
+};
+const setOn = (v) => {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("quickquit#1", e);
+}
+};
+let hooked = null;
+function findPopup(vm, depth) {
+if (!vm || depth > 8) return null;
+const p = vm.$refs && vm.$refs.leaveGameConfirmPopup;
+if (p && typeof p.show === "function") return p;
+for (const c of vm.$children || []) {
+const r = findPopup(c, depth + 1);
+if (r) return r;
+}
+return null;
+}
+function install() {
+const v = window.vueApp,
+p = v && findPopup(v, 0);
+if (!p) return false;
+if (p === hooked) return true;
+hooked = p;
+const show = p.show;
+p.show = function() {
+const x = window.extern;
+if (isOn() && x && x.inGame && typeof v.onLeaveGameConfirm === "function") {
+try {
+v.onLeaveGameConfirm();
+return;
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("quickquit#2", e);
+}
+}
+return show.apply(this, arguments);
+};
+return true;
+}
+function boot() {
+window.__ssbSettings.add({
+key: KEY,
+section: "menus",
+label: "Quick Quit",
+code: "Mq",
+def: false,
+tip: "Quit in the pause menu leaves the match at once, without asking \"Leave game and return to the main menu?\" first.",
+keywords: "quit leave exit game match main menu home confirm confirmation popup yes no fast quick skip",
+get: isOn,
+set: setOn
+});
+document.addEventListener("pointerlockchange", () => {
+if (!document.pointerLockElement) try {
+install();
+} catch (e) {}
+});
+if (install()) return;
+const stop = window.__ssbMenuPoll(() => {
+try {
+if (install()) stop();
+} catch (e) {
+stop();
+if (window.__ssbErr) window.__ssbErr("quickquit#3", e);
+}
+}, 500);
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
 const KEY = "tp-chatJoin";
 const STYLE_ID = "ssb-chat-join-style";
 const CODE = /(?<![\w-])[a-z]{4}-[a-z]{4}-[a-z]{4}(?![\w-])/gi;
@@ -18167,6 +18333,654 @@ else stop();
 }
 });
 if (on) start();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
+const KEY = "tp-chatCountdown",
+DUP_KEY = "tp-chatNoDup",
+STYLE_ID = "ssb-chat-wait-style",
+BOX_ID = "ssb-chat-wait",
+OPEN = 2,
+SEND_AT = 1.875,
+SECS = 4,
+MAX_WAITING = 10;
+let on = false,
+noDup = false;
+try {
+on = JSON.parse(localStorage.getItem(KEY)) === true;
+} catch (e) {
+on = false;
+}
+try {
+noDup = JSON.parse(localStorage.getItem(DUP_KEY)) === true;
+} catch (e) {
+noDup = false;
+}
+const setOn = (v) => {
+on = !!v;
+try {
+localStorage.setItem(KEY, JSON.stringify(on));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatwait#1", e);
+}
+};
+const setNoDup = (v) => {
+noDup = !!v;
+try {
+localStorage.setItem(DUP_KEY, JSON.stringify(noDup));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatwait#4", e);
+}
+};
+let box = null,
+field = null,
+msg = null,
+lead = null,
+sub = null,
+side = null,
+bar = null,
+barMax = 0,
+barLeft = 0,
+timer = null,
+stopPoll = null,
+wrapObs = null,
+wrapRo = null,
+observedWrap = null,
+lastChatOut = null,
+lastChatCount = 0,
+wasDead = false,
+listening = false,
+typing = false,
+sending = false,
+buttons = 0,
+waiting = [],
+sentLines = new Set();
+const gameBox = () => document.getElementById("chatIn");
+const editable = (el) => !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+const secs = (v) => Math.max(1, Math.ceil(v - 1e-6)) + "s";
+const normMsg = (s) => String(s || "").trim().slice(0, 64).toLowerCase();
+function isDead() {
+try {
+const me = (window.players || [])[window.myPlayerIdx];
+return !!(me && (typeof me.isDead === "function" ? me.isDead() : me.hp <= 0));
+} catch (e) {
+return false;
+}
+}
+function syncMatchChat() {
+const x = window.extern;
+if (!x || !x.inGame) {
+sentLines.clear();
+lastChatOut = null;
+lastChatCount = 0;
+wasDead = false;
+return;
+}
+const out = document.getElementById("chatOut");
+const n = out ? out.children.length : 0;
+if (out !== lastChatOut || (lastChatCount > 0 && n === 0)) {
+sentLines.clear();
+}
+lastChatOut = out;
+lastChatCount = n;
+}
+function isDup(text) {
+if (!noDup) return false;
+const nm = normMsg(text);
+if (!nm) return false;
+if (sentLines.has(nm)) return true;
+for (let i = 0; i < waiting.length; i++) {
+if (normMsg(waiting[i]) === nm) return true;
+}
+return false;
+}
+function count() {
+try {
+const x = window.extern;
+if (!x || !x.inGame) return null;
+const me = (window.players || [])[window.myPlayerIdx],
+c = me && me.chatLines;
+return typeof c === "number" && isFinite(c) ? c : null;
+} catch (e) {
+return null;
+}
+}
+function chatShown(pb) {
+return !!pb && pb.isConnected && pb.style.display !== "none" && pb.getClientRects().length > 0;
+}
+function canSend(pb) {
+const ae = document.activeElement;
+if (!chatShown(pb) || !window.extern || typeof window.extern.onChatKeyDown !== "function") return false;
+if (ae === pb) return false;
+return !(ae && ae !== field && editable(ae));
+}
+function ensureStyle() {
+if (document.getElementById(STYLE_ID)) return;
+const s = document.createElement("style");
+s.id = STYLE_ID;
+s.textContent =
+".ssb-cw{position:relative;z-index:6;flex:0 0 auto;box-sizing:border-box;display:flex;align-items:center;gap:.6em;border:0;overflow:hidden;white-space:nowrap;background:rgba(0,0,0,.32);pointer-events:none;cursor:text;}" +
+".ssb-cw[hidden]{display:none!important;}" +
+".ssb-cw.ssb-cw-typing{background:rgba(0,0,0,.5);pointer-events:auto;}" +
+".ssb-cw.ssb-cw-free{pointer-events:auto;}" +
+".ssb-cw > *{margin:0;padding:0;font:inherit;color:inherit;text-shadow:inherit;letter-spacing:inherit;}" +
+".ssb-cw-msg{flex:1 1 auto;min-width:0;display:flex;align-items:baseline;gap:.45em;overflow:hidden;}" +
+".ssb-cw-lead{flex:0 0 auto;font-variant-numeric:tabular-nums;}" +
+".ssb-cw-text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#fff;}" +
+".ssb-cw-hint .ssb-cw-text{opacity:.72;}" +
+".ssb-cw-text:empty{display:none;}" +
+".ssb-cw-in{flex:1 1 auto;min-width:0;height:100%;border:0!important;outline:none!important;background:transparent!important;box-shadow:none!important;}" +
+".ssb-cw-in::placeholder{color:inherit;opacity:.6;}" +
+".ssb-cw-side{flex:0 0 auto;color:#fff;opacity:.68;font-size:.86em;font-variant-numeric:tabular-nums;}" +
+".ssb-cw-side:empty{display:none;}" +
+".ssb-cw-bar{position:absolute;left:0;right:0;bottom:0;height:max(2px,.12em);background:currentColor;opacity:.85;transform-origin:left center;transform:scaleX(0);pointer-events:none;}" +
+".ssb-cw-typing .ssb-cw-msg,.ssb-cw:not(.ssb-cw-typing) .ssb-cw-in{display:none;}" +
+".ssb-cw-cover > #chatIn:not(:focus){opacity:0!important;}";
+(document.head || document.documentElement).appendChild(s);
+}
+function build() {
+ensureStyle();
+box = document.createElement("div");
+box.id = BOX_ID;
+box.className = "ssb-cw";
+box.hidden = true;
+msg = document.createElement("span");
+msg.className = "ssb-cw-msg";
+lead = document.createElement("span");
+lead.className = "ssb-cw-lead";
+sub = document.createElement("span");
+sub.className = "ssb-cw-text";
+msg.appendChild(lead);
+msg.appendChild(sub);
+bar = document.createElement("span");
+bar.className = "ssb-cw-bar";
+field = document.createElement("input");
+field.type = "text";
+field.className = "ssb-cw-in";
+field.autocomplete = "off";
+field.spellcheck = false;
+field.setAttribute("aria-label", "Chat message (sends when the game allows it)");
+side = document.createElement("span");
+side.className = "ssb-cw-side";
+side.setAttribute("aria-live", "off");
+box.appendChild(msg);
+box.appendChild(field);
+box.appendChild(side);
+box.appendChild(bar);
+field.addEventListener("keydown", onFieldKey);
+field.addEventListener("blur", () => {
+if (!sending && typing) closeField(false);
+});
+box.addEventListener("mousedown", (e) => {
+if (typing || document.pointerLockElement || e.button) return;
+e.preventDefault();
+openField();
+});
+}
+function place(pb) {
+const parent = pb.parentNode;
+if (box.parentNode !== parent || box.previousElementSibling !== pb) pb.after(box);
+const cs = getComputedStyle(pb),
+st = box.style,
+h = pb.offsetHeight,
+mb = parseFloat(cs.marginBottom) || 0;
+st.width = pb.offsetWidth + "px";
+st.height = h + "px";
+if (cs.position === "absolute" || cs.position === "fixed") {
+st.position = cs.position;
+st.left = pb.offsetLeft + "px";
+st.top = pb.offsetTop + "px";
+st.bottom = "auto";
+st.margin = "0px";
+} else {
+st.position = "";
+st.left = st.top = st.bottom = "";
+st.marginTop = -(h + mb) + "px";
+st.marginBottom = mb + "px";
+st.marginLeft = cs.marginLeft;
+st.marginRight = "0px";
+st.alignSelf = cs.alignSelf;
+}
+st.fontFamily = cs.fontFamily;
+st.fontSize = cs.fontSize;
+st.fontWeight = cs.fontWeight;
+st.color = cs.color;
+st.textShadow = cs.textShadow;
+st.padding = cs.padding;
+st.borderRadius = cs.borderRadius;
+st.letterSpacing = cs.letterSpacing;
+field.maxLength = pb.maxLength > 0 ? pb.maxLength : 64;
+field.placeholder = pb.placeholder || "";
+}
+function runBar(t) {
+if (!barMax || t > barLeft + 0.3) barMax = t;
+barMax = Math.max(barMax, t);
+barLeft = t;
+const f = barMax > 0 ? Math.min(1, t / barMax) : 0,
+st = bar.style;
+st.transition = "none";
+st.transform = "scaleX(" + f.toFixed(4) + ")";
+let still = false;
+try {
+still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+} catch (e) {}
+if (t > 0 && !still) {
+void bar.offsetWidth;
+st.transition = "transform " + t.toFixed(3) + "s linear";
+st.transform = "scaleX(0)";
+}
+}
+function hideBox() {
+barMax = barLeft = 0;
+if (box) {
+box.hidden = true;
+const p = box.parentNode;
+if (p && p.classList) p.classList.remove("ssb-cw-cover");
+}
+}
+function dropWaiting(why) {
+if (!waiting.length) return;
+const n = waiting.length;
+waiting = [];
+if (window.__ssbUI) window.__ssbUI.toast((n === 1 ? "1 waiting chat message wasn't" : n + " waiting chat messages weren't") + " sent: " + why + ".");
+}
+function focusGame() {
+const c = document.getElementById("canvas");
+try {
+if (c && c.focus) c.focus();
+} catch (e) {}
+}
+function openField() {
+if (!box || typing) return;
+typing = true;
+field.value = "";
+box.classList.add("ssb-cw-typing");
+box.hidden = false;
+if (box.parentNode && box.parentNode.classList) box.parentNode.classList.add("ssb-cw-cover");
+field.focus();
+update();
+if (typing && document.activeElement !== field) {
+field.focus();
+if (document.activeElement !== field) closeField(false);
+}
+}
+function closeField(refocus) {
+if (!typing) return;
+typing = false;
+field.value = "";
+if (refocus !== false) focusGame();
+update();
+}
+function submit() {
+const text = field.value.trim();
+if (!text || text.indexOf("<") >= 0) {
+closeField();
+return;
+}
+if (isDup(text)) {
+field.value = "";
+closeField();
+if (window.__ssbUI) window.__ssbUI.toast("Duplicate chat message skipped.");
+return;
+}
+if (waiting.length >= MAX_WAITING) {
+update();
+return;
+}
+waiting.push(text);
+field.value = "";
+closeField();
+}
+function onFieldKey(e) {
+if (e.key === "Escape") {
+closeField(false);
+return;
+}
+e.stopPropagation();
+if (e.isComposing) return;
+if (e.key === "Enter") {
+e.preventDefault();
+submit();
+} else if (e.key === "Tab") {
+e.preventDefault();
+closeField();
+} else if (e.key === "Backspace" && !field.value && waiting.length) {
+e.preventDefault();
+field.value = waiting.pop();
+update();
+}
+}
+function onKey(e) {
+if ((!on && !noDup) || e.key !== "Enter" || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+const t = e.target;
+if (t && t.id === "chatIn") {
+syncMatchChat();
+if (document.activeElement === t) {
+const raw = (t.value || "").trim().slice(0, 64);
+if (raw && raw.indexOf("<") < 0) {
+if (noDup && sentLines.has(normMsg(raw))) {
+e.preventDefault();
+e.stopPropagation();
+if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+t.value = "";
+try {
+if (window.extern && typeof window.extern.stopChat === "function") window.extern.stopChat();
+else t.blur();
+} catch (err) {}
+focusGame();
+if (window.__ssbUI) window.__ssbUI.toast("Duplicate chat message skipped.");
+if (on) setTimeout(update, 0);
+return;
+}
+sentLines.add(normMsg(raw));
+}
+}
+if (on) setTimeout(update, 0);
+return;
+}
+if (!on || typing || buttons) return;
+if (t && t !== document.body && t !== document.documentElement && t.tagName !== "CANVAS") return;
+const pb = gameBox(),
+c = count();
+if (c === null || !chatShown(pb) || document.activeElement === pb) return;
+if (waiting.length) {
+e.stopPropagation();
+} else if (c <= OPEN) return;
+if (!box) build();
+place(pb);
+openField();
+}
+const onButtons = (e) => {
+buttons = e.buttons || 0;
+};
+const clearButtons = () => {
+buttons = 0;
+};
+function onLock() {
+buttons = 0;
+if (!on) return;
+if (typing && !document.pointerLockElement && field && !field.value) closeField(false);
+update();
+setTimeout(update, 20);
+setTimeout(update, 320);
+}
+function onFocusIn(e) {
+if (!on || sending) return;
+if (e.target === gameBox() || (typing && e.target !== field)) update();
+}
+let observedPb = null;
+function unwatchLayout() {
+if (wrapObs) wrapObs.disconnect();
+if (wrapRo) wrapRo.disconnect();
+wrapObs = wrapRo = observedWrap = observedPb = null;
+}
+function watchLayout(pb) {
+const wrap = (pb && pb.closest && pb.closest(".chat-wrapper")) || (pb && pb.parentElement);
+if (!wrap || (wrap === observedWrap && pb === observedPb)) return;
+unwatchLayout();
+observedWrap = wrap;
+observedPb = pb;
+wrapObs = new MutationObserver(() => {
+if (on) update();
+});
+for (let el = wrap; el && el !== document.body; el = el.parentElement) {
+wrapObs.observe(el, {
+attributes: true,
+attributeFilter: ["class", "style"]
+});
+}
+if (window.ResizeObserver) {
+wrapRo = new ResizeObserver(() => {
+if (on && box && !box.hidden) {
+const cur = gameBox();
+if (cur && cur.isConnected) place(cur);
+}
+});
+wrapRo.observe(wrap);
+if (pb) wrapRo.observe(pb);
+}
+}
+function sendOne(pb) {
+const text = waiting.shift(),
+nm = normMsg(text);
+if (noDup && nm && sentLines.has(nm)) {
+if (window.__ssbUI) window.__ssbUI.toast("Duplicate chat message skipped.");
+return;
+}
+const keep = typing && document.activeElement === field,
+a = keep ? field.selectionStart : 0,
+b = keep ? field.selectionEnd : 0;
+sending = true;
+let ok = false;
+try {
+pb.value = text;
+window.extern.onChatKeyDown({
+key: "Enter",
+code: "Enter",
+preventDefault() {},
+stopPropagation() {}
+});
+ok = true;
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatwait#2", e);
+} finally {
+sending = false;
+}
+if (ok && nm) sentLines.add(nm);
+if (keep) {
+try {
+field.focus();
+field.setSelectionRange(a, b);
+} catch (e) {}
+if (document.activeElement !== field) {
+typing = false;
+field.value = "";
+}
+} else if (typing && document.activeElement !== field) {
+typing = false;
+field.value = "";
+}
+}
+function update() {
+if (timer !== null) clearTimeout(timer);
+timer = null;
+syncMatchChat();
+if (!on) {
+typing = false;
+hideBox();
+return;
+}
+try {
+const c = count(),
+pb = gameBox();
+if (c === null) {
+dropWaiting("you left the match");
+typing = false;
+hideBox();
+return;
+}
+if (pb) watchLayout(pb);
+const dead = isDead();
+if (dead && !wasDead && typing && !field.value) {
+wasDead = dead;
+closeField(false);
+return;
+}
+wasDead = dead;
+if (typing && document.activeElement !== field) {
+typing = false;
+field.value = "";
+}
+if (waiting.length && c <= SEND_AT && canSend(pb)) {
+sendOne(pb);
+timer = setTimeout(update, 60);
+return;
+}
+const locked = c > OPEN;
+if (typing && !locked && !waiting.length && !field.value) {
+if (!dead && document.pointerLockElement && document.activeElement === field &&
+chatShown(pb) && window.extern && typeof window.extern.startChat === "function") {
+typing = false;
+field.value = "";
+hideBox();
+try {
+window.extern.startChat();
+} catch (err) {}
+return;
+}
+closeField(false);
+return;
+}
+const show = chatShown(pb) && document.activeElement !== pb && (locked || waiting.length > 0 || typing);
+if (!show) {
+hideBox();
+if (typing && !chatShown(pb)) closeField(false);
+if (waiting.length) timer = setTimeout(update, 500);
+return;
+}
+if (!box) build();
+place(pb);
+box.classList.toggle("ssb-cw-typing", typing);
+box.classList.toggle("ssb-cw-free", !typing && !document.pointerLockElement);
+if (box.parentNode && box.parentNode.classList) box.parentNode.classList.add("ssb-cw-cover");
+const tOpen = (c - OPEN) * SECS,
+tSend = Math.max(0, (c - SEND_AT) * SECS);
+let head = "",
+text = "",
+note = "";
+const idle = !typing && !waiting.length;
+if (typing) {
+if (waiting.length >= MAX_WAITING) note = "Full: " + MAX_WAITING + " waiting";
+else if (locked || waiting.length) note = "sends in " + secs(tSend + SECS * waiting.length);
+} else if (waiting.length) {
+head = "Sending in " + secs(tSend);
+text = waiting[0];
+if (waiting.length > 1) note = "+" + (waiting.length - 1) + " more";
+} else {
+head = "Chat opens in " + secs(tOpen);
+text = "Press ENTER to type now";
+}
+box.classList.toggle("ssb-cw-hint", idle);
+lead.textContent = head;
+sub.textContent = text;
+side.textContent = note;
+box.hidden = false;
+if (idle && (sub.scrollWidth > sub.clientWidth + 1 || msg.scrollWidth > msg.clientWidth + 1)) {
+sub.textContent = "";
+if (msg.scrollWidth > msg.clientWidth + 1) lead.textContent = "Chat in " + secs(tOpen);
+}
+runBar(waiting.length || typing ? tSend : tOpen);
+const due = [];
+if (locked) due.push(tOpen);
+if (waiting.length || typing) due.push(tSend);
+let next = 1;
+for (const v of due)
+if (v > 0) next = Math.min(next, v - Math.ceil(v - 1e-6) + 1);
+timer = setTimeout(update, Math.max(50, Math.round(next * 1000) + 40));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatwait#3", e);
+}
+}
+function poll() {
+if (timer === null) update();
+}
+function onVisible() {
+if (!document.hidden) update();
+}
+function teardownBox() {
+if (timer !== null) clearTimeout(timer);
+timer = null;
+unwatchLayout();
+const wasTyping = typing && box && document.activeElement === field;
+typing = false;
+dropWaiting("Chat Countdown was turned off");
+if (box) {
+const p = box.parentNode;
+if (p && p.classList) p.classList.remove("ssb-cw-cover");
+box.remove();
+}
+box = field = msg = lead = sub = side = bar = null;
+barMax = barLeft = 0;
+if (wasTyping) focusGame();
+const s = document.getElementById(STYLE_ID);
+if (s) s.remove();
+}
+function start() {
+if (!stopPoll) stopPoll = window.__ssbMenuPoll(poll, 2000, {
+inMatch: true
+});
+if (!listening) {
+listening = true;
+window.addEventListener("keydown", onKey, true);
+window.addEventListener("mousedown", onButtons, true);
+window.addEventListener("mouseup", onButtons, true);
+window.addEventListener("resize", poll);
+window.addEventListener("blur", clearButtons);
+document.addEventListener("pointerlockchange", onLock);
+document.addEventListener("focusin", onFocusIn, true);
+document.addEventListener("visibilitychange", onVisible);
+}
+update();
+}
+function stop() {
+if (stopPoll) stopPoll();
+stopPoll = null;
+if (listening) {
+listening = false;
+window.removeEventListener("keydown", onKey, true);
+window.removeEventListener("mousedown", onButtons, true);
+window.removeEventListener("mouseup", onButtons, true);
+window.removeEventListener("resize", poll);
+window.removeEventListener("blur", clearButtons);
+document.removeEventListener("pointerlockchange", onLock);
+document.removeEventListener("focusin", onFocusIn, true);
+document.removeEventListener("visibilitychange", onVisible);
+}
+teardownBox();
+}
+function boot() {
+window.__ssbChatCountdown = {
+waiting: () => waiting.slice(),
+sent: () => [...sentLines],
+count: count
+};
+window.__ssbSettings.add({
+key: KEY,
+section: "chat",
+after: "tp-chatJoin",
+label: "Chat Countdown",
+code: "Cq",
+def: false,
+tip: "When the game makes you wait before your next chat message, the chat box shows how many seconds are left. Press ENTER to type anyway: your message waits and sends itself as soon as the game allows it, up to " + MAX_WAITING + " at a time. Backspace in an empty box takes back the last waiting message.",
+keywords: "chat cooldown wait timer countdown seconds limit queue type ahead send later message",
+get: () => on,
+set: (v) => {
+setOn(v);
+if (on) start();
+else if (noDup) teardownBox();
+else stop();
+}
+});
+window.__ssbSettings.add({
+key: DUP_KEY,
+section: "chat",
+after: KEY,
+label: "Skip Duplicate Messages",
+code: "Cd",
+def: false,
+tip: "Stops you from sending the same chat message a second time in a match (or queueing a duplicate in Chat Countdown), since the game filters out duplicate messages anyway.",
+keywords: "chat duplicate repeat same message twice second time filter skip block cooldown",
+get: () => noDup,
+set: (v) => {
+setNoDup(v);
+if (on || noDup) start();
+else stop();
+}
+});
+if (on || noDup) start();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();

@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.6.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.6.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -99,8 +99,11 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest 5 messages
 - **Copy Chat**: a button under **MODS ▸ Chat** that copies the chat the game still has as plain text
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
+- **Chat Countdown**: shows how long the game makes you wait before your next chat message, and lets you type ahead; your lines send themselves as soon as the game allows. Off by default
+- **Skip Duplicate Messages**: stops you sending the same chat message twice in a match, since the game filters repeats out. Off by default
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
+- **Quick Quit**: Quit in the pause menu leaves at once, without the confirm pop-up. Off by default (**MODS ▸ Menus**)
 - **Volume slider** added directly to the pause menu
 - **Auto Fullscreen**: clicking into a match goes fullscreen, and in Chrome and Edge Esc only pauses, like F11
 - **Tab-out key**: release pointer lock without snapping the camera
@@ -121,7 +124,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Hide Bullet Splats:** hide the small bullet wall-impact puff while keeping grenade smoke and rocket trails
 - **Stats window:** desktop coop teams side by side, optional **Kill Bars** and **Highlight Your Name**, plus renaming a match by clicking its name/code chip
 - **Smart Auto Detail** (on by default): when FPS drops under 40, lowers the resolution a step at a time and raises it again when FPS recovers, instead of halving it like the game's Auto Detail. It needs the game's own **Auto Detail** setting on
-- **Render Scale**: draws the game at a lower resolution for more FPS. 1 is the normal resolution, up to 4 for the most FPS. Smart Auto Detail can still step down from it
+- **Render Scale**: the resolution the game is drawn at, from 0.25 to 4 (type any value). 1 is normal; above 1 is a lower resolution for more FPS, below 1 a higher resolution for a sharper picture. Smart Auto Detail can still step down from it
 - **FPS Check**: measures your frame rate, finds common causes of low FPS (the graphics card not in use, a battery saver, the game stuck at half resolution) and says how to fix each one. **Copy** puts a picture of the report on your clipboard
 - **Disable Anti-Aliasing**: turns off edge smoothing, which can raise FPS on a weak graphics card (press **F5** after changing it)
 - Hide bullet projectile meshes, explosion fire, yolk burst, damage splats or shell-casing burst, or all of them at once with **Disable All Particles** (smoke stays visible)
@@ -130,7 +133,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
-- **Match History** saves the newest 40 matches plus up to 20 kept matches, with scoreboards, maps, modes, servers and durations. Filter by mode and map and export JSON / CSV. The match you're playing is the first row. **Show Match FPS** adds measured performance; **Personal Records** shows your best kills and KDR
+- **Match History** saves the newest 40 matches plus up to 20 kept matches, with scoreboards, maps, modes, servers and durations. Filter by mode and map and export JSON / CSV. The match you're playing is the first row. **Show Match FPS** adds measured performance; **Personal Records** shows your best kills and KDR. **Infinite Match History** (off by default) keeps every match instead.
 - **King of the Coop Stats** (off by default, **MODS ▸ Stats**): each player's time on the coop, captures and takeovers in the King of the Coop scoreboard, match history and CSV export. Matches saved before show a dash. Needs Stats Tracker on
 - **When King of the Coop Ends** (off by default, **MODS ▸ Stats**): when a team wins a King of the Coop game, copy the scoreboard picture to the clipboard or download it. Needs Stats Tracker on
 - Pinned compact stats above the pause weapon select
@@ -264,7 +267,15 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.6.0 — current
+#### v6.6.1 — current
+
+- **Chat Countdown:** a new switch in **MODS ▸ Chat**, off by default. When the game makes you wait before your next chat message, the chat box shows how many seconds are left. Press Enter to type anyway: your message waits and sends itself as soon as the game allows it, up to 10 at a time. Backspace in an empty box takes back the last waiting message. It never sends faster than the game allows.
+- **Skip Duplicate Messages:** a new switch in **MODS ▸ Chat**, off by default. The game filters out a chat message you already sent, so this stops you sending the same message twice in a match, from the game's chat box or from Chat Countdown.
+- **Quick Quit:** a new switch in **MODS ▸ Menus**, off by default. **Quit** in the pause menu leaves the match at once, without the "Leave game and return to the main menu?" pop-up.
+- **Infinite Match History:** a new switch in **MODS ▸ Stats**, off by default. Match History keeps every match instead of only the last 40. If your browser runs out of storage for the game, the oldest matches you haven't kept are removed to make room.
+- **Render Scale:** now goes from 0.25 to 4, and you can type any value in between. Below 1 draws the game at a higher resolution than normal: sharper, and much heavier on your FPS. FPS Check suggests setting it back to 1 if your FPS is low while it's below 1.
+
+#### v6.6.0
 
 - **Crosshair Per Weapon:** a new card at the end of the **Crosshair** tab, off by default. Switch it on and pick one of your saved profiles for each weapon: in a match, that profile is drawn while you hold the weapon, and your own crosshair is back when you pause. **Same as now** keeps your own crosshair for a weapon. Swapping weapons saves nothing, so your own crosshair stays as it is. Backup files carry the choices.
 - **Other Mods:** Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.
