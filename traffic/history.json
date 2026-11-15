@@ -183,14 +183,18 @@
     "2026-11-13": {
       "count": 14,
       "uniques": 9
+    },
+    "2026-11-14": {
+      "count": 14,
+      "uniques": 10
     }
   },
   "popular_paths": [
     {
-      "count": 93,
+      "count": 85,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 55
+      "uniques": 49
     },
     {
       "count": 5,
@@ -242,8 +246,8 @@
     },
     {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blame/main/.github/scripts/traffic.py",
-      "title": "/blame/main/.github/scripts/traffic.py",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/sync-meta.yml",
+      "title": "/actions/workflows/sync-meta.yml",
       "uniques": 1
     }
   ],
@@ -266,7 +270,7 @@
     {
       "count": 5,
       "referrer": "shellshock.io",
-      "uniques": 5
+      "uniques": 4
     },
     {
       "count": 5,
@@ -281,12 +285,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 1064,
-      "uniques": 533
+      "count": 1078,
+      "uniques": 543
     },
     "views": {
-      "count": 409,
-      "uniques": 235
+      "count": 413,
+      "uniques": 238
     }
   },
   "views": {
@@ -472,6 +476,10 @@
     },
     "2026-11-13": {
       "count": 9,
+      "uniques": 3
+    },
+    "2026-11-14": {
+      "count": 4,
       "uniques": 3
     }
   }
