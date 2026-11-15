@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.6.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.6.2-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -267,7 +267,11 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.6.1 — current
+#### v6.6.2 — current
+
+- **Changelog:** the in-game "What's new" pop-up opens once more, so you also see what 6.6.1 added. Nothing else changed.
+
+#### v6.6.1
 
 - **Chat Countdown:** a new switch in **MODS ▸ Chat**, off by default. When the game makes you wait before your next chat message, the chat box shows how many seconds are left. Press Enter to type anyway: your message waits and sends itself as soon as the game allows it, up to 10 at a time. Backspace in an empty box takes back the last waiting message. It never sends faster than the game allows.
 - **Skip Duplicate Messages:** a new switch in **MODS ▸ Chat**, off by default. The game filters out a chat message you already sent, so this stops you sending the same message twice in a match, from the game's chat box or from Chat Countdown.
