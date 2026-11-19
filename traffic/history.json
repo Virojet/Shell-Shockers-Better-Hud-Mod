@@ -199,14 +199,36 @@
     "2026-11-17": {
       "count": 6,
       "uniques": 6
+    },
+    "2026-11-18": {
+      "count": 2,
+      "uniques": 2
     }
   },
   "popular_paths": [
     {
-      "count": 85,
+      "count": 79,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 49
+      "uniques": 47
+    },
+    {
+      "count": 6,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
+      "title": "/tree/main/.github",
+      "uniques": 3
+    },
+    {
+      "count": 6,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
+      "title": "/tree/main/.github/scripts",
+      "uniques": 3
+    },
+    {
+      "count": 4,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
+      "title": "/blob/main/.github/scripts/traffic.py",
+      "uniques": 2
     },
     {
       "count": 4,
@@ -222,21 +244,15 @@
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github",
-      "title": "/tree/main/.github",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 2
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main/.github/scripts",
-      "title": "/tree/main/.github/scripts",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/tree/main",
+      "title": "/tree/main",
       "uniques": 2
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
-      "title": "/blob/main/.github/scripts/traffic.py",
-      "uniques": 1
     },
     {
       "count": 2,
@@ -249,35 +265,18 @@
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
       "title": "/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
       "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/sync-meta.yml",
-      "title": "/actions/workflows/sync-meta.yml",
-      "uniques": 1
-    },
-    {
-      "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/traffic.yml",
-      "title": "/actions/workflows/traffic.yml",
-      "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 13,
+      "count": 14,
       "referrer": "Google",
       "uniques": 10
     },
     {
-      "count": 8,
+      "count": 9,
       "referrer": "github.com",
-      "uniques": 8
-    },
-    {
-      "count": 7,
-      "referrer": "youtube.com",
-      "uniques": 2
+      "uniques": 9
     },
     {
       "count": 5,
@@ -291,18 +290,18 @@
     },
     {
       "count": 1,
-      "referrer": "Bing",
+      "referrer": "youtube.com",
       "uniques": 1
     }
   ],
   "totals": {
     "clones": {
-      "count": 1123,
-      "uniques": 571
+      "count": 1125,
+      "uniques": 573
     },
     "views": {
-      "count": 427,
-      "uniques": 250
+      "count": 448,
+      "uniques": 254
     }
   },
   "views": {
@@ -505,6 +504,10 @@
     "2026-11-17": {
       "count": 5,
       "uniques": 3
+    },
+    "2026-11-18": {
+      "count": 21,
+      "uniques": 4
     }
   }
 }
