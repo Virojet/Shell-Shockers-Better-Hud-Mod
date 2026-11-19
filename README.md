@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.6.2-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.6.3-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -267,7 +267,11 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.6.2 — current
+#### v6.6.3 — current
+
+- **King of the Coop stats:** Coop Time, Captures and Takeovers count again. The game's update of 17 November had stopped them.
+
+#### v6.6.2
 
 - **Changelog:** the in-game "What's new" pop-up opens once more, so you also see what 6.6.1 added. Nothing else changed.
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.6.2
+// @version      6.6.3
 // @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.2";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.3";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.6.2");
+.version) || "6.6.3");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.2",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.3",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1519,7 +1519,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.6.2",
+version: "6.6.3",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -5584,10 +5584,11 @@ const ownerMove = owner + ".prototype.move=function(";
 const moveAt = once(ownerMove);
 if (moveAt < 0 || moveAt >= cellAt || cellAt - moveAt > 6000) return src;
 const tickText = src.slice(tickAt, tickAt + 700);
-if (!/for\([\w$]+\.update\(\);[\w$]+<[\w$]+;\)\{if\([\w$]+\+=33\.333333333333336,/.test(src.slice(Math.max(0,
+const prof = '(?:,[\\w$]+\\("[A-Za-z]+"\\))?';
+if (!new RegExp("for\\([\\w$]+\\.update\\(\\)" + prof + ";[\\w$]+<[\\w$]+;\\)\\{if\\([\\w$]+\\+=33\\.333333333333336,").test(src.slice(Math.max(0,
 tickAt - 800), tickAt))) return src;
 const tick =
-/^vueApp\.player\.challengeTimer\.played=Math\.floor\(([\w$]+)\.timers\.played\/30\)\)\),\1\.([\w$]+)&&\(\1\.([\w$]+)\.([\w$]+)\(\),\1\.([\w$]+)\(\)\)\)\}/
+new RegExp("^vueApp\\.player\\.challengeTimer\\.played=Math\\.floor\\(([\\w$]+)\\.timers\\.played\\/30\\)\\)\\)," + "\\1\\.([\\w$]+)&&\\((?:[\\w$]+\\(\"[A-Za-z]+\"\\),)?\\1\\.([\\w$]+)\\.([\\w$]+)\\(\\)" + prof + ",\\1\\.([\\w$]+)\\(\\)" + prof + "\\)\\)\\}")
 .exec(tickText);
 if (!tick || tick[2] !== playing || once(tick[0]) !== tickAt) return src;
 const removeHead = owner + ".prototype.removeFromPlay=async function(){";
@@ -14326,7 +14327,7 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.6.2";
+const displayVersion = "6.6.3";
 const changelogVersion = "6.6.2";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
@@ -14337,6 +14338,10 @@ window.__ssbErr("changelog.sound", err);
 }
 }
 const v66Items = [{
+label: "King of the Coop Stats",
+text: "Coop Time, Captures and Takeovers count again. The game's update of 17 November had stopped them.",
+group: "v6.6.3"
+}, {
 label: "Chat Countdown",
 text: "A new switch in MODS ▸ Chat, off by default. When the game makes you wait before your next chat message, the chat box shows how many seconds are left, and you can type anyway: your message sends itself as soon as the game allows it (up to 10 at a time).",
 group: "v6.6.1"
