@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.6.3-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.7.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fabacus.jasoncameron.dev%2Fget%2Fvirojet-better-hud%2Finstalls&query=%24.value&label=installs&color=2ea44f&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v64) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v67) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,12 +65,16 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.6
+## What's new in v6.7
 
-- **Crosshair Per Weapon:** a new card at the end of the **Crosshair** tab, off by default. Switch it on and pick one of your saved profiles for each weapon: in a match, that profile is drawn while you hold the weapon, and your own crosshair is back when you pause. **Same as now** keeps your own crosshair for a weapon. Swapping weapons saves nothing, so your own crosshair stays as it is. Backup files carry the choices.
-- **Other Mods:** Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.
-- **Your Data:** **Remove All Mod Data** and backup files now touch only Better HUD's own settings. What other userscripts saved under `tp-` names stays put, and loading a backup that holds some of it says which keys it left out.
-- **Game didn't start:** if another userscript changes the game's code so the game can't start, a message now says so and how to find that script. Better HUD's console line says what happened, too.
+- **League Stats:** a new **Stats Style** choice in **MODS ▸ Stats**. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.
+- **Show Guns:** a new switch in **MODS ▸ Stats**, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures.
+- **Match History:** a **Progress** page with your KDR or kills over your last 50 matches (click a dot to open that match), a search box and a date calendar, ticking several matches to keep, unkeep, delete or export them together, importing your exports back, and **Saved Match Limit** in place of Infinite Match History.
+- **Chat Mentions:** type @ in chat to pick a player's name. When someone says your name, it's highlighted in blue and you hear a ping.
+- **Crosshair Codes in Chat:** a crosshair code said in chat is underlined. Hover it to see the crosshair, click it to save it as a profile.
+- **Copy as Text:** copies a match as text for Discord, with the tables lined up.
+- **Choose What to Restore:** loading a backup file asks what to bring back, and you review the changes before anything is saved.
+- **Disable Toasts:** a new switch in **MODS ▸ Menus** that hides Better HUD's pop-up messages. A few warnings still show.
 
 [Full changelog ↓](#changelog)
 
@@ -81,10 +85,10 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 | Feature | What it does |
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
-| **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, volume slider, tab-out key |
+| **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, @ mentions in chat, volume slider, tab-out key |
 | **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
-| **Stats tracker** | Live scoreboards, session K / D / KDR, optional King of the Coop time, captures and takeovers, an end-of-match overlay, and match history you can filter and export |
+| **Stats tracker** | Live scoreboards, session K / D / KDR, optional King of the Coop time, captures and takeovers, an end-of-match overlay, league-style pictures, and a match history you can search, filter, chart and export |
 | **Inventory favorites** | Star inventory items, list them first, share them with a code and count how many you own |
 | **Legacy skins & sounds** | Classic gun models and sound effects |
 
@@ -99,11 +103,15 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 - **Infinite Chat History**: keeps up to 500 chat lines; pause or open chat and scroll back. Off keeps the newest 5 messages
 - **Copy Chat**: a button under **MODS ▸ Chat** that copies the chat the game still has as plain text
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
+- **Crosshair Codes in Chat**: a crosshair code said in chat is underlined; hover it to see the crosshair, click it to save it as a profile. On by default
+- **Chat Mentions**: type @ in chat to pick a player's name from a list. When someone says your name, it's highlighted in blue and you hear a ping; a player you mention with @ is highlighted in green. The gear turns each highlight and the ping on or off. On by default
 - **Chat Countdown**: shows how long the game makes you wait before your next chat message, and lets you type ahead; your lines send themselves as soon as the game allows. Off by default
-- **Skip Duplicate Messages**: stops you sending the same chat message twice in a match, since the game filters repeats out. Off by default
+- **Skip Duplicate Messages**: stops a chat message that repeats the one you sent right before it, since the game filters repeats out. On by default
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
 - **Quick Quit**: Quit in the pause menu leaves at once, without the confirm pop-up. Off by default (**MODS ▸ Menus**)
+- **Disable Toasts**: hides Better HUD's pop-up messages at the top of the screen, such as "Copied to clipboard." A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big. Off by default (**MODS ▸ Menus**)
+- **Coop Icon Size**: a slider in **MODS ▸ HUD** that makes the King of the Coop marker over the coop smaller, so it covers less of the players on it
 - **Volume slider** added directly to the pause menu
 - **Auto Fullscreen**: clicking into a match goes fullscreen, and in Chrome and Edge Esc only pauses, like F11
 - **Tab-out key**: release pointer lock without snapping the camera
@@ -133,7 +141,12 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Stats tracker
 - Local K / D / KDR session tracking with an end-of-match overlay
-- **Match History** saves the newest 40 matches plus up to 20 kept matches, with scoreboards, maps, modes, servers and durations. Filter by mode and map and export JSON / CSV. The match you're playing is the first row. **Show Match FPS** adds measured performance; **Personal Records** shows your best kills and KDR. **Infinite Match History** (off by default) keeps every match instead.
+- **Match History** saves your matches with scoreboards, maps, modes, servers and durations. **Saved Match Limit** keeps the last 40 (the default), 100, 250, 500 or 1000, or Unlimited; matches you keep always stay. Search player names, match names, maps, servers, codes or dates, filter by mode, map and a day or date range, and click a match's name to rename it. Tick matches to keep, unkeep, delete or export them together. Export JSON / CSV, and **Import Stats** brings an export back without touching the matches you have. The match you're playing is the first row. **Show Match FPS** adds measured performance; **Personal Records** shows your best kills and KDR
+- **Progress**: the chart button in Match History shows your KDR or kills over your last 50 matches with a 5-match average (click a dot to open that match), then your matches, average kills and KDR by map and by mode. It follows the filters
+- **Stats Style**: Copy Image and Download draw Better HUD's own picture, or a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless
+- **Show Guns** (off by default): each player's gun by their name in the stats window, Match History and the pictures
+- **Match Time**: **Time in Lobby** (the default) counts the whole time in the match, waiting, respawns and menus included; **Time Spawned In** counts only time playing
+- **Copy as Text**: copies a match as text for Discord, each team's table in a code block so the columns line up
 - **King of the Coop Stats** (off by default, **MODS ▸ Stats**): each player's time on the coop, captures and takeovers in the King of the Coop scoreboard, match history and CSV export. Matches saved before show a dash. Needs Stats Tracker on
 - **When King of the Coop Ends** (off by default, **MODS ▸ Stats**): when a team wins a King of the Coop game, copy the scoreboard picture to the clipboard or download it. Needs Stats Tracker on
 - Pinned compact stats above the pause weapon select
@@ -145,7 +158,8 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 #### Other
 - Export / import settings and inventory favorites as shareable codes
-- **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser
+- **Backup File**: save settings, crosshairs, favorites and match history to one file and load it in another browser. Loading asks what to bring back (MODS settings, your current crosshair, each profile, favorites, match history and records) and shows the changes before anything is saved
+- **Local Storage**: a card in **MODS ▸ Manage** that shows how much of your browser's storage Better HUD, Match History and your crosshairs use
 - **Remove All Mod Data**: delete everything Better HUD saved in this browser and start fresh (**MODS ▸ Manage**)
 - **Export / Import Favorites**: copy your starred inventory items as a code and paste one back in (**MODS ▸ Manage**)
 - **Favorites First**: the inventory items you've starred come first, ahead of the rest. Off by default (**MODS ▸ Menus**)
@@ -257,17 +271,41 @@ Works on **shellshock.io and 70+ mirror domains**, in any browser that runs Tamp
 
 ## Privacy
 
-Better HUD makes three kinds of request, and sends nothing about you or your settings in any of them:
+Better HUD makes four kinds of request, and sends nothing about you or your settings in any of them:
 
 - **Install count:** the first time it runs, one anonymous hit goes to a public counter ([Abacus](https://abacus.jasoncameron.dev)) so the installs badge above stays current. No settings, stats, names or IDs. It's sent once per browser; the `ssb-install-counted` key in site storage remembers it
 - **Update check:** it reads the small version file from this repo on GitHub, at most every 30 minutes, to tell you when a new version is out
 - **Pictures:** the first time you take a stats screenshot or an FPS Check picture, it loads the html-to-image library from cdnjs
+- **Fonts:** the pictures, including the league styles, use fonts from Google Fonts
 
 Your settings, saved presets, crosshairs, personal records and match history stay in your browser. **MODS ▸ Manage ▸ Remove All Mod Data** deletes all of it (Better HUD's own `tp-` settings, everything under the `ch2-` and `ssb-` names, and the server list) and reloads the page. Other userscripts that also save under `tp-` names keep their data, and backup files leave it out too. It keeps the `ssb-install-counted` key, so starting fresh isn't counted as a new install.
 
 ## Changelog
 
-#### v6.6.3 — current
+#### v6.7.0 — current
+
+- **League Stats:** a new choice in **MODS ▸ Stats**, **Stats Style**. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.
+- **Show Guns:** a new switch in **MODS ▸ Stats**, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures: the primary they got the most kills with (pistol, grenade and melee kills don't count), or the one they last held before their first kill.
+- **More Match Stats:** matches now also save each player's weapon, kills and deaths on the coop, best kill streak and aces, for the league cards. Matches saved before this don't have them.
+- **Match Time:** a new choice in **MODS ▸ Stats**. **Time in Lobby**, the default, counts the whole time you're in the match, waiting, respawns and menus included; **Time Spawned In** counts only time playing. The stats window, Match History, the pictures and CSV exports show the one you pick. Older matches keep the time they recorded.
+- **Find Matches:** Match History has a search box (player names, match names, maps, servers, codes or dates) and a calendar for a day or a date range. Search, mode, map and date filters work together, and Export follows them.
+- **Rename in Place:** click a match's name, at the top of the stats window or in Match History, to edit it. Enter or clicking away saves, Escape cancels, and a blank name brings back the room code.
+- **Import Stats:** a button in the Match History header takes back Better HUD's JSON or CSV exports. It adds the matches and keeps the ones you have; JSON brings back every player, CSV your own summary.
+- **Crosshair Codes in Chat:** a new switch in **MODS ▸ Chat**, on by default. A crosshair code said in chat is underlined: hover it to see the crosshair, click it to save it as a profile.
+- **Skip Duplicate Messages:** now on by default, and it only stops a message that repeats the one you sent right before it. A message you sent earlier can be sent again.
+- **Chat Mentions:** a new switch in **MODS ▸ Chat**, on by default. Type @ in chat to pick a player's name from a list that narrows as you type. When someone says your name in chat, with or without @ and in any case, your name in their message is highlighted in blue and you hear a ping. When you mention another player with @, their name is highlighted in green. Your name without the numbers at the end counts too when 5 or more letters are left; a shorter one needs @. The gear turns each highlight and the ping on or off, or plays the ping only for @YourName.
+- **Choose What to Restore:** **Load Backup File** in **MODS ▸ Manage** now asks what to bring back: MODS settings, your current crosshair, each crosshair profile, favorites, and match history and records. A profile with the same name as one of yours can be kept as both, replaced or skipped, and you review the changes before anything is saved. Backup files up to 32 MB load too.
+- **Select Matches:** tick matches in Match History, even across filters, and a bar under the list keeps, unkeeps or deletes them together. Export then saves only the ticked matches.
+- **Progress:** a new Progress page in Match History (the chart button): your KDR or kills over your last 50 matches with a 5-match average (click a dot to open that match), then your matches, average kills and KDR by map and by mode. It follows the search, mode, map and date filters, and opens where you left it, on KDR or Kills.
+- **Copy as Text:** a new button next to Copy Image in the stats window copies the match as text for Discord: a title line, then each team's table in a code block so the columns line up.
+- **Coop Icon Size:** a new slider in **MODS ▸ HUD**. It makes the King of the Coop marker over the coop smaller, so it covers less of the players standing on it. 1 is the game's own size.
+- **Fast Double Clicks:** clicking Confirm, Cancel or the X twice quickly no longer opens Settings, or another game window, again.
+- **Saved Match Limit:** replaces the Infinite Match History switch in **MODS ▸ Stats**: keep the last 40, 100, 250, 500 or 1000 matches, or Unlimited. Lowering it first offers to export the matches it would remove, and matches you kept always stay. Unlimited keeps every match until your browser's storage is full; past about 2 MB, a notice suggests exporting it.
+- **Local Storage:** a new card in **MODS ▸ Manage** shows how much of your browser's storage Better HUD, Match History and your crosshairs use.
+- **With Crosshair Mod:** Better HUD now works fully next to Crosshair Mod, whichever one your script manager runs first: the MODS tab is there straight away, Copy Chat, Copy Support Info and FPS Check work, and the "More than one copy" warning no longer shows by mistake.
+- **Disable Toasts:** a new switch in **MODS ▸ Menus**, off by default. It hides Better HUD's pop-up messages at the top of the screen, such as "Copied to clipboard." and error messages. A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big.
+
+#### v6.6.3
 
 - **King of the Coop stats:** Coop Time, Captures and Takeovers count again. The game's update of 17 November had stopped them.
 

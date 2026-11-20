@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.6.3
-// @description  FPS, Ping, HUD controls, match stats history, crosshair, performance tweaks, and styled Server Selector integrated into the native UI.
+// @version      6.7.0
+// @description  Adds a MODS tab to the Shell Shockers settings: FPS and ping display, HUD and effect toggles, match stats history, a custom crosshair editor, FPS helpers and a server picker, all styled like the game.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
 // @license      MIT
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.3";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.6.3");
+.version) || "6.7.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.6.3",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -174,7 +174,16 @@ if (window.__ssbFirstRun) try {
 if (localStorage.getItem(p[0]) === null) localStorage.setItem(p[0], p[1]);
 });
 } catch (e) {}
-window.__ssbErr = window.__ssbErr || (function() {
+window.__ssbHelperNote = window.__ssbHelperNote || {
+first: [],
+added: []
+};
+(function() {
+var prev = typeof window.__ssbErr === "function" ? window.__ssbErr : null,
+note = window.__ssbHelperNote;
+if (prev) note.first.push("__ssbErr");
+if (prev && Array.isArray(window.__ssbErrLog)) return;
+if (prev) note.added.push("__ssbErr error log");
 var on = false,
 seen = new Set(),
 log = window.__ssbErrLog = window.__ssbErrLog || [],
@@ -182,7 +191,10 @@ skip = /^(patches|view)#|^core#[45]$/;
 try {
 on = localStorage.getItem("ssb-debug") === "1";
 } catch (e) {}
-return function(tag, err) {
+window.__ssbErr = function(tag, err) {
+if (prev) try {
+prev(tag, err);
+} catch (e) {}
 if (seen.has(tag)) return;
 seen.add(tag);
 if (log.length < 50 && !skip.test(tag)) log.push({
@@ -193,6 +205,7 @@ at: Date.now()
 if (on) console.warn("[Better HUD] " + tag + ":", err);
 };
 })();
+if (typeof window.__ssbSafe === "function") window.__ssbHelperNote.first.push("__ssbSafe");
 window.__ssbSafe = window.__ssbSafe || function(tag, fn) {
 try {
 return fn();
@@ -201,9 +214,10 @@ window.__ssbErr(tag, e);
 }
 };
 ! function() {
-if (document.getElementById("ssb-tokens")) return;
+if (document.querySelector('style#ssb-tokens[data-ssb-owner="better-hud"]')) return;
 var s = document.createElement("style");
 s.id = "ssb-tokens";
+s.setAttribute("data-ssb-owner", "better-hud");
 s.textContent = ":root{" +
 "--ssb-ink:#0C576F;--ssb-blue:#0E7697;--ssb-blue-hi:#2db8d4;--ssb-blue-shadow:#1b7385;--ssb-panel:#8ED9E8;" +
 "--ssb-orange:#FF981F;--ssb-yolk:#ff9800;--ssb-yolk-hi:#e68a00;--ssb-yolk-shadow:#d35400;" +
@@ -333,7 +347,12 @@ window.__ssbNativeFrame = window.__ssbNativeFrame || {
 request: window.requestAnimationFrame.bind(window),
 cancel: window.cancelAnimationFrame.bind(window)
 };
-window.__ssbMenuPoll = window.__ssbMenuPoll || (function() {
+window.__ssbMenuPoll = (function(cur) {
+if (typeof cur === "function") {
+window.__ssbHelperNote.first.push("__ssbMenuPoll");
+if (typeof cur.reconcile === "function" && /inMatch/.test(Function.prototype.toString.call(cur))) return cur;
+window.__ssbHelperNote.added.push("__ssbMenuPoll scheduler");
+}
 var jobs = new Map(),
 timer = null;
 function gate() {
@@ -395,8 +414,8 @@ schedule();
 }
 register.reconcile = reconcile;
 return register;
-})();
-window.__ssbUI = window.__ssbUI || (function() {
+})(window.__ssbMenuPoll);
+window.__ssbUI = (function(cur) {
 var CSS = `#ssb-dialog-overlay { position:fixed; inset:0; z-index:2147483647; display:flex; align-items:center; justify-content:center; padding:18px; box-sizing:border-box; background:rgba(7,39,52,0.55); backdrop-filter:blur(2px); font-family:"Nunito",system-ui,sans-serif; }
 #ssb-dialog-panel { width:min(470px,100%); box-sizing:border-box; padding:16px 22px 20px; border:4px solid var(--ssb-ink); border-radius:10.5px; background:linear-gradient(#1192bc,#3ea2c7 30%,#5bb2d2 55%,#75c3de 78%,#8dd3ea); box-shadow:0 18px 42px rgba(0,0,0,0.36); text-align:center; animation:ssb-pop-in 0.14s ease; }
 #ssb-dialog-panel * { box-sizing:border-box; font-size:inherit; letter-spacing:normal; }
@@ -439,10 +458,14 @@ var CSS = `#ssb-dialog-overlay { position:fixed; inset:0; z-index:2147483647; di
 @keyframes ssb-pop-in { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:none; } }
 @keyframes ssb-toast-in { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
 `;
+var ownCss = null;
 function ensureCss() {
-if (document.getElementById("ssb-ui-style")) return;
-var s = document.createElement("style");
+if (ownCss && ownCss.isConnected) return;
+ownCss = document.querySelector('style#ssb-ui-style[data-ssb-owner="better-hud"]');
+if (ownCss) return;
+var s = ownCss = document.createElement("style");
 s.id = "ssb-ui-style";
+s.setAttribute("data-ssb-owner", "better-hud");
 s.textContent = CSS;
 (document.head || document.documentElement).appendChild(s);
 }
@@ -459,10 +482,19 @@ if (cls) e.className = cls;
 if (text != null) e.textContent = text;
 return e;
 }
-var stack = null;
+var stack = null,
+GATE = Symbol.for("ssb.toast.gate");
+function quiet(o) {
+if (o && o.keep) return false;
+try {
+return JSON.parse(localStorage.getItem("tp-noToasts") || "false") === true;
+} catch (e) {
+return false;
+}
+}
 function toast(text, o) {
 o = o || {};
-if (!document.body) return null;
+if (!document.body || quiet(o)) return null;
 ensureCss();
 if (!stack) {
 stack = node("div");
@@ -472,7 +504,7 @@ stack.setAttribute("aria-live", "polite");
 stack.setAttribute("aria-relevant", "additions text");
 }
 document.body.appendChild(stack);
-var t = node("div", "ssb-toast" + (o.type ? " ssb-toast-" + o.type : ""));
+var t = node("div", "ssb-toast ssb-toast-allowed" + (o.type ? " ssb-toast-" + o.type : ""));
 t.appendChild(node("div", "ssb-toast-text", text));
 if (o.code) t.appendChild(node("div", "ssb-toast-code", o.code));
 var gone = false;
@@ -492,6 +524,7 @@ while (stack.children.length > 4) stack.firstElementChild.remove();
 setTimeout(close, o.ms || (o.type === "error" ? 6500 : o.code ? 6000 : 3200));
 return t;
 }
+toast[GATE] = true;
 window.__ssbEatKeyUp = function(key) {
 var k = String(key).toLowerCase(),
 tm = setTimeout(done, 1500);
@@ -615,6 +648,8 @@ e.preventDefault();
 window.__ssbEatKeyUp("Escape");
 finish(o.cancel);
 } else if (e.key === "Enter" && !e.isComposing) {
+var act = document.activeElement;
+if (act && (act.tagName === "TEXTAREA" || act.tagName === "SELECT") && panel.contains(act)) return;
 e.preventDefault();
 window.__ssbEatKeyUp("Enter");
 var f = document.activeElement;
@@ -623,7 +658,10 @@ else if (primary) primary.click();
 } else if (e.key === "Tab") {
 e.preventDefault();
 var list = [].slice.call(panel.querySelectorAll(
-"input:not(:disabled), button:not(:disabled)")),
+"input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)"))
+.filter(function(el) {
+return el.getClientRects().length > 0 && !el.closest("[hidden]");
+}),
 i = list.indexOf(document.activeElement);
 var next = list[i < 0 ? (e.shiftKey ? list.length - 1 : 0) : (i + (e.shiftKey ? -1 :
 1) + list.length) % list.length];
@@ -1011,8 +1049,42 @@ buttons: buttons
 copyText: copyText,
 ensureCss: ensureCss
 };
-return api;
-})();
+if (!cur || typeof cur !== "object") return api;
+var added = Object.keys(api).filter(function(k) {
+if (typeof cur[k] === "function") return false;
+cur[k] = api[k];
+return true;
+});
+if (typeof cur.toast === "function" && !cur.toast[GATE]) {
+var theirToast = cur.toast;
+cur.toast = function(text, o) {
+if (quiet(o)) return null;
+var t = theirToast.apply(this, arguments);
+if (t && t.classList) t.classList.add("ssb-toast-allowed");
+return t;
+};
+cur.toast[GATE] = true;
+}
+var note = window.__ssbHelperNote;
+if (note) {
+note.first.push("__ssbUI");
+added.forEach(function(k) {
+note.added.push("__ssbUI." + k);
+});
+}
+if (added.length && typeof cur.ensureCss === "function" && cur.ensureCss !== ensureCss) {
+var theirs = cur.ensureCss;
+cur.ensureCss = function() {
+try {
+theirs.apply(this, arguments);
+} catch (e) {
+window.__ssbErr("ui#1", e);
+}
+ensureCss();
+};
+}
+return cur;
+})(window.__ssbUI);
 (function ssbPatchNotice() {
 var KEY = "ssb-patch-notice",
 tries = 0,
@@ -1069,7 +1141,8 @@ window.__ssbErr("patchnotice#1", e);
 window.__ssbUI.toast("Better HUD couldn't attach to part of the game: " + names.join(", ") + ".\n" +
 "The game may have been updated, so these might not work until Better HUD is updated too. " +
 "To report it, open MODS ▸ Manage ▸ Copy Support Info and post it in the Discord.", {
-ms: 16000
+ms: 16000,
+keep: true
 });
 }
 stop = window.__ssbMenuPoll(task, 4000);
@@ -1079,9 +1152,7 @@ var KEY = "ssb-copies-notice",
 tries = 0,
 stop = null;
 function twice() {
-return ["mod-vol-slider", "ssb-global-tooltip"].some(function(id) {
-return document.querySelectorAll('[id="' + id + '"]').length > 1;
-});
+return document.querySelectorAll('[id="mod-vol-slider"]').length > 1;
 }
 function copies() {
 var v = (window.__ssbCopies || []).map(function(c) {
@@ -1124,7 +1195,8 @@ var list = names.length > 2 ? names.slice(0, -1).join(", ") + " and " + names[na
 window.__ssbUI.toast("More than one copy of Better HUD is running (" + list + ").\n" +
 "Open your script manager (Tampermonkey), turn all but one off and reload the game. Until then some parts show up twice, " +
 "and the version at the bottom of MODS can be the wrong one.", {
-ms: 20000
+ms: 20000,
+keep: true
 });
 }
 stop = window.__ssbMenuPoll(task, 4000);
@@ -1438,6 +1510,50 @@ window.__ssbUI.toast("Disable Anti-Aliasing is " + (v ? "on" : "off") +
 }
 });
 }();
+! function() {
+var KEY = "tp-noToasts";
+function isOn() {
+try {
+return JSON.parse(localStorage.getItem(KEY) || "false") === true;
+} catch (e) {
+return false;
+}
+}
+function sync() {
+var s = document.getElementById("ssb-toasts-off");
+if (!isOn()) {
+if (s) s.remove();
+} else if (!s) {
+s = document.createElement("style");
+s.id = "ssb-toasts-off";
+s.textContent = "#ssb-toast-stack .ssb-toast:not(.ssb-toast-allowed) { display:none !important; }";
+(document.head || document.documentElement).appendChild(s);
+}
+}
+sync();
+window.addEventListener("storage", function(e) {
+if (e.key === KEY || e.key === null) sync();
+});
+window.__ssbSettings.add({
+key: KEY,
+section: "menus",
+after: "tp-advancedSettings",
+label: "Disable Toasts",
+code: "Mt",
+def: false,
+tip: "Hides Better HUD's pop-up messages at the top of the screen, such as \"Copied to clipboard.\" and error messages. A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big.",
+keywords: "toast toasts notification notifications popup popups pop-up message messages alert alerts quiet silent hide mute copied",
+get: isOn,
+set: function(v) {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+window.__ssbErr("toasts#1", e)
+}
+sync();
+}
+});
+}();
 (function() {
 "use strict";
 if (window.__ssbEffects60) return;
@@ -1519,7 +1635,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.6.3",
+version: "6.7.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -2999,6 +3115,7 @@ const _ssbCore = [
 ["ui", "showChangedTab", "tp-showChangedTab", "Uz", false, "b", "Show Changed Tab"],
 ["ui", "advancedSettings", "tp-advancedSettings", "Uy", false, "b", "Advanced Settings"],
 ["ui", "guiScale", "tp-guiScale", "Ui", 1, "n", "GUI Scale"],
+["ui", "coopIconSize", "tp-coopIconSize", "Uo", 1, "n", "Coop Icon Size"],
 ["gameplay", "tabOutKey", "tp-tabOutKey", "Gt", "Tab", "key", "Tab Out Key"],
 ["gameplay", "noExplosionSmoke", "tp-noExplosionSmoke", "Gs", false, "b"],
 ["gameplay", "noExplosionFire", "tp-noExplosionFire", "Gf", false, "b", "Hide Explosion Fire"],
@@ -3018,7 +3135,11 @@ const _ssbCore = [
 ["stats", "kotc", "tp-statsKotc", "Sk", false, "b", "King of the Coop Stats"],
 ["stats", "killBars", "tp-statsKillBars", "Sb", false, "b", "Kill Bars"],
 ["stats", "highlightMe", "tp-statsHighlightMe", "Sn", true, "b", "Highlight Your Name"],
+["stats", "showGuns", "tp-statsShowGuns", "Sg", false, "b", "Show Guns"],
 ["stats", "kotcEnd", "tp-statsKotcEnd", "Sm", 0, "n1", "When King of the Coop Ends"],
+["stats", "style", "tp-statsStyle", "Sy", 0, "n1", "Stats Style"],
+["stats", "timeMode", "tp-statsTimeMode", "St", 0, "n1", "Match Time"],
+["stats", "historyLimit", "tp-statsHistoryLimit", "Sv", 40, "n1", "Saved Match Limit"],
 ["stats", "hotkey", "tp-statsHotkey", "Sh", "\\", "key", "Stats Hotkey"],
 ["stats", "pinned", "tp-statsPinned", "Sp", true, "b", "Pin Stats on Pause Menu"]
 ];
@@ -3117,6 +3238,10 @@ v = v === null ? def : v === " " ? v : v.trim()
 } else v = type === "b" ? s(key, def) : l(key, def);
 d[sec][prop] = v
 });
+try {
+if (localStorage.getItem("tp-statsHistoryLimit") === null && localStorage.getItem("tp-statsUnlimited") === "true") d.stats.historyLimit = 0;
+} catch (_) {}
+d.stats.historyLimit = _ssbCleanHistoryLimit(d.stats.historyLimit);
 window.__ssbEffects60.connect(d.perf);
 window.__ssbHideBulletSplats = !!d.gameplay.noBulletSplats || !!d.perf.noParticles;
 window.__ssbSkinUnlocker = !!d.gameplay
@@ -3480,6 +3605,10 @@ window.__ssbGuiScale =
 let v = +d.ui.guiScale;
 return v >= .4 && v <= 1.2 ? v : v > 1.2 ? 1.2 : v > 0 ? .4 : 1
 };
+window.__ssbCoopIconSize = () => {
+let v = Math.round(20 * +d.ui.coopIconSize) / 20;
+return v >= .25 && v <= 1 ? v : v > 1 ? 1 : v > 0 ? .25 : 1
+};
 document.addEventListener("ssb:settings-change", () => {
 window.__ssbHideBulletSplats = !!d.gameplay.noBulletSplats || !!d.perf.noParticles;
 window.__ssbSmartDetail?.refresh?.()
@@ -3561,8 +3690,12 @@ if (!k || i[j - 1] === "." || !i.startsWith(k + ".scoreKill()", a + 12)) return 
 let x = n => n.replace(/\$/g, "\\$"),
 v = RegExp("[^\\w$]" + x(k) + "&&([\\w$]+)&&[\\w$]+\\(" + x(k) + ",\\1\\)").exec(i.slice(a,
 a + 4e3));
+let g = RegExp("updateTerminus\\(getKeyByValue\\([\\w$]+," + x(k) +
+"\\.charClass\\),([\\w$]+)\\[([\\w$]+)\\]\\.name,\"kills\"\\)").exec(i.slice(Math.max(0, j - 2e3), j)),
+wn = g ? "," + g[1] + "[" + g[2] + "]&&" + g[1] + "[" + g[2] + "].name" : "";
 return v && RegExp("[^\\w$]" + x(v[1]) + "\\.die\\(\\)").test(i.slice(Math.max(0, j - 2e3),
-j)) ? i.slice(0, j) + "(" + k + ".isDead()&&" + v[1] + "&&" + k + "!==" + v[1] + "&&(" +
+j)) ? i.slice(0, j) + "(typeof window.__ssbKill==\"function\"&&window.__ssbKill(" + k + "," + v[1] +
+wn + ")," + k + ".isDead()&&" + v[1] + "&&" + k + "!==" + v[1] + "&&(" +
 k +
 ".__ssbSkippedKills=(" + k + ".__ssbSkippedKills|0)+1)," + i.slice(j, a + 9) + ")" + i
 .slice(a + 9) : i
@@ -4587,6 +4720,10 @@ e.hideKillFeed);
 r("ssb-hide-game-stats",
 "#teamScores, #captureContainer, #captureIconContainer, #spatulaPlayer, .match-vs, .team-vs, .team-score, .gameStats, .game-stats { display: none !important; visibility: hidden !important; }",
 e.hideGameStats);
+let _cis = window.__ssbCoopIconSize();
+r("ssb-coop-icon-size", "#captureInsideContainer { font-size: " + Math.round(100 * _cis) + "% !important; } " +
+"#captureRingBackground, #captureRingContainer, #captureRing, #captureIcon { font-size: inherit !important; }",
+_cis !== 1);
 r("ssb-hide-ammo",
 "#ammo { display: none !important; visibility: hidden !important; }", e.hideAmmo);
 r("ssb-hide-grenade",
@@ -4906,7 +5043,8 @@ let i = window.players;
 return i && i.some(e => e && (e.team === 1 || e.team === 2)) || eb && eb.everSeenTeams ? "team" : "ffa"
 }
 let _histMem = null,
-_histT = 0;
+_histT = 0,
+_histBigSaid = 0;
 function _ssbHist() {
 if (!_histMem) {
 try {
@@ -4927,12 +5065,21 @@ return
 }
 for (let tries = 0;; tries++) {
 try {
-if (_histMem && _histMem.length) localStorage.setItem("tp-statsHistory", JSON.stringify(_histMem));
+let encoded = JSON.stringify(_histMem || []);
+if (encoded.length > 1048576 && !_histBigSaid && !document.pointerLockElement && window.__ssbUI) {
+_histBigSaid = 1;
+window.__ssbUI.toast("Match History is now over 2 MB. To keep room for your crosshairs and settings, export it and pick a Saved Match Limit in MODS ▸ Stats. Nothing was removed.", {
+keep: true
+});
+}
+if (_histMem && _histMem.length) localStorage.setItem("tp-statsHistory", encoded);
 else localStorage.removeItem("tp-statsHistory");
 return
 } catch (e) {
-if (tries < 40 && _ssbHistUnlimited() && _histMem && _histMem.length > _HIST_MAX && _ssbHistDropOldest(25)) {
-if (!tries && window.__ssbUI) window.__ssbUI.toast("Your browser's storage is full: the oldest matches in Match History were removed to save the newest one.");
+if (tries < 40 && _histMem && _histMem.length > _HIST_MAX && _ssbHistDropOldest(25)) {
+if (!tries && window.__ssbUI) window.__ssbUI.toast("Your browser's storage is full: the oldest matches in Match History were removed to save the newest one.", {
+keep: true
+});
 continue
 }
 window.__ssbErr("stats.histWrite", e);
@@ -4964,7 +5111,7 @@ const _HIST_MAX = 40,
 _HIST_KEPT = 20;
 function _ssbHistUnlimited() {
 try {
-return JSON.parse(localStorage.getItem("tp-statsUnlimited") || "false") === true
+return _ssbHistoryLimit() === 0
 } catch (e) {
 return false
 }
@@ -4975,6 +5122,7 @@ key: "tp-statsUnlimited",
 section: "stats",
 after: "tp-statsShowFps",
 label: "Infinite Match History",
+onMount: row => row.remove(),
 code: "Sx",
 def: false,
 tip: "Match History keeps every match instead of only the last 40. If your browser runs out of storage for the game, the oldest matches you haven't kept are removed to make room. Turning it off trims the history back to the last 40 (plus the ones you kept) after your next match.",
@@ -4982,14 +5130,17 @@ keywords: "stats history match unlimited infinite limit 40 forty keep all every 
 get: _ssbHistUnlimited,
 set: v => {
 try {
-localStorage.setItem("tp-statsUnlimited", JSON.stringify(!!v))
+const limit = v ? 0 : _ssbHistoryLimit() || 40;
+localStorage.setItem("tp-statsUnlimited", JSON.stringify(!!v));
+localStorage.setItem("tp-statsHistoryLimit", JSON.stringify(limit));
+d.stats.historyLimit = limit;
 } catch (e) {
 window.__ssbErr("stats.unlimited", e)
 }
 }
 });
-function _ssbHistTrim(hist) {
-if (_ssbHistUnlimited()) return;
+function _ssbHistTrim(hist, limit = _ssbHistoryLimit()) {
+if (!limit) return;
 let kept = 0,
 plain = 0;
 for (let i = 0; i < hist.length; i++) {
@@ -4999,7 +5150,7 @@ kept++;
 continue
 }
 if (h && h.kept) delete h.kept;
-if (++plain > _HIST_MAX) {
+if (++plain > limit) {
 hist.splice(i, 1);
 i--
 }
@@ -5111,6 +5262,47 @@ localStorage.setItem("tp-statsRecords", JSON.stringify(R))
 window.__ssbErr("stats.rec", e)
 }
 }
+function _ssbRecordsEdited(entry) {
+if (!_ssbRecOn() || !entry.mode || !(entry.players || []).some(p => p && p.isMe)) return;
+const R = _ssbRecGet(), id = h => JSON.stringify([h.code, h.startMs]), editedId = id(entry),
+history = _ssbHist().filter(h => h && id(h) !== editedId).concat(entry),
+known = new Set(history.map(id)), same = (a, b) => a && b && a.c === b.c && a.s === b.s,
+record = (h, key) => {
+const me = (h.players || []).find(p => p && p.isMe);
+if (!me) return null;
+const k = Number(me.kills), d = Number(me.deaths),
+n = key === "k" ? k : k >= 10 ? Math.round(k / Math.max(1, d || 0) * 100) / 100 : 0;
+return Number.isFinite(n) && n > 0 ? {n, c: h.code, s: h.startMs, m: h.map || ""} : null;
+};
+for (const [grp, name] of [["modes", entry.mode], ["maps", entry.map]]) {
+if (!name) continue;
+const group = Object.assign(Object.create(null), R[grp] && typeof R[grp] === "object" ? R[grp] : {}),
+box = Object.prototype.hasOwnProperty.call(group, name) && group[name] && typeof group[name] === "object" ? group[name] : {},
+next = {};
+for (const key of ["k", "r"]) {
+const candidates = new Map(), old = box[key];
+for (const r of [old, old?.prev]) {
+if (!r || !Number.isFinite(r.n) || r.n <= 0 || known.has(JSON.stringify([r.c, r.s]))) continue;
+candidates.set(JSON.stringify([r.c, r.s]), {n: r.n, c: r.c, s: r.s, m: r.m || ""});
+}
+for (const h of history) {
+if ((grp === "modes" ? h.mode : h.map) !== name) continue;
+const r = record(h, key);
+if (r) candidates.set(id(h), r);
+}
+const ranked = [...candidates.values()].sort((a, b) => b.n - a.n || Number(same(b, old)) - Number(same(a, old)));
+if (ranked.length) {
+next[key] = ranked[0];
+if (ranked[1]) next[key].prev = ranked[1];
+}
+}
+if (Object.keys(next).length) group[name] = next;
+else delete group[name];
+R[grp] = group;
+}
+try { localStorage.setItem("tp-statsRecords", JSON.stringify(R)); }
+catch (err) { window.__ssbErr("stats.recordsEdit", err); }
+}
 function _ssbRecTell(entry) {
 if (!_ssbRecOn() || !eb.matchEndMs || eb._recTold === entry.startMs) return;
 eb._recTold = entry.startMs;
@@ -5145,26 +5337,30 @@ window.__ssbErr("stats.recOn", e)
 });
 function _ssbSaveStats(_f) {
 try {
+_stTimeTick();
 if (_f && _histT) _ssbHistWrite(1);
 if (!d.stats.enabled || !eb.matchStartMs) return;
 let _sk = 0,
 _sd = 0,
 _sn = 0,
 _coopMs = 0,
-_coopEvents = 0;
+_coopEvents = 0,
+_lg = 0;
 for (let _k in eb.byName) {
 let _r = eb.byName[_k];
 _sk += _r.kills || 0;
 _sd += _r.deaths || 0;
 _coopMs += Math.floor(_r.coopMs || 0);
 _coopEvents += (_r.coopCaptures || 0) + (_r.coopTakeovers || 0);
+_lg += (_r.onKills || 0) + (_r.onDeaths || 0) + (_r.bestKs || 0) + (_r.aces || 0) + (_r.cls || 0) + (Array.isArray(_r.gunK) ? _r.gunK.reduce((a, n) => a + (+n || 0), 0) : 0);
 _sn++
 }
 let _now = Date.now(),
+_timing = _stTimeSnapshot(),
 _ready = (eb.snapshot || []).length > 0 && _now - eb.matchStartMs >= 2e4;
 let _sig = eb.gameCode + "|" + eb.matchStartMs + "|" + eb.map + "|" + eb.server + "|" + eb.mode + "|" + (eb
 .kotcScore ? eb.kotcScore[1] + "," + eb.kotcScore[2] : "") + "|" + _sk + "|" + _sd + "|" + _sn +
-"|" + _coopMs + "|" + _coopEvents + "|" + _ready;
+"|" + _coopMs + "|" + _coopEvents + "|" + _lg + "|" + _ready + "|" + Math.floor((_timing.lobbyMs || 0) / 1000) + "|" + Math.floor((_timing.spawnedMs || 0) / 1000);
 if (!_f && eb._saveSig === _sig && !eb._histDue && !eb._sessDue) return;
 eb._saveSig = _sig;
 let _gcS = eb.gameCode || (eb._synth || (eb._synth = "local-" + (eb.matchStartMs || Date
@@ -5179,6 +5375,7 @@ map: eb.map,
 server: eb.server,
 byName: eb.byName || {},
 matchStartMs: eb.matchStartMs,
+timing: _timing,
 kotcScore: eb.kotcScore || {
 1: 0,
 2: 0
@@ -5212,6 +5409,7 @@ server: eb.server,
 mode: eb.mode,
 startMs: eb.matchStartMs,
 endMs: eb.matchEndMs || _now,
+..._timing,
 kotc: eb.kotcScore || {
 1: 0,
 2: 0
@@ -5222,6 +5420,11 @@ let idx = hist.findIndex(h => h && h.code === _gcS && Math.abs((h.startMs || 0) 
 15e3);
 let _pf = _ssbMatchPerf();
 if (_pf) entry.perf = _pf;
+if (idx >= 0 && hist[idx].no > 0) entry.no = hist[idx].no;
+else try {
+entry.no = (parseInt(localStorage.getItem("tp-statsGameNo"), 10) || 0) + 1;
+localStorage.setItem("tp-statsGameNo", String(entry.no))
+} catch (ne) {}
 if (idx >= 0) {
 entry.label = hist[idx].label;
 if (hist[idx].kept) entry.kept = true;
@@ -5258,6 +5461,7 @@ _rr._q = 0;
 }
 }
 eb.matchStartMs = s.matchStartMs || Date.now();
+_stTimeRestore(s);
 eb.kotcScore = s.kotcScore || {
 1: 0,
 2: 0
@@ -5320,6 +5524,8 @@ if (!compatible || !rec || eb.mode !== "king") return;
 const s = states.get(player);
 if (!s && !enabled()) return;
 if (!valid(rec.coopMs)) rec.coopMs = 0;
+if (!valid(rec.onKills)) rec.onKills = 0;
+if (!valid(rec.onDeaths)) rec.onDeaths = 0;
 if (hook?.live) {
 if (!valid(rec.coopCaptures)) rec.coopCaptures = 0;
 if (!valid(rec.coopTakeovers)) rec.coopTakeovers = 0;
@@ -5369,6 +5575,7 @@ states.set(player, s);
 }
 if (s.since !== null && t - s.last > GAP) close(s, s.last + STEP);
 if (on) {
+s.lastOn = t;
 if (s.since === null) {
 s.since = t;
 transitions++
@@ -5517,6 +5724,10 @@ sweep,
 start,
 stop,
 sync,
+onPoint(player, t) {
+const s = states.get(player);
+return !!s && s.lastOn !== undefined && t - s.lastOn <= 150
+},
 reset() {
 states.clear();
 if (hook) {
@@ -5585,10 +5796,12 @@ const moveAt = once(ownerMove);
 if (moveAt < 0 || moveAt >= cellAt || cellAt - moveAt > 6000) return src;
 const tickText = src.slice(tickAt, tickAt + 700);
 const prof = '(?:,[\\w$]+\\("[A-Za-z]+"\\))?';
-if (!new RegExp("for\\([\\w$]+\\.update\\(\\)" + prof + ";[\\w$]+<[\\w$]+;\\)\\{if\\([\\w$]+\\+=33\\.333333333333336,").test(src.slice(Math.max(0,
-tickAt - 800), tickAt))) return src;
-const tick =
-new RegExp("^vueApp\\.player\\.challengeTimer\\.played=Math\\.floor\\(([\\w$]+)\\.timers\\.played\\/30\\)\\)\\)," + "\\1\\.([\\w$]+)&&\\((?:[\\w$]+\\(\"[A-Za-z]+\"\\),)?\\1\\.([\\w$]+)\\.([\\w$]+)\\(\\)" + prof + ",\\1\\.([\\w$]+)\\(\\)" + prof + "\\)\\)\\}")
+if (!new RegExp("for\\([\\w$]+\\.update\\(\\)" + prof +
+";[\\w$]+<[\\w$]+;\\)\\{if\\([\\w$]+\\+=33\\.333333333333336,").test(src.slice(Math.max(0, tickAt - 800),
+tickAt))) return src;
+const tick = new RegExp("^vueApp\\.player\\.challengeTimer\\.played=Math\\.floor\\(([\\w$]+)\\.timers\\.played\\/30\\)\\)\\)," +
+"\\1\\.([\\w$]+)&&\\((?:[\\w$]+\\(\"[A-Za-z]+\"\\),)?\\1\\.([\\w$]+)\\.([\\w$]+)\\(\\)" + prof +
+",\\1\\.([\\w$]+)\\(\\)" + prof + "\\)\\)\\}")
 .exec(tickText);
 if (!tick || tick[2] !== playing || once(tick[0]) !== tickAt) return src;
 const removeHead = owner + ".prototype.removeFromPlay=async function(){";
@@ -5622,6 +5835,113 @@ const out = _stCoopPatch(src);
 _stCoop.compatible(out !== src);
 return out;
 });
+const _lgTrack = (() => {
+const pend = new WeakMap();
+let live = false;
+const get = p => {
+let s = pend.get(p);
+if (!s) pend.set(p, s = {
+onK: 0,
+onD: 0,
+run: 0,
+best: 0,
+aces: 0,
+got: new Set()
+});
+return s
+};
+const GUN = {
+Eggk47: 0,
+Scrambler: 1,
+FreeRanger: 2,
+Rpegg: 3,
+Whipper: 4,
+Crackshot: 5,
+TriHard: 6
+};
+let gen = 0;
+function kill(killer, victim, wpn) {
+try {
+if (!d.stats.enabled || !victim || typeof victim !== "object") return;
+live = true;
+const t = performance.now(),
+v = get(victim);
+if (_stCoop.onPoint(victim, t)) v.onD++;
+v.run = 0;
+v.got.clear();
+if (!killer || typeof killer !== "object" || killer === victim) return;
+const k = get(killer);
+if (typeof wpn === "string" && Object.prototype.hasOwnProperty.call(GUN, wpn)) {
+if (!k.gk || k.gen !== gen) k.gk = [0, 0, 0, 0, 0, 0, 0];
+k.gk[GUN[wpn]]++;
+k.gl = GUN[wpn];
+k.gen = gen;
+}
+if (_stCoop.onPoint(killer, t)) k.onK++;
+if (++k.run > k.best) k.best = k.run;
+const team = victim.team;
+if ((team === 1 || team === 2) && killer.team !== team) {
+k.got.add(victim);
+const foes = (window.players || []).filter(p => p && p.stats && p.team === team);
+if (foes.length >= 2 && foes.every(p => k.got.has(p))) {
+k.aces++;
+k.got.clear();
+}
+}
+} catch (e) {
+window.__ssbErr("stats.league", e)
+}
+}
+function count(rec, p, died) {
+if (!rec || !p) return;
+if (Number.isInteger(p.charClass) && p.charClass >= 0 && p.charClass <= 6) rec.cls = p.charClass;
+const s = pend.get(p),
+num = v => typeof v === "number" && Number.isFinite(v) && v >= 0;
+if (live) {
+if (!num(rec.bestKs)) rec.bestKs = 0;
+if (!num(rec.aces)) rec.aces = 0;
+}
+if (!s) return;
+if (s.gk) {
+if (s.gen === gen) {
+const a = _lgGunKills(rec) || [0, 0, 0, 0, 0, 0, 0];
+for (let i = 0; i < 7; i++) a[i] += s.gk[i];
+rec.gunK = a;
+rec.gunLast = s.gl;
+}
+s.gk = null;
+}
+if (num(rec.onKills)) rec.onKills += s.onK;
+if (num(rec.onDeaths)) rec.onDeaths += s.onD;
+s.onK = s.onD = 0;
+if (s.best > (rec.bestKs || 0)) rec.bestKs = s.best;
+if (s.aces) rec.aces = (rec.aces || 0) + s.aces;
+s.aces = 0;
+if (died) {
+s.run = 0;
+s.got.clear();
+}
+}
+window.__ssbKill = kill;
+return {
+count,
+reset() {
+gen++
+}
+}
+})();
+function _lgGunKills(p) {
+const a = p && p.gunK;
+return Array.isArray(a) && a.length === 7 && a.every(n => Number.isInteger(n) && n >= 0) ? a.slice() : null
+}
+function _lgGun(p) {
+const a = _lgGunKills(p);
+if (a) {
+const top = Math.max.apply(null, a);
+if (top > 0) return Number.isInteger(p.gunLast) && a[p.gunLast] === top ? p.gunLast : a.indexOf(top);
+}
+return p && Number.isInteger(p.cls) && p.cls >= 0 && p.cls <= 6 ? p.cls : -1
+}
 function _stCount(rec, c) {
 if (!c || !c.stats) return;
 _stCoop.count(rec, c);
@@ -5658,9 +5978,72 @@ if (rec._q && !fresh && (_ka > 0 || _sd > 0 || _died)) rec._q = 0;
 rec._lastK = u;
 rec._lastD = f;
 rec._lastTK = tk;
+_lgTrack.count(rec, c, _died);
 }
+function _stTimeMode() {
+return d.stats.timeMode === 1 ? 1 : 0;
+}
+function _stTimeTick() {
+const now = Date.now(), room = _stInGame(), code = window.__ssbGameCode || "";
+if (room && (!eb._timeInRoom || code && eb._timeRoomCode && code !== eb._timeRoomCode)) {
+eb._roomJoinedMs = now;
+eb._timeRoomGen = (eb._timeRoomGen || 0) + 1;
+}
+eb._timeInRoom = room;
+if (room && code) eb._timeRoomCode = code;
+const c = eb._time;
+if (!c) return;
+const connected = d.stats.enabled && room && c._roomGen === eb._timeRoomGen && !(code && eb.gameCode && code !== eb.gameCode),
+spawned = connected && !!document.pointerLockElement;
+for (const [on, at, total] of [[connected, "_lobbyAt", "lobbyMs"], [spawned, "_spawnAt", "spawnedMs"]]) {
+if (on && !c[at]) c[at] = now;
+else if (!on && c[at]) {
+c[total] += Math.max(0, now - c[at]);
+c[at] = 0;
+}
+}
+if (spawned && !c.spawnStartMs) c.spawnStartMs = now;
+}
+function _stTimeReset(start = Date.now()) {
+const now = Date.now(), room = d.stats.enabled && _stInGame(), spawned = room && !!document.pointerLockElement;
+eb._time = { lobbyStartMs: start, spawnStartMs: spawned ? now : 0,
+lobbyMs: room ? Math.max(0, now - start) : 0, spawnedMs: 0,
+_lobbyAt: room ? now : 0, _spawnAt: spawned ? now : 0, _roomGen: eb._timeRoomGen };
+}
+function _stTimeSnapshot() {
+const c = eb._time;
+if (!c) return {};
+const now = Date.now();
+return { lobbyStartMs: c.lobbyStartMs, spawnStartMs: c.spawnStartMs,
+lobbyMs: c.lobbyMs + (c._lobbyAt ? Math.max(0, now - c._lobbyAt) : 0),
+spawnedMs: c.spawnedMs + (c._spawnAt ? Math.max(0, now - c._spawnAt) : 0) };
+}
+function _stTimeRestore(saved) {
+const now = Date.now(), c = saved.timing || {},
+clean = (v, fallback) => typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : fallback,
+legacy = Math.max(0, (saved.ts || now) - (saved.matchStartMs || now)),
+room = d.stats.enabled && _stInGame(), spawned = room && !!document.pointerLockElement;
+eb._time = { lobbyStartMs: clean(c.lobbyStartMs, saved.matchStartMs || now),
+spawnStartMs: clean(c.spawnStartMs, saved.matchStartMs || now),
+lobbyMs: clean(c.lobbyMs, legacy) + (room ? Math.max(0, now - (eb._roomJoinedMs || now)) : 0),
+spawnedMs: clean(c.spawnedMs, legacy), _lobbyAt: room ? now : 0, _spawnAt: spawned ? now : 0,
+_roomGen: eb._timeRoomGen };
+}
+function _stTimeMs(h) {
+const c = h || _stTimeSnapshot(), value = c[_stTimeMode() ? "spawnedMs" : "lobbyMs"];
+if (typeof value === "number" && Number.isFinite(value) && value >= 0) return value;
+const start = h ? h.startMs : eb.matchStartMs, end = h ? h.endMs : eb.matchEndMs || Date.now();
+return start && end ? Math.max(0, end - start) : null;
+}
+function _stTimeStart(h) {
+const c = h || _stTimeSnapshot(), value = c[_stTimeMode() ? "spawnStartMs" : "lobbyStartMs"];
+return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : h ? h.startMs : eb.matchStartMs;
+}
+document.addEventListener("pointerlockchange", () => _stTimeTick());
+document.addEventListener("ssb:settings-change", () => _stTimeTick());
 function _stFlush() {
 try {
+_stTimeTick();
 if (!d.stats.enabled || !eb._seen || !eb._seen.length) return;
 for (let [rec, c] of eb._seen) _stCount(rec, c);
 _stCoop.sweep(window.players, !_stInGame());
@@ -5685,6 +6068,13 @@ s
 .coopMs = o.coopMs;
 s.coopCaptures = o.coopCaptures;
 s.coopTakeovers = o.coopTakeovers;
+s.cls = o.cls;
+s.gunK = o.gunK;
+s.gunLast = o.gunLast;
+s.onKills = o.onKills;
+s.onDeaths = o.onDeaths;
+s.bestKs = o.bestKs;
+s.aces = o.aces;
 return s;
 })
 }
@@ -5710,6 +6100,7 @@ window.__ssbErr("stats.inGame", x)
 return true
 }
 function ew() {
+_stTimeTick();
 if (!d.stats.enabled || document.hidden) return;
 (function() {
 if (!eb.kotcScore) eb.kotcScore = {
@@ -5790,9 +6181,16 @@ eb
 };
 eb._seedQ = Date.now();
 eb._synth = 0;
+_stTimeReset(eb._roomJoinedMs || eb.matchStartMs);
 } else {
 if (!eb.matchStartMs) eb.matchStartMs = Date
 .now();
+if (!eb._time) _stTimeReset(eb._roomJoinedMs || eb.matchStartMs);
+else if (eb._time._roomGen !== eb._timeRoomGen) {
+eb._time._roomGen = eb._timeRoomGen;
+eb._time.lobbyMs += Math.max(0, Date.now() - (eb._roomJoinedMs || Date.now()));
+_stTimeTick();
+}
 }
 eb._readyForReset = false;
 eb.gameCode = gc;
@@ -6047,9 +6445,10 @@ deaths: 0
 let _kS = String(me.kills || 0),
 _dS = String(me.deaths || 0),
 _rS = ((me.kills || 0) / Math.max(1, me.deaths || 0)).toFixed(2);
-if (ek._kV && ek._kV.textContent !== _kS) ek._kV.textContent = _kS;
-if (ek._dV && ek._dV.textContent !== _dS) ek._dV.textContent = _dS;
+if (ek._kV && !ek._kV.isContentEditable && ek._kV.textContent !== _kS) ek._kV.textContent = _kS;
+if (ek._dV && !ek._dV.isContentEditable && ek._dV.textContent !== _dS) ek._dV.textContent = _dS;
 if (ek._rV && ek._rV.textContent !== _rS) ek._rV.textContent = _rS;
+_stPinnedAdmin(ek, me);
 if (ek._cW) {
 let king = eb.mode === "king" && d.stats.kotc;
 ek._cW.style.display = king ? "flex" : "none";
@@ -6124,7 +6523,8 @@ return timeOnly ? t : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "
 " · " + t
 }
 function _stLen(h) {
-return h && h.startMs && h.endMs ? eP(Math.floor((h.endMs - h.startMs) / 1e3)) : ""
+const ms = h && _stTimeMs(h);
+return ms == null ? "" : eP(Math.floor(ms / 1e3));
 }
 function _stMe() {
 return (eb.snapshot || []).find(p => p && p.isMe) || {
@@ -6133,7 +6533,7 @@ deaths: 0
 }
 }
 function _stDur() {
-return eP(Math.floor(((eb.matchEndMs || Date.now()) - eb.matchStartMs) / 1e3))
+return eP(Math.floor((_stTimeMs() || 0) / 1e3));
 }
 function _stLive() {
 let p = window.players;
@@ -6149,20 +6549,43 @@ return h ? h + ":" + String(m).padStart(2, "0") + ":" + ss : String(m).padStart(
 }
 function _stKotcSaved(p) {
 const out = {};
-for (const key of ["coopMs", "coopCaptures", "coopTakeovers"])
+for (const key of ["coopMs", "coopCaptures", "coopTakeovers", "onKills", "onDeaths", "bestKs", "aces", "cls"])
 if (Number.isFinite(p[key]) && p[key] >= 0) out[key] = Math.floor(p[key]);
+const gk = _lgGunKills(p);
+if (gk) {
+out.gunK = gk;
+if (Number.isInteger(p.gunLast) && p.gunLast >= 0 && p.gunLast <= 6) out.gunLast = p.gunLast;
+}
 return out;
+}
+const _stGunSvg = {};
+function _stGun(p) {
+if (!d.stats.showGuns) return "";
+const g = _lgGun(p),
+id = ["soldier", "scrambler", "ranger", "rpegg", "whipper", "crackshot", "trihard"][g];
+if (id && !_stGunSvg[id]) {
+const sym = document.getElementById("ico-weapon-" + id);
+if (sym) {
+const vb = (sym.getAttribute("viewBox") || "0 0 106 106").replace(/[^\d.\s,-]/g, "");
+const paths = [...sym.querySelectorAll("path")].map(e => (e.getAttribute("d") || "").replace(/[^\w\s.,-]/g, ""))
+.filter(Boolean).map(dd => `<path d="${dd}"/>`).join("") + [...sym.querySelectorAll("polygon")]
+.map(e => (e.getAttribute("points") || "").replace(/[^\d\s.,-]/g, "")).filter(Boolean)
+.map(pt => `<polygon points="${pt}"/>`).join("");
+if (paths) _stGunSvg[id] = `<svg class="ssb-gun" viewBox="${vb}" fill="currentColor" fill-rule="evenodd" aria-hidden="true">${paths}</svg>`;
+}
+}
+return id && _stGunSvg[id] || '<span class="ssb-gun ssb-gun-none" aria-hidden="true">–</span>'
 }
 function _stKotcCount(n) {
 return Number.isFinite(n) && n >= 0 ? String(Math.floor(n)) : "–"
 }
-function eL(title, cls, players, mode, team) {
+function eL(title, cls, players, mode, team, source = players) {
 const king = mode === "king",
 coop = king && d.stats.kotc;
 const top = d.stats.killBars ? players.reduce((n, p) => Math.max(n, Number.isFinite(+p.kills) ? +p.kills : 0), 0) : 0;
 const stat = (key, text, cls = "") => `<td data-stat="${key}"${cls ? ' class="' + cls + '"' : ""}>${text}</td>`;
 const rows = players.map((p, i) =>
-`<tr class="${p.isMe && d.stats.highlightMe !== false ? "ssb-me " : ""}${d.stats.killBars ? "ssb-kill-row" : ""}"${d.stats.killBars ? ' style="--ssb-kill:' + (top && Number.isFinite(+p.kills) ? Math.max(0, Math.min(100, +p.kills / top * 100)).toFixed(2) : 0) + '%"' : ""}${Number.isFinite(p.id) ? ' data-player-id="' + p.id + '"' : ""}><td class="ssb-rank">${i + 1}</td><td class="ssb-name">${eC(p.name || "Player")}</td>${stat("kills", +p.kills || 0)}${stat("deaths", +p.deaths || 0)}${stat("kdr", _stKdr(p.kills, p.deaths))}${coop ? stat("coopMs", _stCoopTime(p.coopMs), "ssb-coop-time") + stat("coopCaptures", _stKotcCount(p.coopCaptures)) + stat("coopTakeovers", _stKotcCount(p.coopTakeovers)) : ""}</tr>`
+`<tr data-source="${source.indexOf(p)}" class="${p.isMe && d.stats.highlightMe !== false ? "ssb-me " : ""}${d.stats.killBars ? "ssb-kill-row" : ""}"${d.stats.killBars ? ' style="--ssb-kill:' + (top && Number.isFinite(+p.kills) ? Math.max(0, Math.min(100, +p.kills / top * 100)).toFixed(2) : 0) + '%"' : ""}${Number.isFinite(p.id) ? ' data-player-id="' + p.id + '"' : ""}><td class="ssb-rank">${i + 1}</td><td class="ssb-name">${_stGun(p)}${eC(p.name || "Player")}</td>${stat("kills", +p.kills || 0)}${stat("deaths", +p.deaths || 0)}${stat("kdr", _stKdr(p.kills, p.deaths))}${coop ? stat("coopMs", _stCoopTime(p.coopMs), "ssb-coop-time") + stat("coopCaptures", _stKotcCount(p.coopCaptures)) + stat("coopTakeovers", _stKotcCount(p.coopTakeovers)) : ""}</tr>`
 ).join("") || `<tr><td class="ssb-none" colspan="${coop ? 8 : 5}">No players</td></tr>`;
 const score = king && (team === 1 || team === 2) ?
 `<span class="ssb-team-score">Score ${+(eb.kotcScore && eb.kotcScore[team]) || 0}</span>` : "";
@@ -6175,14 +6598,14 @@ let t = {
 0: []
 };
 (list || []).forEach(p => {
-if (p && typeof p == "object") t[p.team === 1 || p.team === 2 ? p.team : 0].push(p);
+if (p && typeof p == "object") t[mode !== "ffa" && (p.team === 1 || p.team === 2) ? p.team : 0].push(p);
 });
 Object.values(t).forEach(a => a.sort((x, y) => (+y.kills || 0) - (+x.kills || 0) || (+x.deaths || 0) - (+y
 .deaths || 0)));
 let teams = t[1].length || t[2].length,
-out = teams ? eL("Blue Team", "ssb-team-blue", t[1], mode, 1) + eL("Red Team", "ssb-team-red", t[2], mode,
-2) : "";
-if (t[0].length) out += eL(teams ? "Other Players" : "Players", "ssb-team-ffa", t[0], mode, 0);
+out = teams ? eL("Blue Team", "ssb-team-blue", t[1], mode, 1, list) + eL("Red Team", "ssb-team-red", t[2], mode,
+2, list) : "";
+if (t[0].length) out += eL(teams ? "Other Players" : "Players", "ssb-team-ffa", t[0], mode, 0, list);
 return out ? `<div class="ssb-cols${mode === "king" && d.stats.kotc ? " ssb-coop-cols" : ""}">${out}</div>` :
 `<div class="ssb-empty">${empty}</div>`
 }
@@ -6190,12 +6613,16 @@ function _stIcoBtn(act, label, cls) {
 let ico = {
 back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
 copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+copytext: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+progress: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
 download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
 reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
 close: '<path d="M18 6L6 18M6 6l12 12"/>',
-clearhist: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'
+clearhist: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+imstats: '<path d="M4 15v5h16v-5M12 3v12M7 10l5 5 5-5"/>',
+exstats: '<path d="M4 15v5h16v-5M12 15V3M7 8l5-5 5 5"/>'
 };
-return `<button type="button" class="ssb-btn ssb-ico${cls ? " " + cls : ""}" data-act="${act}" data-tooltip="${label}" aria-label="${label}"><svg viewBox="0 0 24 24" aria-hidden="true">${ico[act === "backhist" ? "back" : act]}</svg></button>`
+return `<button type="button" class="ssb-btn ssb-ico${cls ? " " + cls : ""}" data-act="${act}" data-tooltip="${label}" aria-label="${label}"><svg viewBox="0 0 24 24" aria-hidden="true">${ico[act === "backhist" || act === "histlist" ? "back" : act]}</svg></button>`
 }
 function _stChips(strong, rest) {
 return strong.filter(Boolean).map(c => `<span class="ssb-chip ssb-chip-strong">${c}</span>`).join("") + rest
@@ -6220,12 +6647,18 @@ ef("ui_toggletab");
 e1();
 });
 on('[data-act="backhist"]', () => {
-let k = eb._histKey;
+let k = eb._histKey,
+prog = view === "match" && eb._histFrom === "progress";
+_stHistPref("View", prog ? "progress" : "");
 ef("ui_toggletab");
-eHIST(view === "live" ? ".ssb-hr-live" : k ? '.ssb-hist-row[data-code="' + CSS
+eHIST(view === "live" ? ".ssb-hr-live" : k ? (prog ? ".ssb-prog-pt" : ".ssb-hist-row") + '[data-code="' + CSS
 .escape(k[0]) + '"][data-start="' + CSS.escape(k[1]) + '"]' : null, eb._histTop);
 });
 on('[data-act="copy"]', () => eA());
+on('[data-act="copytext"]', () => {
+ef("ui_click");
+window.__ssbUI.copyText(_stMatchText(view === "live" ? _stLiveMatch() : match, view === "live"), "Match copied as text.");
+});
 on('[data-act="download"]', () => e4());
 _stWireRename(ov, match || (view === "live" ? {code: _stLiveCode(), startMs: eb.matchStartMs} : null));
 }
@@ -6238,45 +6671,126 @@ return code && !/^local-\d+$/.test(code) ? code : "";
 function _stSavedMatch(code, startMs) {
 return _ssbHist().find(h => h && h.code === code && Math.abs((h.startMs || 0) - (startMs || 0)) < 15e3);
 }
+function _stLiveMatch() {
+const saved = _stSavedMatch(_stLiveCode(), eb.matchStartMs);
+return {code: _stLiveCode(), label: saved && saved.label, startMs: eb.matchStartMs, mode: eb.mode || e0(), map: eb.map,
+server: eb.server, players: eb.snapshot || [], kotc: eb.kotcScore};
+}
+function _stMatchText(h, live) {
+const mode = h.mode || "ffa",
+coop = mode === "king" && d.stats.kotc,
+plain = v => String(v == null ? "" : v).replace(/[`\r\n\t]/g, " ").replace(/\s+/g, " ").trim(),
+md = v => plain(v).replace(/([\\*_~|>#-])/g, "\\$1"),
+len = v => [...v].length,
+cut = (v, n) => len(v) > n ? [...v].slice(0, n - 1).join("") + "…" : v,
+start = h.startMs ? _stTimeStart(live ? null : h) : 0,
+time = live ? (h.startMs ? _stDur() : "") : _stLen(h),
+facts = [h.map && plain(h.map), h.server && plain(eSN(h.server)), _stMode(mode), start && _stWhen(start), time]
+.filter(Boolean),
+t = {1: [], 2: [], 0: []};
+(h.players || []).forEach(p => {
+if (p && typeof p == "object") t[mode !== "ffa" && (p.team === 1 || p.team === 2) ? p.team : 0].push(p);
+});
+Object.values(t).forEach(a => a.sort((x, y) => (+y.kills || 0) - (+x.kills || 0) || (+x.deaths || 0) - (+y.deaths || 0)));
+const both = t[1].length || t[2].length,
+groups = (both ? [["Blue Team", t[1], 1], ["Red Team", t[2], 2]] : []).concat(t[0].length ? [[both ? "Other Players" : "Players", t[0], 0]] : []),
+score = h.kotc || {},
+blocks = groups.map(([name, list, team]) => {
+const head = ["#", "Player", "K", "D", "KDR"].concat(coop ? ["Coop", "Cap", "Take"] : []),
+rows = list.map((p, i) => [String(i + 1), cut(plain(p.name || "Player"), 20) + (p.isMe ? " (me)" : ""), String(+p.kills || 0),
+String(+p.deaths || 0), _stKdr(p.kills, p.deaths)
+].concat(coop ? [_stCoopTime(p.coopMs), _stKotcCount(p.coopCaptures), _stKotcCount(p.coopTakeovers)] : [])),
+w = head.map((c, i) => Math.max(len(c), ...rows.map(r => len(r[i])))),
+line = r => r.map((c, i) => i === 1 ? c + " ".repeat(w[i] - len(c)) : " ".repeat(w[i] - len(c)) + c).join("  ").replace(/\s+$/, ""),
+info = [name, list.length + (list.length === 1 ? " player" : " players")]
+.concat(mode === "king" && team ? ["Score " + (+score[team] || 0)] : []).join(" · ");
+return [info].concat(list.length ? [line(head)].concat(rows.map(line)) : ["No players"]).join("\n");
+});
+return "**" + md(h.label || _stRoomCode(h.code) || "Match") + "**" + (facts.length ? " · " + facts.map(md).join(" · ") : "") +
+"\n```\n" + (blocks.join("\n\n") || "No player data.") + "\n```";
+}
 function _stNameChip(h) {
-return `<button type="button" class="ssb-match-name" data-act="rename-match" aria-label="Rename match" title="Rename match">${eC(h.label || h.code || "Match")}</button>`;
+return `<span role="button" tabindex="0" class="ssb-match-name" data-act="rename-match" aria-label="Rename match" title="Rename match">${eC(h.label || h.code || "Match")}</span>`;
+}
+function _stInline(el, value, commit, limit = 60) {
+if (el.isContentEditable || document.pointerLockElement) return;
+const role = el.getAttribute("role");
+el.textContent = String(value);
+el.contentEditable = "plaintext-only";
+el.classList.add("ssb-editing");
+el.setAttribute("role", "textbox");
+let done = false;
+const finish = save => {
+if (done) return;
+done = true;
+const text = el.textContent.replace(/[\r\n]+/g, " ").trim().slice(0, limit);
+el.removeAttribute("contenteditable");
+el.classList.remove("ssb-editing");
+if (role) el.setAttribute("role", role);
+else el.removeAttribute("role");
+el.removeEventListener("keydown", key);
+el.removeEventListener("keyup", stop);
+el.removeEventListener("paste", paste);
+el.removeEventListener("blur", blur);
+el.textContent = String(value);
+if (save) commit(text);
+};
+const stop = ev => ev.stopPropagation(), blur = () => finish(true), key = ev => {
+ev.stopPropagation();
+if (!ev.isComposing && (ev.key === "Enter" || ev.key === "Escape")) {
+ev.preventDefault();
+window.__ssbEatKeyUp(ev.key);
+finish(ev.key === "Enter");
+if (el.isConnected) el.focus({preventScroll: true});
+}
+}, paste = ev => {
+ev.preventDefault();
+const text = (ev.clipboardData?.getData("text/plain") || "").replace(/[\r\n]+/g, " ").slice(0, limit),
+sel = window.getSelection();
+if (!sel?.rangeCount || !el.contains(sel.anchorNode)) return;
+const range = sel.getRangeAt(0), node = document.createTextNode(text);
+range.deleteContents();
+range.insertNode(node);
+range.setStartAfter(node);
+range.collapse(true);
+sel.removeAllRanges();
+sel.addRange(range);
+};
+el.addEventListener("keydown", key);
+el.addEventListener("keyup", stop);
+el.addEventListener("paste", paste);
+el.addEventListener("blur", blur);
+el.focus({preventScroll: true});
+const range = document.createRange(), sel = window.getSelection();
+range.selectNodeContents(el);
+sel.removeAllRanges();
+sel.addRange(range);
+}
+function _stRenameStart(el, key, after) {
+let entry = _stSavedMatch(key.code, key.startMs);
+if (!entry && key.code === _stLiveCode() && key.startMs === eb.matchStartMs) {
+_ssbSaveStats(1);
+entry = _stSavedMatch(key.code, key.startMs);
+}
+if (!entry) return window.__ssbUI.toast("There's no saved match to rename yet.");
+_stInline(el, entry.label || entry.code || "Match", name => {
+const h = _stSavedMatch(key.code, key.startMs);
+if (!h) return;
+if (name) h.label = name;
+else delete h.label;
+_ssbHistSet(_ssbHist());
+el.textContent = h.label || h.code || "Match";
+ef("ui_onchange");
+if (after) after(h);
+});
 }
 function _stWireRename(ov, key) {
 const button = ov.querySelector('[data-act="rename-match"]');
 if (!button || !key) return;
-button.onclick = () => {
-if (document.pointerLockElement) return;
-let h = _stSavedMatch(key.code, key.startMs);
-if (!h && key.code === _stLiveCode() && key.startMs === eb.matchStartMs) {
-_ssbSaveStats(1);
-h = _stSavedMatch(key.code, key.startMs);
-}
-if (!h) {
-window.__ssbUI.toast("There's no saved match to rename yet.");
-return;
-}
-const input = document.createElement("input");
-input.type = "text";
-input.className = "ssb-name-input";
-input.maxLength = 60;
-input.value = h.label || h.code || "";
-input.setAttribute("aria-label", "Match name; leave blank to use the code");
-let done = false;
-const finish = (save, focus) => {
-if (done) return;
-done = true;
-const entry = _stSavedMatch(key.code, key.startMs);
-if (save && entry) {
-const name = input.value.trim().slice(0, 60);
-if (name) entry.label = name;
-else delete entry.label;
-_ssbHistSet(_ssbHist());
-}
-button.textContent = entry && entry.label || key.code || "Match";
-input.replaceWith(button);
+const start = () => _stRenameStart(button, key, entry => {
 let codeChip = ov.querySelector("[data-match-code]")?.closest(".ssb-chip");
 const roomCode = _stRoomCode(key.code);
-if (entry?.label && roomCode) {
+if (entry.label && roomCode) {
 if (!codeChip) {
 codeChip = document.createElement("span");
 codeChip.className = "ssb-chip ssb-chip-strong";
@@ -6287,29 +6801,117 @@ button.closest(".ssb-chip")?.after(codeChip);
 }
 codeChip.firstElementChild.textContent = roomCode;
 } else codeChip?.remove();
-if (focus && button.isConnected) button.focus({preventScroll: true});
-};
-input.addEventListener("keydown", e => {
-e.stopPropagation();
-if (e.isComposing) return;
-if (e.key === "Enter" || e.key === "Escape") {
-e.preventDefault();
-window.__ssbEatKeyUp(e.key);
-finish(e.key === "Enter", true);
-}
 });
-input.addEventListener("keyup", e => e.stopPropagation());
-input.addEventListener("blur", () => finish(true, false));
-button.replaceWith(input);
-input.focus({preventScroll: true});
-input.select();
+button.onclick = start;
+button.onkeydown = ev => {
+if (!button.isContentEditable && (ev.key === "Enter" || ev.key === " ")) {
+ev.preventDefault();
+ev.stopPropagation();
+start();
+}
 };
+}
+function _stAdminOn() {
+try { return JSON.parse(localStorage.getItem("tp-statsAdmin") || "false") === true; }
+catch (err) { return false; }
+}
+function _stAdminCommit(player, key, text, match) {
+if (!_stAdminOn() || !player || key !== "kills" && key !== "deaths") return false;
+if (!/^\d{1,8}$/.test(text) || Number(text) > 1e7) {
+window.__ssbUI.toast("Enter a whole number from 0 to 10,000,000.", {type: "error"});
+return false;
+}
+const value = Number(text);
+if (match) {
+const entry = _stSavedMatch(match.code, match.startMs), index = match.players?.indexOf(player);
+if (!entry || index < 0 || entry.players?.[index] !== player) return false;
+player[key] = value;
+_ssbHistSet(_ssbHist());
+} else {
+const name = Object.keys(eb.byName).find(n => eb._snapMap?.[n] === player);
+if (!name) return false;
+const rec = eb.byName[name];
+rec[key] = value;
+rec._q = 0;
+_stSnap();
+_ssbSaveStats(1);
+}
+if (player.isMe) _ssbRecordsEdited(match || {code: _stLiveCode(), startMs: eb.matchStartMs,
+map: eb.map, mode: eb.mode || e0(), players: eb.snapshot});
+eS();
+ef("ui_onchange");
+return true;
+}
+function _stPinnedAdmin(pin, player) {
+const enabled = _stAdminOn() && player.isMe;
+for (const [cell, key] of [[pin._kV, "kills"], [pin._dV, "deaths"]]) {
+if (!cell) continue;
+cell.classList.toggle("ssb-admin-cell", !!enabled);
+if (!enabled) {
+cell.removeAttribute("tabindex"); cell.removeAttribute("role"); cell.removeAttribute("aria-label");
+cell.removeAttribute("title"); cell.onclick = null; cell.onkeydown = null;
+continue;
+}
+cell.dataset.stat = key;
+cell.tabIndex = 0;
+cell.setAttribute("role", "button");
+cell.setAttribute("aria-label", "Edit your local " + key);
+cell.title = "Edit your local " + key;
+const edit = () => _stInline(cell, player[key], text => _stAdminCommit(player, key, text), 8);
+cell.onclick = edit;
+cell.onkeydown = ev => {
+if (!cell.isContentEditable && (ev.key === "Enter" || ev.key === " ")) {
+ev.preventDefault(); ev.stopPropagation(); edit();
+}
+};
+}
+}
+function _stAdminWire(root, list, match) {
+if (!_stAdminOn()) return;
+root.querySelectorAll("tr[data-source]").forEach(row => {
+const player = list?.[Number(row.dataset.source)];
+if (!player) return;
+row.querySelectorAll('[data-stat="kills"], [data-stat="deaths"]').forEach(cell => {
+cell.classList.add("ssb-admin-cell");
+cell.tabIndex = 0;
+cell.setAttribute("role", "button");
+cell.setAttribute("aria-label", "Edit local " + cell.dataset.stat + " for " + player.name);
+cell.title = "Edit local " + cell.dataset.stat;
+const edit = () => _stInline(cell, player[cell.dataset.stat], text => {
+if (!_stAdminCommit(player, cell.dataset.stat, text, match)) return;
+cell.textContent = String(player[cell.dataset.stat]);
+const kdr = row.querySelector('[data-stat="kdr"]');
+if (kdr) kdr.textContent = _stKdr(player.kills, player.deaths);
+}, 8);
+cell.onclick = edit;
+cell.onkeydown = ev => {
+if (!cell.isContentEditable && (ev.key === "Enter" || ev.key === " ")) {
+ev.preventDefault(); ev.stopPropagation(); edit();
+}
+};
+});
+});
 }
 function _stLiveSignature() {
-return JSON.stringify([eb.mode, d.stats.kotc, d.stats.killBars, d.stats.highlightMe, (eb.snapshot || []).map(p => [p.id, p.name, p.team, p.isMe, p
-.kills, p.deaths
+return JSON.stringify([eb.mode, d.stats.kotc, d.stats.killBars, d.stats.highlightMe, d.stats.showGuns, (eb.snapshot || []).map(p => [p.id, p.name, p.team, p.isMe, p
+.kills, p.deaths, d.stats.showGuns ? _lgGun(p) : 0
 ])]);
 }
+function _stPaintTime(root, h) {
+const start = _stTimeStart(h);
+for (const [selector, text] of [[".ssb-time-start", _stWhen(start, true)],
+[".ssb-time-date", _stDate(start)], [".ssb-hist-dur", h ? _stLen(h) : ""],
+[".ssb-dur", h ? _stLen(h) : _stDur()]]) {
+root.querySelectorAll(selector).forEach(cell => {
+if (cell.textContent !== text) cell.textContent = text;
+});
+}
+}
+document.addEventListener("ssb:settings-change", () => {
+const overlay = document.getElementById("ssb-stats-overlay");
+if (overlay?.classList.contains("open")) _stPaintTime(overlay,
+overlay.querySelector(".ssb-v-match") ? eb._lgView : null);
+});
 function _stTick() {
 if (e8) clearInterval(e8);
 e8 = setInterval(() => {
@@ -6325,9 +6927,10 @@ const live = overlay.querySelector(".ssb-v-live");
 if (live) {
 _stFlush();
 const signature = _stLiveSignature();
-if (signature !== eb._liveSig) {
+if (signature !== eb._liveSig && !live.querySelector(".ssb-editing")) {
 live.querySelector(".ssb-body").innerHTML = _stTeams(eb.snapshot, eb.mode,
 "No player data yet.");
+_stAdminWire(live, eb.snapshot);
 eb._liveSig = signature;
 }
 const rows = new Map((eb.snapshot || []).map(p => [p.id, p]));
@@ -6339,7 +6942,7 @@ const key = cell.dataset.stat;
 const text = key === "coopMs" ? _stCoopTime(p[key]) : key ===
 "coopCaptures" || key === "coopTakeovers" ? _stKotcCount(p[key]) :
 key === "kdr" ? _stKdr(p.kills, p.deaths) : String(+p[key] || 0);
-if (cell.textContent !== text) cell.textContent = text;
+if (!cell.isContentEditable && cell.textContent !== text) cell.textContent = text;
 });
 });
 live.querySelectorAll(".ssb-team-score").forEach(cell => {
@@ -6352,6 +6955,7 @@ overlay.querySelectorAll(".ssb-dur").forEach(cell => {
 const text = _stDur();
 if (cell.textContent !== text) cell.textContent = text;
 });
+_stPaintTime(overlay, overlay.querySelector(".ssb-v-match") ? eb._lgView : null);
 const kd = overlay.querySelector(".ssb-live-kd");
 if (kd?.children.length > 1) {
 const me = _stMe(),
@@ -6373,15 +6977,25 @@ let eat = false,
 downOv = false;
 ov.addEventListener("pointerdown", ev => {
 downOv = ev.target === ov;
+const calendar = ov.querySelector(".ssb-date[open]");
+if (calendar && !calendar.contains(ev.target)) calendar.open = false;
 let dd = ov.querySelector(".ssb-dd.ssb-open");
-eat = !!dd && !dd.contains(ev.target);
-if (eat) _stDdClose(dd, true);
+const exp = ov.querySelector(".ssb-export.ssb-open"), outsideExport = exp && !exp.contains(ev.target);
+eat = !!dd && !dd.contains(ev.target) || !!outsideExport;
+if (dd && !dd.contains(ev.target)) _stDdClose(dd, true);
+if (outsideExport) _stExportClose(exp);
 }, true);
 ov.addEventListener("pointerup", () => {
 if (eat) setTimeout(() => {
 eat = false
 }, 0);
 }, true);
+ov.addEventListener("mouseover", ev => {
+const fit = ev.target.closest?.(".ssb-chip-fit"), txt = fit && fit.firstElementChild;
+if (!txt) return;
+if (txt.scrollWidth > txt.clientWidth + 1) fit.setAttribute("data-tooltip", txt.textContent);
+else fit.removeAttribute("data-tooltip");
+});
 ov.addEventListener("click", ev => {
 if (eat) {
 eat = false;
@@ -6399,7 +7013,11 @@ if (ev.key !== "Escape") return;
 ev.preventDefault();
 ev.stopPropagation();
 let dd = ov.querySelector(".ssb-dd.ssb-open");
-if (dd) _stDdClose(dd, true, true);
+const calendar = ov.querySelector(".ssb-date[open]");
+const exp = ov.querySelector(".ssb-export.ssb-open");
+if (exp) _stExportClose(exp, true);
+else if (dd) _stDdClose(dd, true, true);
+else if (calendar) { calendar.open = false; calendar.querySelector("summary").focus(); }
 else {
 ef("ui_toggletab");
 e1();
@@ -6426,14 +7044,14 @@ font-size:14px; font-weight:700; line-height:1.3; text-align:left; letter-spacin
 /* The game gives every element font-size:1.95vh; inside the panel only our own sizes count. */
 #ssb-stats-panel * { box-sizing:border-box; font-size:inherit; letter-spacing:normal !important; word-spacing:normal !important; }
 #ssb-stats-panel:focus { outline:none; }
-#ssb-stats-panel :is(button, [tabindex="0"]):focus-visible { outline:3px solid var(--ssb-focus, #0C576F); outline-offset:2px; }
+#ssb-stats-panel :is(button, [tabindex="0"]):focus-visible { outline:none !important; background-color:rgba(255,255,255,0.7); }
 #ssb-stats-panel :is(.ssb-btn, .ssb-link, .ssb-dd-btn) { margin:0; font-family:inherit; line-height:1.2; text-transform:none; text-shadow:none; cursor:pointer; }
 #ssb-stats-panel.ssb-in { animation:ssb-st-in 0.2s ease-out both; }
 @keyframes ssb-st-in { from { opacity:0; transform:translateY(8px) scale(0.985); } to { opacity:1; transform:none; } }
 
 /* Tabs and buttons */
 #ssb-stats-panel .ssb-actions { display:flex; flex-wrap:wrap; gap:8px; margin-left:auto; }
-#ssb-stats-panel .ssb-head { flex:none; display:flex; align-items:center; gap:10px 16px; margin:0 0 14px; padding:0 0 14px; border-bottom:1px solid var(--st-edge); }
+#ssb-stats-panel .ssb-head { position:relative; z-index:4; flex:none; display:flex; align-items:center; gap:10px 16px; margin:0 0 14px; padding:0 0 14px; border-bottom:1px solid var(--st-edge); }
 #ssb-stats-panel .ssb-head .ssb-actions { flex:none; flex-wrap:nowrap; gap:6px; }
 #ssb-stats-panel .ssb-chips { flex:1 1 auto; min-width:0; display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
 #ssb-stats-panel .ssb-chip { display:inline-flex; align-items:center; height:28px; padding:0 10px; border:1px solid var(--st-edge); border-radius:999px; background:rgba(255,255,255,0.28); color:var(--st-sub); font-size:12px; font-weight:800; line-height:1; white-space:nowrap; }
@@ -6444,6 +7062,9 @@ if the screen is narrower, scroll just the chips and leave the actions in view. 
 #ssb-stats-panel:is(.ssb-v-match, .ssb-v-live):has(.ssb-coop-cols) { width:max-content; min-width:min(1160px, calc(96vw / var(--ssb-ui-scale, 1))) !important; }
 #ssb-stats-panel:is(.ssb-v-match, .ssb-v-live) .ssb-chips { flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; padding:3px; margin:-3px; }
 #ssb-stats-panel:is(.ssb-v-match, .ssb-v-live) .ssb-chip { flex:none; }
+#ssb-stats-panel .ssb-admin-cell { cursor:text; text-decoration:underline dotted; text-underline-offset:4px; }
+#ssb-stats-panel .ssb-editing { outline:none !important; border:0 !important; background-color:rgba(14,118,151,0.09) !important; min-width:2ch; cursor:text; text-overflow:clip !important; }
+#ssb-stats-panel .ssb-history-name { cursor:text; }
 #ssb-stats-panel .ssb-match-name { all:unset; font:inherit; color:inherit; cursor:text; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #ssb-stats-panel .ssb-name-input { box-sizing:border-box; width:240px; max-width:100%; height:28px; border:1px solid var(--st-ink); border-radius:8px; padding:0 8px; background:var(--st-field); color:var(--st-ink); font:800 12px "Nunito",sans-serif; }
 #ssb-stats-panel .ssb-ico { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; padding:0; }
@@ -6457,17 +7078,23 @@ if the screen is narrower, scroll just the chips and leave the actions in view. 
 #ssb-stats-panel .ssb-btn:active { transform:translateY(1px); }
 #ssb-stats-panel .ssb-link { padding:2px 4px; border:none; background:none; color:var(--st-ink); font-size:13.5px; font-weight:800; text-decoration:underline; text-underline-offset:3px; text-decoration-color:rgba(12,87,111,0.35); white-space:nowrap; }
 #ssb-stats-panel .ssb-link:hover { text-decoration-color:currentColor; }
-#ssb-stats-panel .ssb-danger { color:var(--st-red); }
-#ssb-stats-panel .ssb-link.ssb-danger { text-decoration-color:rgba(196,32,32,0.35); }
+#ssb-stats-panel .ssb-danger { color:var(--st-ink); }
+#ssb-stats-panel .ssb-link.ssb-danger { text-decoration-color:rgba(12,87,111,0.35); }
 #ssb-stats-panel .ssb-link.ssb-danger:hover { text-decoration-color:currentColor; }
+#ssb-stats-panel .ssb-export { position:relative; display:flex; }
+#ssb-stats-panel .ssb-export-menu { position:absolute; z-index:7; top:calc(100% + 7px); right:0; min-width:170px; padding:5px; border:1px solid var(--st-edge); border-radius:12px; background:#f4fbfe; box-shadow:0 12px 28px rgba(8,62,84,0.25); }
+#ssb-stats-panel .ssb-export-menu[hidden] { display:none; }
+#ssb-stats-panel .ssb-export-menu button { display:flex; align-items:center; justify-content:space-between; gap:20px; width:100%; margin:0; padding:10px 12px; border:0; border-radius:8px; background:transparent; color:var(--st-ink); font:800 14px "Nunito",system-ui,sans-serif; text-align:left; cursor:pointer; }
+#ssb-stats-panel .ssb-export-menu button:is(:hover,:focus-visible) { background:rgba(14,118,151,0.12); outline:none !important; }
+#ssb-stats-panel .ssb-export-menu small { font-size:11px; font-weight:700; color:var(--st-sub); }
 
 /* Content */
 #ssb-stats-panel .ssb-body { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:14px; margin:0 -10px; padding:2px 10px 6px; overflow-y:auto; container-type:inline-size; }
-#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list) { scrollbar-width:auto !important; scrollbar-color:auto !important; }
-#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list)::-webkit-scrollbar { width:6px; height:6px; }
-#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list)::-webkit-scrollbar-track { background:transparent; }
-#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list)::-webkit-scrollbar-thumb { border-radius:999px; background:rgba(12,87,111,0.28); }
-#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list)::-webkit-scrollbar-thumb:hover { background:rgba(12,87,111,0.5); }
+#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list, .ssb-prog) { scrollbar-width:auto !important; scrollbar-color:auto !important; }
+#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list, .ssb-prog)::-webkit-scrollbar { width:6px; height:6px; }
+#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list, .ssb-prog)::-webkit-scrollbar-track { background:transparent; }
+#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list, .ssb-prog)::-webkit-scrollbar-thumb { border-radius:999px; background:rgba(12,87,111,0.28); }
+#ssb-stats-panel :is(.ssb-body, .ssb-hist-list, .ssb-dd-list, .ssb-prog)::-webkit-scrollbar-thumb:hover { background:rgba(12,87,111,0.5); }
 
 /* Scoreboard */
 #ssb-stats-panel .ssb-cols { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); align-items:start; gap:14px; }
@@ -6496,6 +7123,8 @@ if the screen is narrower, scroll just the chips and leave the actions in view. 
 #ssb-stats-panel tbody tr:first-child td { border-top:none; }
 #ssb-stats-panel td.ssb-rank { font-size:13px; color:var(--st-sub); }
 #ssb-stats-panel td.ssb-name { font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#ssb-stats-panel .ssb-gun { display:inline-block; width:1.3em; height:1.3em; margin-right:.4em; vertical-align:-.3em; opacity:.85; }
+#ssb-stats-panel .ssb-gun-none { height:auto; vertical-align:baseline; text-align:center; opacity:.5; }
 #ssb-stats-panel tr.ssb-kill-row { background:linear-gradient(90deg,var(--st-bar) var(--ssb-kill,0%),transparent var(--ssb-kill,0%)); }
 #ssb-stats-panel tr.ssb-me td { box-shadow:inset 0 0 0 999px rgba(255,255,255,0.3); }
 #ssb-stats-panel tr.ssb-me td.ssb-name { font-weight:900; }
@@ -6505,11 +7134,63 @@ if the screen is narrower, scroll just the chips and leave the actions in view. 
 /* Match History */
 #ssb-stats-panel.ssb-v-hist { height:min(600px, calc(76vh / var(--ssb-ui-scale, 1))); }
 #ssb-stats-panel.ssb-v-hist .ssb-body { overflow:hidden; }
+/* Match History and Progress keep the count, K / D and KDR on the title's line (user, 2026-11-18): the panel
+is a little wider for them, and when the line is still full the count gives way with an ellipsis. */
+#ssb-stats-panel.ssb-v-hist { width:760px; }
+#ssb-stats-panel.ssb-v-hist .ssb-chips { flex-wrap:nowrap; overflow:hidden; }
+#ssb-stats-panel.ssb-v-hist .ssb-chips > * { flex:none; }
+#ssb-stats-panel.ssb-v-hist .ssb-chips > .ssb-chip-fit { flex:0 1 auto; min-width:0; }
+#ssb-stats-panel .ssb-chip-fit > span { min-width:0; overflow:hidden; text-overflow:ellipsis; line-height:1.4; }
+/* Progress: the chart card and the by-map / by-mode tables scroll under the filters. */
+#ssb-stats-panel .ssb-prog { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:14px; margin:0 -10px; padding:2px 10px 6px; overflow-y:auto; }
+#ssb-stats-panel .ssb-prog > * { flex:none; }
+#ssb-stats-panel .ssb-prog-card .ssb-team-hdr { align-items:center; }
+#ssb-stats-panel .ssb-prog-metric { display:flex; gap:3px; margin-left:auto; padding:3px; border-radius:10px; background:rgba(14,118,151,0.1); }
+#ssb-stats-panel .ssb-prog-metric button { margin:0; padding:5px 12px; border:0; border-radius:8px; background:transparent; color:var(--st-ink); font:800 13px "Nunito",sans-serif; line-height:1.2; cursor:pointer; }
+#ssb-stats-panel .ssb-prog-metric button[aria-pressed="true"] { background:#fff; box-shadow:0 1px 4px rgba(8,62,84,0.15); }
+#ssb-stats-panel .ssb-prog-svg { display:block; width:100%; height:auto; padding:8px 6px 0; overflow:visible; }
+#ssb-stats-panel .ssb-prog-svg text { font:700 11px "Nunito",sans-serif; fill:var(--st-sub); }
+#ssb-stats-panel .ssb-prog-grid { stroke:var(--st-line); stroke-width:1; }
+#ssb-stats-panel .ssb-prog-even { stroke:var(--st-sub); stroke-width:1; stroke-dasharray:4 4; opacity:0.55; }
+#ssb-stats-panel .ssb-prog-each { fill:none; stroke:rgba(12,87,111,0.28); stroke-width:1.5; stroke-linejoin:round; }
+#ssb-stats-panel .ssb-prog-avg { fill:none; stroke:var(--st-ink); stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
+#ssb-stats-panel .ssb-prog-dot { fill:#fff; stroke:#0E7697; stroke-width:1.75; transform-box:fill-box; transform-origin:center; transition:transform .12s ease, fill .12s ease; }
+#ssb-stats-panel .ssb-prog-pt { cursor:pointer; outline:none !important; }
+#ssb-stats-panel .ssb-prog-hit { fill:transparent; stroke:none; }
+#ssb-stats-panel .ssb-prog-ring { fill:none; stroke:#0E7697; stroke-width:2; opacity:0; pointer-events:none; }
+#ssb-stats-panel .ssb-prog-pt:is(:hover, :focus-visible) .ssb-prog-dot { fill:#0E7697; stroke:#fff; transform:scale(1.5); }
+#ssb-stats-panel .ssb-prog-pt:focus-visible .ssb-prog-ring { opacity:1; }
+@media (prefers-reduced-motion: reduce) { #ssb-stats-panel .ssb-prog-dot { transition:none; } }
+#ssb-stats-panel .ssb-prog-foot { display:flex; flex-wrap:wrap; gap:4px 16px; padding:2px 14px 12px; font-size:12.5px; font-weight:800; color:var(--st-sub); }
+#ssb-stats-panel .ssb-prog-trend { margin-left:auto; color:var(--st-ink); }
+#ssb-stats-panel .ssb-prog-table col.ssb-pc-n { width:56px; }
+#ssb-stats-panel .ssb-prog-table col.ssb-pc-k { width:56px; }
+#ssb-stats-panel .ssb-prog-table col.ssb-pc-r { width:58px; }
+#ssb-stats-panel .ssb-prog-table :is(th, td):nth-child(n+2) { text-align:center; }
 #ssb-stats-panel .ssb-filters { flex:none; position:relative; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+#ssb-stats-panel .ssb-history-search { flex:1 1 220px; width:220px; min-width:140px; height:40px; box-sizing:border-box; margin:0; padding:0 12px; border:2px solid rgba(14,118,151,0.28); border-radius:12px; background:#fff; color:var(--st-ink); font:800 14px "Nunito",system-ui,sans-serif; outline:none; }
+#ssb-stats-panel .ssb-history-search::placeholder { color:var(--st-sub); opacity:0.85; }
+#ssb-stats-panel .ssb-history-search:focus-visible { border-color:rgba(14,118,151,0.5); outline:none; background:#f4fbfe; }
+#ssb-stats-panel .ssb-filters .ssb-dd-btn { min-width:145px; max-width:190px; }
+#ssb-stats-panel .ssb-date { position:relative; flex:none; }
+#ssb-stats-panel .ssb-date-btn { display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:8px; box-sizing:border-box; list-style:none; cursor:pointer; }
+#ssb-stats-panel .ssb-date-btn::-webkit-details-marker { display:none; }
+#ssb-stats-panel .ssb-date-btn svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+#ssb-stats-panel .ssb-date-active, #ssb-stats-panel .ssb-date[open] > summary { border-color:rgba(14,118,151,0.4); background:#fff; }
+#ssb-stats-panel .ssb-date-pop { position:absolute; right:0; top:calc(100% + 6px); z-index:6; width:272px; box-sizing:border-box; padding:16px; border:1px solid var(--st-edge); border-radius:14px; background:#f4fbfe; box-shadow:0 14px 30px rgba(8,62,84,0.28); color:var(--st-ink); font-size:14px; }
+#ssb-stats-panel .ssb-date-title { font-size:16px; font-weight:900; margin-bottom:10px; }
+#ssb-stats-panel .ssb-date-modes { display:flex; gap:4px; padding:3px; margin-bottom:12px; border-radius:10px; background:rgba(14,118,151,0.1); }
+#ssb-stats-panel .ssb-date-modes button { flex:1; padding:7px 4px; border:0; border-radius:8px; background:transparent; color:inherit; font:800 13px "Nunito",sans-serif; cursor:pointer; }
+#ssb-stats-panel .ssb-date-modes button[aria-pressed="true"] { background:#fff; box-shadow:0 1px 4px rgba(8,62,84,0.15); }
+#ssb-stats-panel .ssb-date-pop label { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:8px 0; font-weight:800; }
+#ssb-stats-panel .ssb-date-pop [hidden] { display:none !important; }
+#ssb-stats-panel .ssb-date-pop input { min-width:0; width:165px; box-sizing:border-box; padding:7px; border:1px solid var(--st-edge); border-radius:8px; background:#fff; color:var(--st-ink); font:700 13px "Nunito",sans-serif; }
+#ssb-stats-panel .ssb-date-presets, #ssb-stats-panel .ssb-date-actions { display:flex; justify-content:space-between; gap:8px; margin-top:10px; }
+#ssb-stats-panel .ssb-date-error { color:var(--ss-red,#b82d2d); font-size:12px; font-weight:800; }
 #ssb-stats-panel .ssb-dd { position:relative; }
 #ssb-stats-panel .ssb-dd-btn { display:flex; align-items:center; gap:10px; min-width:200px; height:40px; padding:0 12px 0 14px; border:2px solid rgba(14,118,151,0.28); border-radius:12px; background:#fff; color:var(--st-ink); font-size:14.5px; font-weight:800; box-shadow:inset 0 2px 4px rgba(8,62,84,0.08); transition:border-color 0.15s, box-shadow 0.15s; }
 #ssb-stats-panel .ssb-dd-btn:hover { border-color:rgba(14,118,151,0.5); }
-#ssb-stats-panel .ssb-dd.ssb-open .ssb-dd-btn { border-color:#ff981f; box-shadow:0 0 0 4px rgba(255,152,31,0.22); }
+#ssb-stats-panel .ssb-dd.ssb-open .ssb-dd-btn { border-color:rgba(14,118,151,0.5); background:#f4fbfe; box-shadow:none; }
 #ssb-stats-panel .ssb-dd-val { flex:1; min-width:0; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #ssb-stats-panel .ssb-dd-car { flex:none; width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; transition:transform 0.15s; }
 #ssb-stats-panel .ssb-dd.ssb-open .ssb-dd-car { transform:rotate(180deg); }
@@ -6522,6 +7203,20 @@ if the screen is narrower, scroll just the chips and leave the actions in view. 
 #ssb-stats-panel :is(.ssb-colhd, .ssb-hist-row) { display:grid; grid-template-columns:var(--st-grid); align-items:center; column-gap:16px; }
 #ssb-stats-panel .ssb-colhd { flex:none; margin-bottom:-8px; padding:0 17px; font-size:11px; font-weight:800; letter-spacing:0.6px !important; text-transform:uppercase; color:var(--st-sub); }
 #ssb-stats-panel :is(.ssb-colhd span:last-child, .ssb-hr-kd) { text-align:right; }
+#ssb-stats-panel .ssb-hist-row:not(.ssb-hr-live) { position:relative; padding-left:48px; }
+#ssb-stats-panel .ssb-hist-pick { position:absolute; left:15px; top:50%; transform:translateY(-50%); width:20px; height:20px; margin:0; }
+/* Tick boxes look like the game's own: a white rounded box with a thick blue tick (as CROSSHAIR's). */
+#ssb-stats-panel :is(.ssb-hist-pick, .ssb-bulk input[type="checkbox"]) { -webkit-appearance:none; appearance:none; flex:none; box-sizing:border-box; border:0; border-radius:5px; background:#fff no-repeat center / 80%; cursor:pointer; }
+#ssb-stats-panel :is(.ssb-hist-pick, .ssb-bulk input[type="checkbox"]):checked { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 12.5l5 5L19.5 6.5' fill='none' stroke='%230E7697' stroke-width='4.2'/%3E%3C/svg%3E"); }
+/* Select shown is half ticked when only some shown matches are: a blue dash, as the native box drew. */
+#ssb-stats-panel .ssb-bulk input[type="checkbox"]:indeterminate { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12h12' fill='none' stroke='%230E7697' stroke-width='4.2'/%3E%3C/svg%3E"); }
+#ssb-stats-panel .ssb-bulk input[type="checkbox"]:disabled { opacity:0.45; cursor:default; }
+#ssb-stats-panel .ssb-bulk { flex:none; padding-top:10px; border-top:1px solid var(--st-line); display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-size:13px; color:var(--st-sub); }
+#ssb-stats-panel .ssb-bulk [role="status"] { flex:1 1 0; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#ssb-stats-panel .ssb-bulk label { flex:none; display:flex; align-items:center; gap:6px; font-size:13px; white-space:nowrap; cursor:pointer; }
+#ssb-stats-panel .ssb-bulk input { width:18px; height:18px; margin:0; }
+#ssb-stats-panel .ssb-bulk .ssb-btn { flex:none; font-size:12px; padding:5px 8px; min-height:30px; }
+#ssb-stats-panel .ssb-bulk button:disabled { opacity:0.4; cursor:default; }
 #ssb-stats-panel .ssb-hist-list { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; margin:0 -10px; padding:4px 10px 10px; overflow-y:auto; }
 #ssb-stats-panel .ssb-hist-row { flex:none; min-height:64px; padding:10px 16px; border:1px solid var(--st-edge); border-radius:14px; background:var(--st-glass); box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 6px rgba(8,62,84,0.06); cursor:pointer; transition:background 0.15s, box-shadow 0.15s, transform 0.15s; }
 #ssb-stats-panel .ssb-hist-row:is(:hover, :focus-visible) { background:var(--st-glass-hi); box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 18px rgba(8,62,84,0.12); transform:translateY(-1px); }
@@ -6568,8 +7263,7 @@ The hidden Played cell lets clicks through: at opacity 0 it paints on top of the
 function _stLiveChips(mode) {
 let on = !!eb.matchStartMs,
 h = _stSavedMatch(_stLiveCode(), eb.matchStartMs) || {code: eb.gameCode || "Live Match"};
-return _stChips([_stNameChip(h), h.label && eb.gameCode && `<span data-match-code>${eC(eb.gameCode)}</span>`, on && _stWhen(eb.matchStartMs, true), on && _stDate(eb
-.matchStartMs)], [eC(eb.map || ""), eb.server && eC(eSN(eb.server)), eC(_stMode(mode)), on &&
+return _stChips([_stNameChip(h), h.label && eb.gameCode && `<span data-match-code>${eC(eb.gameCode)}</span>`, on && `<span class="ssb-time-start">${_stWhen(_stTimeStart(), true)}</span>`, on && `<span class="ssb-time-date">${_stDate(_stTimeStart())}</span>`], [eC(eb.map || ""), eb.server && eC(eSN(eb.server)), eC(_stMode(mode)), on &&
 `<span class="ssb-dur">${_stDur()}</span>`
 ])
 }
@@ -6581,10 +7275,12 @@ let snap = eb.snapshot || [],
 mode = eb.mode || e0(),
 chips = _stLiveChips(mode);
 ov.innerHTML = _stShell("live", "", _stIcoBtn("backhist", "Match History") + _stIcoBtn("copy", "Copy Image") +
-_stIcoBtn("download", "Download") + _stIcoBtn("reset", "Reset Live Stats", "ssb-danger") + _stIcoBtn(
+_stIcoBtn("copytext", "Copy as Text") + _stIcoBtn("download", "Download") + _stIcoBtn("reset", "Reset Live Stats", "ssb-danger") + _stIcoBtn(
 "close", "Close", "ssb-danger"), _stTeams(snap, mode,
 "No player data yet. Join a match and the scoreboard shows up here."), chips);
 _stWire(ov, "live", "Live match", focus);
+eb._lgView = null;
+_stAdminWire(ov, snap);
 ov.querySelector('[data-act="reset"]').onclick = eRS;
 eb._liveSig = _stLiveSignature();
 _stTick()
@@ -6751,6 +7447,7 @@ return;
 _stFlush();
 _ssbSaveStats(1);
 _stCoop.reset();
+_lgTrack.reset();
 let pl = window.players || [],
 _was = new Map((eb._seen || []).map(([r, c]) => [c, r]));
 eb.byName = Object.create(null);
@@ -6781,6 +7478,7 @@ eb._seen.push([eb.byName[_k], c]);
 }
 eb.matchStartMs = Date.now();
 eb.matchEndMs = 0;
+_stTimeReset();
 eb.kotcScore = {
 1: 0,
 2: 0
@@ -6823,12 +7521,203 @@ else Object.keys(R.modes || {}).filter(m => !flt.mode || m === flt.mode).sort((a
 (order.indexOf(b) + 1 || 9)).forEach(m => add(_stMode(m), R.modes[m]));
 return rows.length ? `<div class="ssb-records"><span class="ssb-rec-h">Personal records</span>${rows.join("")}</div>` : ""
 }
+function _stHistoryFits(h, f) {
+if (f.mode && h.mode !== f.mode || f.map && h.map !== f.map) return false;
+const day = h.startMs ? _stDate(h.startMs) : "";
+if ((f.from || f.to) && (!day || f.from && day < f.from || f.to && day > f.to)) return false;
+const words = String(f.query || "").toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+if (!words.length) return true;
+const text = [h.label, h.code, h.map, h.mode, _stMode(h.mode), h.server, eSN(h.server), day,
+h.startMs && _stWhen(h.startMs), h.startMs && new Date(h.startMs).toLocaleDateString(),
+...(h.players || []).map(p => p && p.name)].filter(Boolean).join(" ").toLocaleLowerCase();
+return words.every(word => text.includes(word));
+}
+function _stDateFilter(f) {
+const active = f.from || f.to, label = !active ? "All dates" : f.from === f.to ? f.from :
+(f.from || "Any date") + " – " + (f.to || "Now"), range = f.from !== f.to;
+return `<details class="ssb-date"><summary class="ssb-btn ssb-date-btn${active ? " ssb-date-active" : ""}" aria-label="Filter dates: ${eC(label)}" title="${eC(label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M8 15h2M14 15h2"/></svg></summary><div class="ssb-date-pop" role="group" aria-label="Date filter"><div class="ssb-date-title">Played on</div><div class="ssb-date-modes"><button type="button" data-date-mode="day" aria-pressed="${!range}">Single day</button><button type="button" data-date-mode="range" aria-pressed="${range}">Date range</button></div><label><span data-date-label>${range ? "From" : "Date"}</span><input type="date" data-date="from" aria-label="From date" value="${eC(f.from || "")}"></label><label data-date-end${range ? "" : " hidden"}>To<input type="date" data-date="to" aria-label="To date" value="${eC(f.to || "")}"></label><div class="ssb-date-presets"><button type="button" class="ssb-link" data-date-preset="today">Today</button><button type="button" class="ssb-link" data-date-preset="week">Last 7 days</button></div><div class="ssb-date-error" role="status"></div><div class="ssb-date-actions"><button type="button" class="ssb-btn ssb-sm" data-date-clear>Clear</button><button type="button" class="ssb-btn ssb-sm" data-date-apply>Apply</button></div></div></details>`;
+}
+function _stHistoryFilterWire(ov, f) {
+const search = ov.querySelector(".ssb-history-search");
+search.oninput = ev => {
+if (ev.isComposing) return;
+const start = search.selectionStart, end = search.selectionEnd;
+f.query = search.value.slice(0, 200);
+eHIST(".ssb-history-search");
+ov.querySelector(".ssb-history-search").setSelectionRange(start, end);
+};
+search.onkeydown = ev => {
+ev.stopPropagation();
+if (ev.key === "Escape") {
+ev.preventDefault();
+window.__ssbEatKeyUp(ev.key);
+if (search.value) { f.query = ""; eHIST(".ssb-history-search"); }
+else search.blur();
+}
+};
+search.onkeyup = ev => ev.stopPropagation();
+const date = ov.querySelector(".ssb-date"), from = date.querySelector('[data-date="from"]'),
+to = date.querySelector('[data-date="to"]'), setMode = range => {
+date.querySelector("[data-date-end]").hidden = !range;
+date.querySelector("[data-date-label]").textContent = range ? "From" : "Date";
+date.querySelectorAll("[data-date-mode]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.dateMode === "range") === range)));
+}, apply = (a, b) => {
+f.from = a; f.to = b;
+ef("ui_onchange");
+eHIST(".ssb-date-btn");
+};
+date.ontoggle = () => { if (date.isConnected) ef("ui_toggletab"); };
+date.querySelectorAll("[data-date-mode]").forEach(b => b.onclick = () => { setMode(b.dataset.dateMode === "range"); ef("ui_onchange"); });
+date.querySelector("[data-date-clear]").onclick = () => apply("", "");
+date.querySelector("[data-date-apply]").onclick = () => {
+const range = !date.querySelector("[data-date-end]").hidden, a = from.value, b = range ? to.value : a;
+if (!from.validity.valid || range && !to.validity.valid || a && b && a > b) {
+date.querySelector(".ssb-date-error").textContent = "Choose a valid date range with From before To.";
+return;
+}
+apply(a, b);
+};
+date.querySelectorAll("[data-date-preset]").forEach(b => b.onclick = () => {
+const end = new Date(), start = new Date();
+if (b.dataset.datePreset === "week") start.setDate(start.getDate() - 6);
+apply(_stDate(+start), _stDate(+end));
+});
+date.querySelectorAll("input").forEach(input => {
+input.onkeydown = ev => { if (ev.key !== "Escape") ev.stopPropagation(); };
+input.onkeyup = ev => ev.stopPropagation();
+});
+}
+function _stExportTools() {
+return _stIcoBtn("imstats", "Import Stats") + `<div class="ssb-export">${_stIcoBtn("exstats", "Export Stats")}<div class="ssb-export-menu" role="menu" aria-label="Export format" hidden><button type="button" role="menuitem" data-act="exjson">JSON<small>Full match data</small></button><button type="button" role="menuitem" data-act="excsv">CSV<small>Spreadsheet</small></button></div></div>`;
+}
+function _stExportClose(exp, focus) {
+exp.classList.remove("ssb-open");
+const button = exp.querySelector('[data-act="exstats"]');
+button.setAttribute("aria-expanded", "false");
+exp.querySelector(".ssb-export-menu").hidden = true;
+if (focus) button.focus({preventScroll: true});
+ef("ui_toggletab");
+}
+function _stExportWire(ov, list) {
+const exp = ov.querySelector(".ssb-export"), button = exp.querySelector('[data-act="exstats"]'),
+menu = exp.querySelector(".ssb-export-menu"), options = [...menu.querySelectorAll("button")],
+open = () => {
+ov.querySelectorAll(".ssb-dd.ssb-open").forEach(dd => _stDdClose(dd, false));
+const calendar = ov.querySelector(".ssb-date[open]");
+if (calendar) calendar.open = false;
+exp.classList.add("ssb-open");
+button.setAttribute("aria-expanded", "true");
+menu.hidden = false;
+options[0].focus({preventScroll: true});
+ef("ui_toggletab");
+};
+button.setAttribute("aria-haspopup", "menu");
+button.setAttribute("aria-expanded", "false");
+button.onclick = () => exp.classList.contains("ssb-open") ? _stExportClose(exp, true) : open();
+button.onkeydown = ev => {
+if (ev.key === "ArrowDown" || ev.key === "ArrowUp") { ev.preventDefault(); ev.stopPropagation(); open(); }
+};
+options.forEach(option => option.onclick = () => {
+_stExportClose(exp, true);
+_ssbHistExport(typeof list === "function" ? list() : list, option.dataset.act === "exjson" ? "json" : "csv");
+});
+menu.onkeydown = ev => {
+ev.stopPropagation();
+const index = options.indexOf(document.activeElement);
+let next;
+if (ev.key === "ArrowDown") next = (index + 1) % options.length;
+else if (ev.key === "ArrowUp") next = (index - 1 + options.length) % options.length;
+else if (ev.key === "Home") next = 0;
+else if (ev.key === "End") next = options.length - 1;
+else if (ev.key === "Escape") { ev.preventDefault(); window.__ssbEatKeyUp(ev.key); _stExportClose(exp, true); }
+else if (ev.key === "Tab") _stExportClose(exp, false);
+if (next !== undefined) { ev.preventDefault(); options[next].focus(); }
+};
+menu.onkeyup = ev => ev.stopPropagation();
+}
+function _stProgress(hist, any) {
+const meOf = h => (h.players || []).find(p => p && p.isMe),
+list = hist.filter(meOf).sort((a, b) => (a.startMs || 0) - (b.startMs || 0)),
+kdr = eb._histMetric !== "kills";
+if (!list.length) return `<div class="ssb-empty">${any ? "No saved matches with your stats fit these filters." : "No games recorded yet. Finish a match and your progress shows up here."}</div>`;
+const K = h => +meOf(h).kills || 0,
+D = h => +meOf(h).deaths || 0,
+sum = (a, f) => a.reduce((s, h) => s + f(h), 0),
+val = a => kdr ? sum(a, K) / Math.max(1, sum(a, D)) : sum(a, K) / Math.max(1, a.length),
+fmt = v => kdr ? v.toFixed(2) : String(Math.round(v * 10) / 10),
+day = ms => ms ? _stWhen(ms).split(" · ")[0] : "",
+WIN = 5,
+chart = kdr ? list.filter(h => K(h) > 1 || D(h) > 2) : list,
+shown = chart.slice(-50),
+n = shown.length,
+pts = shown.map(h => val([h])),
+avg = shown.map((h, i) => val(shown.slice(Math.max(0, i - WIN + 1), i + 1))),
+nice = v => {
+if (!(v > 0)) return 1;
+const p = Math.pow(10, Math.floor(Math.log10(v)));
+return [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].map(f => f * p).find(x => x >= v - 1e-9);
+},
+top = nice(Math.max(...pts, ...avg, kdr ? 1 : 0)),
+W = 660, H = 170, L = 40, R = 14, T = 12, B = 26,
+x = i => L + (n === 1 ? (W - L - R) / 2 : i * (W - L - R) / (n - 1)),
+y = v => T + (H - T - B) * (1 - Math.min(v, top) / top),
+xy = a => a.map((v, i) => x(i).toFixed(1) + "," + y(v).toFixed(1)).join(" "),
+what = kdr ? "KDR" : "Kills",
+grid = [0, top / 2, top].map(v => `<line class="ssb-prog-grid" x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${+v.toFixed(2)}</text>`).join(""),
+even = kdr && top > 1 ? `<line class="ssb-prog-even" x1="${L}" x2="${W - R}" y1="${y(1).toFixed(1)}" y2="${y(1).toFixed(1)}"><title>KDR 1.00</title></line>` : "",
+hitR = Math.max(6, Math.min(10, n > 1 ? (W - L - R) / (n - 1) / 2 : 10)).toFixed(1),
+dots = shown.map((h, i) => {
+const cx = x(i).toFixed(1), cy = y(pts[i]).toFixed(1),
+tip = [h.label, h.map, _stMode(h.mode), h.startMs && _stWhen(h.startMs)].filter(Boolean).join(" · ") + ": " + K(h) + (K(h) === 1 ? " kill, " : " kills, ") +
+D(h) + (D(h) === 1 ? " death" : " deaths") + ", KDR " + _stKdr(K(h), D(h)) + (h.kept ? ". Kept" : "");
+return `<g class="ssb-prog-pt" role="button" tabindex="${i === n - 1 ? 0 : -1}" data-code="${eC(h.code || "")}" data-start="${eC(String(h.startMs || ""))}" data-tooltip="${eC(tip)}" aria-label="${eC("Open match: " + tip)}"><circle class="ssb-prog-hit" cx="${cx}" cy="${cy}" r="${hitR}"/><circle class="ssb-prog-ring" cx="${cx}" cy="${cy}" r="8"/><circle class="ssb-prog-dot" cx="${cx}" cy="${cy}" r="4"/></g>`;
+}).join(""),
+svg = !n ? `<div class="ssb-empty">None of these matches has 2 or more kills or 3 or more deaths.</div>` : `<svg class="ssb-prog-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${eC(what + " in your last " + n + (n === 1 ? " match" : " matches") + ", " + WIN + "-match average now " + fmt(avg[n - 1]))}">${grid}${even}${n > 1 ? `<polyline class="ssb-prog-each" points="${xy(pts)}"/><polyline class="ssb-prog-avg" points="${xy(avg)}"/>` : ""}${dots}<text x="${L}" y="${H - 6}">${eC(day(shown[0].startMs))}</text>${n > 1 ? `<text x="${W - R}" y="${H - 6}" text-anchor="end">${eC(day(shown[n - 1].startMs))}</text>` : ""}</svg>`,
+recent = chart.length >= 12 ? `<span class="ssb-prog-trend">Last 10: ${what === "KDR" ? "KDR " + fmt(val(chart.slice(-10))) : fmt(val(chart.slice(-10))) + " kills a match"} · before them: ${fmt(val(chart.slice(0, -10)))}</span>` : "",
+group = keyOf => {
+const m = new Map();
+for (const h of list) {
+const k = keyOf(h), g = m.get(k) || {k, n: 0, kills: 0, deaths: 0};
+g.n++; g.kills += K(h); g.deaths += D(h);
+m.set(k, g);
+}
+return [...m.values()].sort((a, b) => b.n - a.n || (a.k < b.k ? -1 : a.k > b.k ? 1 : 0));
+},
+table = (title, col, rows) => `<section class="ssb-team ssb-prog-table"><div class="ssb-team-hdr"><span class="ssb-team-name">${title}</span><span class="ssb-team-info">${rows.length} ${rows.length === 1 ? col.toLowerCase() : col.toLowerCase() + "s"}</span></div><table><colgroup><col><col class="ssb-pc-n"><col class="ssb-pc-k"><col class="ssb-pc-r"></colgroup><thead><tr><th>${col}</th><th scope="col" title="Matches">Games</th><th scope="col" title="Average kills a match">Avg K</th><th scope="col">KDR</th></tr></thead><tbody>${rows.map(g => `<tr><td class="ssb-name" title="${eC(g.k)}">${eC(g.k)}</td><td>${g.n}</td><td>${(g.kills / g.n).toFixed(1)}</td><td>${_stKdr(g.kills, g.deaths)}</td></tr>`).join("")}</tbody></table></section>`;
+return `<div class="ssb-prog"><section class="ssb-team ssb-prog-card"><div class="ssb-team-hdr"><span class="ssb-team-name">${what} by match</span><span class="ssb-team-info">${n < chart.length ? "last " + n + " of " + chart.length + " matches" : n + (n === 1 ? " match" : " matches")}</span><div class="ssb-prog-metric" role="group" aria-label="Show"><button type="button" data-prog-metric="kdr" aria-pressed="${kdr}">KDR</button><button type="button" data-prog-metric="kills" aria-pressed="${!kdr}">Kills</button></div></div>${svg}${n ? `<div class="ssb-prog-foot"><span>Dots: each match${kdr ? " with 2+ kills or 3+ deaths" : ""} (click one to open it)${n > 1 ? " · line: average of the last " + WIN : ""}</span>${recent}</div>` : ""}</section><div class="ssb-cols">${table("By map", "Map", group(h => h.map || "Unknown map"))}${table("By mode", "Mode", group(h => _stMode(h.mode) || "Unknown mode"))}</div></div>`;
+}
+const _stHistKeep = {
+View: ["tp-statsHistView", "", "progress"],
+Metric: ["tp-statsHistMetric", "kdr", "kills"]
+};
+function _stHistPref(k, v) {
+const key = _stHistKeep[k][0],
+ok = _stHistKeep[k].slice(1),
+prop = "_hist" + k;
+if (v !== undefined) {
+eb[prop] = ok.includes(v) ? v : ok[0];
+try {
+localStorage.setItem(key, JSON.stringify(eb[prop]));
+} catch (e) {
+window.__ssbErr("stats#10", e);
+}
+} else if (eb[prop] === undefined) {
+let x = ok[0];
+try {
+x = JSON.parse(localStorage.getItem(key));
+} catch (e) {}
+eb[prop] = ok.includes(x) ? x : ok[0];
+}
+return eb[prop];
+}
 function eHIST(focus, top) {
 let ov = _stOverlay();
+const prog = _stHistPref("View") === "progress";
+_stHistPref("Metric");
 let all = _ssbHist().filter(h => h && typeof h == "object"),
 flt = eb._histFilter || (eb._histFilter = {
 mode: "",
-map: ""
+map: "", query: "", from: "", to: ""
 }),
 live = _stLive(),
 lCode = eb.gameCode || eb._synth || "",
@@ -6836,12 +7725,14 @@ lMode = eb.mode || e0() || "",
 lMap = eb.map || "",
 isCur = h => live && h.code === lCode && Math.abs((h.startMs || 0) - eb.matchStartMs) < 15e3,
 cur = all.find(isCur);
+const selection = eb._histSelected || (eb._histSelected = new Set()), ids = new Set(all.map(_stHistoryId));
+for (const id of selection) if (!ids.has(id)) selection.delete(id);
 if (flt.mode && !all.some(h => h.mode === flt.mode) && !(live && lMode === flt.mode)) flt.mode = "";
 if (flt.map &&
 !all.some(h => h.map === flt.map) && !(live && lMap === flt.map)) flt.map = "";
-let fits = (mo, ma) => (!flt.mode || mo === flt.mode) && (!flt.map || ma === flt.map),
-hist = all.filter(h => fits(h.mode, h.map)),
-showLive = live && fits(lMode, lMap),
+let hist = all.filter(h => _stHistoryFits(h, flt)),
+showLive = live && _stHistoryFits({label: cur?.label, code: lCode, mode: lMode, map: lMap,
+server: eb.server, startMs: eb.matchStartMs, players: eb.snapshot}, flt),
 me = h => (h.players || []).find(p => p && p.isMe) || {
 kills: 0,
 deaths: 0
@@ -6858,11 +7749,11 @@ sd += +m.deaths || 0;
 let part = hist.length !== all.length,
 keptN = all.filter(h => h.kept).length,
 games = n => n + " " + (n === 1 ? "game" : "games"),
-chips = `<span class="ssb-head-name">Match History</span>` + (all.length ? _stChips([], [part ? hist
-.length + " of " + all.length + " games" : games(all.length) + " &middot; " + (window.__ssbHistUnlimited && window.__ssbHistUnlimited() ? "all saved" : keptN ? "last 40 + " +
-keptN + " kept" : "last 40 saved"), sk +
-" / " + sd
-]) + `<span class="ssb-chip ssb-chip-strong">KDR ${_stKdr(sk, sd)}</span>` : ""),
+count = part ? hist.length + " of " + all.length + " games" : games(all.length) + " &middot; " + (window.__ssbHistUnlimited && window.__ssbHistUnlimited() ? "all saved" : keptN ? "last " + _ssbHistoryLimit() + " + " +
+keptN + " kept" : "last " + _ssbHistoryLimit() + " saved"),
+chips = `<span class="ssb-head-name">${prog ? "Progress" : "Match History"}</span>` + (all.length ?
+`<span class="ssb-chip ssb-chip-fit"><span>${count}</span></span>` + _stChips([], [sk + " / " + sd]) +
+`<span class="ssb-chip ssb-chip-strong">KDR ${_stKdr(sk, sd)}</span>` : ""),
 modes = [...new Set([...all.map(h => h.mode), live && lMode].filter(Boolean).map(String))],
 maps = [...new Set([...all.map(h => h.map), live && lMap].filter(Boolean).map(String))].sort(),
 lm = _stMe(),
@@ -6880,15 +7771,16 @@ name = h.label || h.code || "-",
 meta = [h.label && h.code, h.map, _stMode(h.mode), h.server && eSN(h.server), _stPerf(h)].filter(
 Boolean)
 .map(eC).join(" &middot; ");
-return `<div class="ssb-hist-row${h.kept ? " ssb-hr-kept" : ""}" tabindex="0" role="button" ${keyOf(h)} aria-label="${eC(name + ", " + (h.map || "unknown map") + ", " + k + " kills, " + dd + " deaths" + (h.kept ? ", kept" : ""))}"><div class="ssb-hr-main"><div class="ssb-hr-name">${eC(name)}${h.kept ? '<span class="ssb-kept-pill">Kept</span>' : ""}</div><div class="ssb-hr-sub">${meta || "&nbsp;"}</div></div><div class="ssb-hr-when"><div class="ssb-hr-info"><div class="ssb-hr-strong">${eC(_stWhen(h.startMs))}</div><div class="ssb-hr-sub">${len || "&nbsp;"}</div></div><div class="ssb-hr-acts"><button type="button" class="ssb-hist-abtn ssb-link" data-hact="keep" ${keyOf(h)} data-tooltip="${h.kept ? "Let the 40-match limit remove it again" : "Keep it when older matches are removed (up to 20)"}">${h.kept ? "Unkeep" : "Keep"}</button><button type="button" class="ssb-hist-abtn ssb-link" data-hact="rename" ${keyOf(h)}>Rename</button><button type="button" class="ssb-hist-abtn ssb-link ssb-danger" data-hact="del" ${keyOf(h)}>Delete</button></div></div><div class="ssb-hr-kd"><div class="ssb-hr-strong">${k} / ${dd}</div><div class="ssb-hr-sub">KDR ${_stKdr(k, dd)}</div></div></div>`
+return `<div class="ssb-hist-row${h.kept ? " ssb-hr-kept" : ""}" tabindex="0" role="button" ${keyOf(h)} aria-label="${eC(name + ", " + (h.map || "unknown map") + ", " + k + " kills, " + dd + " deaths" + (h.kept ? ", kept" : ""))}"><input type="checkbox" class="ssb-hist-pick" aria-label="${eC("Select " + name)}" ${selection.has(_stHistoryId(h)) ? "checked" : ""}><div class="ssb-hr-main"><div class="ssb-hr-name"><span class="ssb-history-name" role="button" tabindex="0" aria-label="Rename match">${eC(name)}</span>${h.kept ? '<span class="ssb-kept-pill">Kept</span>' : ""}</div><div class="ssb-hr-sub">${meta || "&nbsp;"}</div></div><div class="ssb-hr-when"><div class="ssb-hr-info"><div class="ssb-hr-strong">${eC(_stWhen(h.startMs))}</div><div class="ssb-hr-sub">${len || "&nbsp;"}</div></div><div class="ssb-hr-acts"><button type="button" class="ssb-hist-abtn ssb-link" data-hact="keep" ${keyOf(h)} data-tooltip="${h.kept ? "Let the saved-match limit remove it again" : "Keep it when older matches are removed (up to 20)"}">${h.kept ? "Unkeep" : "Keep"}</button><button type="button" class="ssb-hist-abtn ssb-link" data-hact="rename" ${keyOf(h)}>Rename</button><button type="button" class="ssb-hist-abtn ssb-link ssb-danger" data-hact="del" ${keyOf(h)}>Delete</button></div></div><div class="ssb-hr-kd"><div class="ssb-hr-strong">${k} / ${dd}</div><div class="ssb-hr-sub">KDR ${_stKdr(k, dd)}</div></div></div>`
 }).join("") ||
 `<div class="ssb-empty">${all.length ? "No saved matches fit these filters." : "No games recorded yet. Finish a match and it shows up here."}</div>`,
-body = (all.length ?
-`<div class="ssb-filters">${_stDd("mode", "All modes", flt.mode, modes, _stMode)}${_stDd("map", "All maps", flt.map, maps)}<span class="ssb-fx"><button type="button" class="ssb-btn ssb-sm" data-act="exjson" data-tooltip="Download the matches shown as JSON">JSON</button><button type="button" class="ssb-btn ssb-sm" data-act="excsv" data-tooltip="Download the matches shown as a spreadsheet (CSV)">CSV</button></span></div>` :
-"") + _stRecCard(flt) + (all.length || showLive ?
+filters = `<div class="ssb-filters"><input type="search" class="ssb-history-search" aria-label="Search match history" placeholder="Search matches, players, maps…" maxlength="200" value="${eC(flt.query || "")}">${_stDd("mode", "All modes", flt.mode, modes, _stMode)}${_stDd("map", "All maps", flt.map, maps)}${_stDateFilter(flt)}</div>`,
+body = prog ? filters + _stProgress(hist, all.length) : filters + `<input type="file" data-stats-file accept=".json,.csv,application/json,text/csv" hidden>` + _stRecCard(flt) + (all.length || showLive ?
 `<div class="ssb-colhd" aria-hidden="true"><span>Match</span><span>Played</span><span>K / D</span></div>` :
-"") + `<div class="ssb-hist-list">${rows}</div>`;
-ov.innerHTML = _stShell("hist", "", (all.length ? _stIcoBtn("clearhist", "Clear History", "ssb-danger") : "") +
+"") + `<div class="ssb-hist-list">${rows}</div>` +
+(selection.size ? _stHistoryBulkBar(selection.size, hist.filter(h => !isCur(h)).length) : "");
+ov.innerHTML = _stShell("hist", "", prog ? _stIcoBtn("histlist", "Match History") + _stIcoBtn("close", "Close", "ssb-danger") :
+_stIcoBtn("progress", "Progress") + _stExportTools() + (all.length ? _stIcoBtn("clearhist", "Clear History", "ssb-danger") : "") +
 _stIcoBtn("close", "Close", "ssb-danger"), body, chips);
 let list = ov.querySelector(".ssb-hist-list"),
 keep = () => list && list.isConnected ? list.scrollTop : 0,
@@ -6897,7 +7789,66 @@ let b = ov.querySelector(sel);
 if (b) b.onclick = fn;
 };
 if (top && list) list.scrollTop = top;
-_stWire(ov, "hist", "Match history", focus);
+_stWire(ov, "hist", prog ? "Progress" : "Match history", focus);
+if (prog) {
+ov.querySelector("#ssb-stats-panel").classList.add("ssb-v-prog");
+on('[data-act="histlist"]', () => {
+_stHistPref("View", "");
+ef("ui_toggletab");
+eHIST('[data-act="progress"]', eb._histTop);
+});
+ov.querySelectorAll("[data-prog-metric]").forEach(b => b.onclick = () => {
+if (b.getAttribute("aria-pressed") === "true") return;
+_stHistPref("Metric", b.dataset.progMetric);
+ef("ui_onchange");
+eHIST('[data-prog-metric="' + b.dataset.progMetric + '"]');
+});
+const pts = [...ov.querySelectorAll(".ssb-prog-pt")],
+openPt = g => {
+const code = g.getAttribute("data-code") || "", st = g.getAttribute("data-start") || "",
+h = _ssbHist().find(x => x && typeof x == "object" && (x.code || "") === code && String(x.startMs || "") === st);
+if (!h) {
+window.__ssbUI.toast("That match is no longer in your history.");
+eHIST();
+return;
+}
+eb._histKey = [code, st];
+ef("ui_toggletab");
+eHISTDetail(h, "progress");
+};
+pts.forEach((g, i) => {
+g.onclick = () => openPt(g);
+g.onfocus = () => pts.forEach(p => p.setAttribute("tabindex", p === g ? "0" : "-1"));
+g.onkeydown = ev => {
+if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+const j = ev.key === "ArrowRight" ? i + 1 : ev.key === "ArrowLeft" ? i - 1 :
+ev.key === "Home" ? 0 : ev.key === "End" ? pts.length - 1 : null;
+if (ev.key === "Enter" || ev.key === " ") {
+ev.preventDefault();
+ev.stopPropagation();
+if (!ev.repeat) openPt(g);
+} else if (j !== null) {
+ev.preventDefault();
+ev.stopPropagation();
+if (pts[j]) pts[j].focus();
+}
+};
+});
+const cur = pts.find(g => g === document.activeElement);
+if (cur) cur.onfocus();
+_stHistoryFilterWire(ov, flt);
+_stDdWire(ov, (key, v) => {
+flt[key] = v;
+eHIST('[data-dd="' + key + '"] .ssb-dd-btn');
+});
+return;
+}
+on('[data-act="progress"]', () => {
+eb._histTop = keep();
+_stHistPref("View", "progress");
+ef("ui_toggletab");
+eHIST('[data-act="histlist"]');
+});
 on('[data-act="clearhist"]', async () => {
 if ((await window.__ssbUI.confirm({
 title: "Clear History",
@@ -6910,9 +7861,10 @@ _ssbHistSet(_ssbHist().filter(h => h && h.kept));
 eHIST();
 }
 });
-on('[data-act="exjson"]', () => _ssbHistExport(hist, "json"));
-on('[data-act="excsv"]', () => _ssbHistExport(
-hist, "csv"));
+_stExportWire(ov, () => { const selected = _ssbHist().filter(h => h && selection.has(_stHistoryId(h))); return selected.length ? selected : hist; });
+_stHistoryBulkWire(ov, all, hist.filter(h => !isCur(h)), selection, keep);
+_stHistoryFilterWire(ov, flt);
+_stImportWire(ov);
 _stDdWire(ov, (key, v) => {
 flt[key] = v;
 eHIST('[data-dd="' + key + '"] .ssb-dd-btn');
@@ -6936,7 +7888,31 @@ eHISTDetail(h);
 }
 };
 ov.querySelectorAll(".ssb-hist-row").forEach(row => {
-row.onclick = () => open(row);
+row.onclick = ev => {
+if (!ev.target.closest(".ssb-history-name, .ssb-hist-pick")) open(row);
+};
+const pick = row.querySelector(".ssb-hist-pick");
+if (pick) {
+pick.onclick = ev => ev.stopPropagation();
+pick.onchange = () => { const h = hist.find(same(row)); if (!h) return;
+const id = _stHistoryId(h); if (pick.checked) selection.add(id); else selection.delete(id);
+ef("ui_onchange"); eHIST(rowSel(h.code, String(h.startMs)) + " .ssb-hist-pick", keep()); };
+}
+const name = row.querySelector(".ssb-history-name");
+if (name) {
+const rename = ev => {
+ev.stopPropagation();
+const h = hist.find(same(row));
+if (h) _stRenameStart(name, h, () => eHIST(rowSel(h.code, String(h.startMs)), keep()));
+};
+name.onclick = rename;
+name.onkeydown = ev => {
+if (!name.isContentEditable && (ev.key === "Enter" || ev.key === " ")) {
+ev.preventDefault();
+rename(ev);
+}
+};
+}
 row.onkeydown = ev => {
 if (!(ev.target !== row || ev.key !== "Enter" && ev.key !== " ")) {
 ev.preventDefault();
@@ -6994,29 +7970,147 @@ _ssbHistSet(H);
 eHIST(null, t);
 }
 } else if (act === "rename") {
-let nn = await window.__ssbUI.prompt({
-title: "Rename Match",
-text: "Leave it blank to show the match code again.",
-value: x.label || x.code || "",
-ok: "Save",
-maxLength: 60
-});
-if (nn != null) {
-let t = keep();
-H = _ssbHist();
-let i = H.findIndex(same(b));
-if (i >= 0) {
-nn = nn.trim();
-if (nn) H[i].label = nn;
-else delete H[i].label;
-_ssbHistSet(H);
-}
-eHIST(rowSel(b.getAttribute("data-code") || "", b.getAttribute("data-start") || ""),
-t);
-}
+const name = b.closest(".ssb-hist-row").querySelector(".ssb-history-name");
+_stRenameStart(name, x, () => eHIST(rowSel(x.code, String(x.startMs)), keep()));
 }
 });
 if (showLive) _stTick();
+}
+function _stImportClean(h) {
+const obj = v => v && typeof v === "object" && !Array.isArray(v),
+num = (v, max = 1e7) => typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= max,
+text = (v, max) => typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max) : "";
+if (!obj(h) || !text(h.code, 200) || !num(h.startMs, 7258118400000) || !h.startMs ||
+!num(h.endMs, 7258118400000) || h.endMs < h.startMs || !Array.isArray(h.players) ||
+!h.players.length || h.players.length > 256) return null;
+const out = {code: text(h.code, 200), startMs: h.startMs, endMs: h.endMs, mode:
+["ffa", "team", "ctf", "king"].includes(h.mode) ? h.mode : "ffa", map: text(h.map, 120),
+server: text(h.server, 120), players: []};
+const label = text(h.label, 60);
+if (label) out.label = label;
+if (h.kept === true) out.kept = true;
+if (num(h.no) && h.no > 0) out.no = Math.floor(h.no);
+if (h.importSummary === true) out.importSummary = true;
+for (const key of ["lobbyMs", "spawnedMs"]) if (num(h[key], 31536000000)) out[key] = Math.floor(h[key]);
+for (const key of ["lobbyStartMs", "spawnStartMs"]) if (num(h[key], 7258118400000)) out[key] = h[key];
+if (obj(h.kotc)) out.kotc = {1: num(h.kotc[1]) ? Math.floor(h.kotc[1]) : 0, 2: num(h.kotc[2]) ? Math.floor(h.kotc[2]) : 0};
+if (obj(h.perf)) {
+const perf = {};
+for (const key of ["avg", "low", "frz", "res"]) if (num(h.perf[key], 1e7)) perf[key] = h.perf[key];
+if (Object.keys(perf).length) out.perf = perf;
+}
+for (const p of h.players) {
+if (!obj(p) || !num(p.kills) || !num(p.deaths) || !Number.isInteger(p.kills) || !Number.isInteger(p.deaths)) return null;
+const player = {name: text(p.name, 120) || "Player", team: out.mode !== "ffa" && (p.team === 1 || p.team === 2) ? p.team : 0,
+kills: p.kills, deaths: p.deaths, isMe: p.isMe === true};
+for (const key of ["coopMs", "coopCaptures", "coopTakeovers", "onKills", "onDeaths", "bestKs", "aces"])
+if (num(p[key], key === "coopMs" ? 31536000000 : 1e7)) player[key] = Math.floor(p[key]);
+if (Number.isInteger(p.cls) && p.cls >= 0 && p.cls <= 6) player.cls = p.cls;
+if (Array.isArray(p.gunK) && p.gunK.length === 7 && p.gunK.every(n => num(n))) {
+player.gunK = p.gunK.map(Math.floor);
+if (Number.isInteger(p.gunLast) && p.gunLast >= 0 && p.gunLast <= 6) player.gunLast = p.gunLast;
+}
+out.players.push(player);
+}
+return out;
+}
+function _stImportCsv(text) {
+const rows = [], row = [];
+let field = "", quoted = false, closed = false;
+const cell = () => { row.push(field); field = ""; closed = false; if (row.length > 128) throw Error("Too many CSV columns."); },
+line = () => { cell(); if (row.some(v => v.trim())) rows.push(row.splice(0)); else row.length = 0;
+if (rows.length > 10001) throw Error("Import up to 10,000 matches at a time."); };
+for (let i = 0; i < text.length; i++) {
+const c = text[i];
+if (quoted) {
+if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else { quoted = false; closed = true; } }
+else field += c;
+} else if (c === ',') cell();
+else if (c === '\r' || c === '\n') { if (c === '\r' && text[i + 1] === '\n') i++; line(); }
+else if (c === '"' && !field && !closed) quoted = true;
+else { if (closed || c === '"') throw Error("The CSV has invalid quoting."); field += c; }
+}
+if (quoted) throw Error("The CSV has an unfinished quoted cell.");
+line();
+if (!rows.length) throw Error("The CSV is empty.");
+const headers = rows.shift().map(v => v.trim());
+if (["Code", "Start", "Kills", "Deaths"].some(key => !headers.includes(key)) || new Set(headers).size !== headers.length)
+throw Error("Choose a Better HUD match-history CSV export.");
+const modes = {"Free for All": "ffa", "Teams": "team", "Capture the Spatula": "ctf", "King of the Coop": "king"};
+return rows.map(row => {
+const get = key => { const v = row[headers.indexOf(key)] || ""; return /^'[=+\-@\t\r]/.test(v) ? v.slice(1) : v; },
+n = key => get(key).trim() ? Number(get(key)) : NaN, stamp = Date.parse(get("Start")),
+start = get("Match Start") ? Date.parse(get("Match Start")) : stamp, duration = n("Duration (s)");
+if (row.length !== headers.length || !Number.isFinite(start) || !Number.isFinite(stamp) || !Number.isFinite(duration) || duration < 0 || duration > 31536000) return null;
+const player = {name: "You (CSV summary)", isMe: true, team: 0, kills: n("Kills"), deaths: n("Deaths")};
+for (const [col, key, scale] of [["Coop Time (s)", "coopMs", 1000], ["Captures", "coopCaptures", 1], ["Takeovers", "coopTakeovers", 1]])
+if (Number.isFinite(n(col))) player[key] = n(col) * scale;
+const h = {code: get("Code"), label: get("Name"), startMs: start, endMs: start + duration * 1000,
+map: get("Map"), mode: modes[get("Mode")] || get("Mode"), server: get("Server"), kept: get("Kept").toLowerCase() === "yes",
+players: [player], importSummary: true};
+if (get("Time Basis") === "Time Spawned In") { h.spawnedMs = duration * 1000; h.spawnStartMs = stamp; }
+else { h.lobbyMs = duration * 1000; h.lobbyStartMs = stamp; }
+const perf = {};
+for (const [col, key] of [["Avg FPS", "avg"], ["Lowest FPS", "low"], ["Freezes", "frz"], ["Lowest Resolution (%)", "res"]])
+if (Number.isFinite(n(col))) perf[key] = n(col);
+if (Object.keys(perf).length) h.perf = perf;
+return h;
+});
+}
+function _stImportParse(text, kind) {
+text = String(text).replace(/^\uFEFF/, "");
+if (text.length > 10485760) throw Error("Choose a file smaller than 10 MB.");
+let data;
+if (kind === "csv") data = _stImportCsv(text);
+else try { data = JSON.parse(text); }
+catch (err) { throw Error("The JSON file is incomplete or invalid. Choose a Better HUD match-history export."); }
+if (!Array.isArray(data)) throw Error("Choose a Better HUD match-history export (a JSON list or CSV file).");
+if (data.length > 10000) throw Error("Import up to 10,000 matches at a time.");
+const entries = data.map(_stImportClean).filter(Boolean);
+return {entries, invalid: data.length - entries.length};
+}
+function _stImportMerge(entries, history) {
+const out = history.slice(), byCode = new Map();
+for (const h of out) {
+if (!h) continue;
+if (!byCode.has(h.code)) byCode.set(h.code, []);
+byCode.get(h.code).push(h.startMs);
+}
+let added = 0, duplicate = 0;
+for (const h of entries) {
+const starts = byCode.get(h.code) || [];
+if (starts.some(start => Math.abs(start - h.startMs) < 15000)) { duplicate++; continue; }
+out.push(h); starts.push(h.startMs); byCode.set(h.code, starts); added++;
+}
+out.sort((a, b) => (+b?.startMs || 0) - (+a?.startMs || 0));
+return {history: out, added, duplicate};
+}
+function _stImportWire(ov) {
+const button = ov.querySelector('[data-act="imstats"]'), input = ov.querySelector("[data-stats-file]");
+button.onclick = () => { ef("ui_click"); input.click(); };
+input.onchange = async () => {
+const file = input.files?.[0];
+input.value = "";
+if (!file) return;
+try {
+if (file.size > 10485760) throw Error("Choose a file smaller than 10 MB.");
+const csv = /\.csv$/i.test(file.name), parsed = _stImportParse(await file.text(), csv ? "csv" : "json"),
+preview = _stImportMerge(parsed.entries, _ssbHist());
+if (!preview.added) return window.__ssbUI.toast(parsed.invalid ? "No new valid matches found. " + parsed.invalid + " invalid entries skipped." : "These matches are already in your history.");
+const keepNote = _ssbHistoryLimit() && preview.history.filter(h => !h.kept).length > _ssbHistoryLimit() ? " Your " + _ssbHistoryLimit() + "-match limit still applies at the next match save; change Saved Match Limit to keep more imported matches." : "";
+if (!await window.__ssbUI.confirm({title: "Import Match History", text: "Add " + preview.added + " matches? " + preview.duplicate + " duplicates and " + parsed.invalid + " invalid entries will be skipped. Existing matches stay unchanged." +
+(csv ? " CSV restores only your exported summary and duration; use JSON for all players and both clocks." : "") + keepNote, ok: "Import"})) return;
+const merged = _stImportMerge(parsed.entries, _ssbHist()), encoded = JSON.stringify(merged.history);
+localStorage.setItem("tp-statsHistory", encoded);
+_ssbHistSet(merged.history);
+ef("ui_onchange");
+eb._histFilter = {mode: "", map: "", query: "", from: "", to: ""};
+eHIST('[data-act="imstats"]');
+window.__ssbUI.toast("Imported " + merged.added + " matches.", {type: "success"});
+} catch (err) {
+window.__ssbUI.toast("Couldn't import stats: " + err.message, {type: "error"});
+}
+};
 }
 function _ssbHistExport(list, kind) {
 try {
@@ -7044,7 +8138,7 @@ return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v
 },
 lines = [
 ["Name", "Code", "Start", "Duration (s)", "Map", "Mode", "Server", "Kills", "Deaths", "KDR",
-"Players", "Coop Time (s)", "Captures", "Takeovers", "Kept"
+"Players", "Coop Time (s)", "Captures", "Takeovers", "Kept", "Time Basis", "Match Start"
 ].concat(fps ? ["Avg FPS", "Lowest FPS", "Freezes", "Lowest Resolution (%)"] : []).join(",")
 ];
 list.forEach(h => {
@@ -7054,18 +8148,18 @@ deaths: 0
 },
 k = m.kills || 0,
 dd = m.deaths || 0;
-lines.push([h.label || "", h.code || "", h.startMs ? new Date(h.startMs).toISOString() : "",
-h.startMs && h.endMs ? Math.round((h.endMs - h.startMs) / 1e3) : "", h.map ||
+lines.push([h.label || "", h.code || "", _stTimeStart(h) ? new Date(_stTimeStart(h)).toISOString() : "",
+_stTimeMs(h) == null ? "" : Math.round(_stTimeMs(h) / 1e3), h.map ||
 "", mn[h.mode] || h.mode || "", eSN(h.server), k, dd, (k / Math.max(1, dd))
 .toFixed(2), (h.players || []).length, Number.isFinite(m.coopMs) && m.coopMs >=
 0 ? (m.coopMs / 1000).toFixed(3) : "", Number.isFinite(m.coopCaptures) && m
 .coopCaptures >= 0 ? Math.floor(m.coopCaptures) : "", Number.isFinite(m
-.coopTakeovers) && m.coopTakeovers >= 0 ? Math.floor(m.coopTakeovers) : "", h.kept ? "yes" : ""
+.coopTakeovers) && m.coopTakeovers >= 0 ? Math.floor(m.coopTakeovers) : "", h.kept ? "yes" : "", _stTimeMode() ? "Time Spawned In" : "Time in Lobby", h.startMs ? new Date(h.startMs).toISOString() : ""
 ].concat(fps ? [h.perf && h.perf.avg || "", h.perf && h.perf.low || "", h.perf ? h.perf.frz || 0 :
 "", h.perf && h.perf.res || ""
 ] : []).map(q).join(","))
 });
-blob = new Blob(["﻿" + lines.join("\r\n")], {
+blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
 type: "text/csv"
 });
 }
@@ -7085,8 +8179,9 @@ type: "error"
 })
 }
 }
-function eHISTDetail(h) {
+function eHISTDetail(h, from) {
 if (!h) return;
+eb._histFrom = from === "progress" ? from : "";
 let ov = _stOverlay(),
 mode = h.mode || "ffa",
 _sk = eb.kotcScore,
@@ -7100,13 +8195,14 @@ teams = _stTeams(h.players, mode, "No player data was saved for this match.")
 } finally {
 eb.kotcScore = _sk
 }
-let chips = _stChips([_stNameChip(h), h.label && _stRoomCode(h.code) && `<span data-match-code>${eC(h.code)}</span>`, h.startMs && _stWhen(h
-.startMs, true), h.startMs && _stDate(h.startMs)], [eC(h.map || ""), h.server && eC(eSN(h.server)),
-eC(_stMode(mode)), eC(_stLen(h)), h.kept && "Kept", eC(_stPerf(h, true))
+let chips = _stChips([_stNameChip(h), h.label && _stRoomCode(h.code) && `<span data-match-code>${eC(h.code)}</span>`, h.startMs && `<span class="ssb-time-start">${_stWhen(_stTimeStart(h), true)}</span>`, h.startMs && `<span class="ssb-time-date">${_stDate(_stTimeStart(h))}</span>`], [eC(h.map || ""), h.server && eC(eSN(h.server)),
+eC(_stMode(mode)), `<span class="ssb-hist-dur">${eC(_stLen(h))}</span>`, h.kept && "Kept", h.importSummary && "CSV summary", eC(_stPerf(h, true))
 ]);
-ov.innerHTML = _stShell("match", "", _stIcoBtn("backhist", "Match History") + _stIcoBtn("copy", "Copy Image") +
-_stIcoBtn("download", "Download") + _stIcoBtn("close", "Close", "ssb-danger"), teams, chips);
-_stWire(ov, "match", "Match details", '[data-act="backhist"]', h)
+ov.innerHTML = _stShell("match", "", _stIcoBtn("backhist", eb._histFrom ? "Back to Progress" : "Match History") + _stIcoBtn("copy", "Copy Image") +
+_stIcoBtn("copytext", "Copy as Text") + _stIcoBtn("download", "Download") + _stIcoBtn("close", "Close", "ssb-danger"), teams, chips);
+_stWire(ov, "match", "Match details", '[data-act="backhist"]', h);
+eb._lgView = h;
+_stAdminWire(ov, h.players, h);
 }
 window.__ssbOpenHistory = function() {
 try {
@@ -7140,6 +8236,8 @@ return ""
 function e9(e, panel) {
 let t = panel || document.querySelector("#ssb-stats-overlay #ssb-stats-panel");
 if (!t) return Promise.resolve(null);
+_stPaintTime(t, panel ? null : eb._lgView);
+if (_lgStyle()) return _lgShot(e, panel ? null : eb._lgView);
 return (typeof window.htmlToImage == "object" ? Promise.resolve() : eI || (eI = new Promise((e, t) => {
 let o = document.createElement(
 "script");
@@ -7432,6 +8530,1681 @@ if (o.nodeType === Node.TEXT_NODE && o.textContent.trim()) return o
 }
 return null
 }
+const _lgCore = (() => {
+const CLS = ["soldier", "scrambler", "ranger", "rpegg", "whipper", "crackshot", "trihard"],
+DV = '"DejaVu Sans", Verdana, "Bitstream Vera Sans", sans-serif',
+MONO = '"DejaVu Sans Mono", "Noto Sans Mono", Menlo, Consolas, monospace',
+BC = '"Barlow Condensed", "Arial Narrow", sans-serif',
+BA = 'Barlow, "Segoe UI", Arial, sans-serif',
+INT = 'Inter, "Segoe UI", Arial, sans-serif',
+ORB = 'Orbitron, "Arial Black", sans-serif',
+AR = "Arial, Helvetica, sans-serif",
+WEB = {
+2: ["family=Noto+Sans+Mono:wght@700", ['700 16px "Noto Sans Mono"']],
+3: ["family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700", ["400 16px Barlow",
+"500 16px Barlow", "600 16px Barlow", "700 16px Barlow", '600 16px "Barlow Condensed"',
+'700 16px "Barlow Condensed"'
+]],
+4: ["family=Inter:wght@400;500;600;700&family=Orbitron:wght@900", ["400 16px Inter", "500 16px Inter",
+"600 16px Inter", "700 16px Inter", "900 16px Orbitron"
+]]
+},
+fontJobs = {},
+icons = {};
+function fonts(style) {
+const w = WEB[style];
+if (!w || !document.fonts || !document.fonts.load) return Promise.resolve();
+const within = (p, ms) => new Promise(done => {
+const t = setTimeout(done, ms),
+end = () => {
+clearTimeout(t);
+done()
+};
+p.then(end, end);
+});
+if (!fontJobs[style]) fontJobs[style] = new Promise((ok, no) => {
+const l = document.createElement("link");
+l.rel = "stylesheet";
+l.href = "https://fonts.googleapis.com/css2?" + w[0] + "&display=swap";
+l.onload = ok;
+l.onerror = () => {
+delete fontJobs[style];
+l.remove();
+no()
+};
+(document.head || document.documentElement).appendChild(l);
+});
+return within(fontJobs[style].then(() => Promise.all(w[1].map(f => document.fonts.load(f, "Ag0")))), 5000);
+}
+function icon(cls) {
+const id = CLS[cls];
+if (!id) return null;
+if (icons[id]) return icons[id];
+const sym = document.getElementById("ico-weapon-" + id);
+if (!sym) return null;
+const out = [];
+try {
+for (const p of sym.querySelectorAll("path")) {
+const dd = p.getAttribute("d");
+if (dd) out.push(new Path2D(dd));
+}
+for (const p of sym.querySelectorAll("polygon")) {
+const pts = (p.getAttribute("points") || "").trim();
+if (pts) out.push(new Path2D("M" + pts + "Z"));
+}
+} catch (e) {}
+const vb = (sym.getAttribute("viewBox") || "0 0 106 106").split(/[\s,]+/).map(Number);
+return out.length ? icons[id] = {
+paths: out,
+size: vb[2] > 0 ? vb[2] : 106
+} : null;
+}
+function drawIcon(x, cls, cx, cy, size, color) {
+if (cls == null) return;
+if (cls === -1) {
+tx(x, "–", cx, cy, "700 " + Math.round(size * 0.6) + "px " + AR, color, "center");
+return;
+}
+const ic = icon(cls);
+if (!ic) return;
+x.save();
+x.translate(cx - size / 2, cy - size / 2);
+x.scale(size / ic.size, size / ic.size);
+x.fillStyle = color;
+for (const p of ic.paths) x.fill(p, "evenodd");
+x.restore();
+}
+function rr(x, X, Y, W, H, r) {
+const a = typeof r === "number" ? [r, r, r, r] : r;
+x.beginPath();
+x.moveTo(X + a[0], Y);
+x.lineTo(X + W - a[1], Y);
+x.arcTo(X + W, Y, X + W, Y + a[1], a[1]);
+x.lineTo(X + W, Y + H - a[2]);
+x.arcTo(X + W, Y + H, X + W - a[2], Y + H, a[2]);
+x.lineTo(X + a[3], Y + H);
+x.arcTo(X, Y + H, X, Y + H - a[3], a[3]);
+x.lineTo(X, Y + a[0]);
+x.arcTo(X, Y, X + a[0], Y, a[0]);
+x.closePath();
+}
+function fill(x, color, X, Y, W, H, r) {
+x.fillStyle = color;
+if (r) {
+rr(x, X, Y, W, H, r);
+x.fill()
+} else x.fillRect(X, Y, W, H);
+}
+function tx(x, s, X, cy, f, color, align, ls) {
+const size = parseFloat(/(\d+(?:\.\d+)?)px/.exec(f)[1]);
+x.font = f;
+x.fillStyle = color;
+x.textAlign = align || "left";
+x.textBaseline = "alphabetic";
+if ("letterSpacing" in x) x.letterSpacing = (ls || 0) + "px";
+x.fillText(s, X, cy + size * 0.355);
+const w = x.measureText(s).width;
+if ("letterSpacing" in x) x.letterSpacing = "0px";
+return w;
+}
+function width(x, s, f, ls) {
+x.font = f;
+if ("letterSpacing" in x) x.letterSpacing = (ls || 0) + "px";
+const w = x.measureText(s).width;
+if ("letterSpacing" in x) x.letterSpacing = "0px";
+return w;
+}
+function fit(x, s, f, max) {
+s = String(s == null ? "" : s);
+if (width(x, s, f) <= max) return s;
+let n = s.length;
+while (n > 1 && width(x, s.slice(0, n).trimEnd() + "…", f) > max) n--;
+return s.slice(0, n).trimEnd() + "…";
+}
+function runs(x, parts, X, cy, align) {
+const total = parts.reduce((n, p) => n + width(x, p[0], p[1], p[3]), 0);
+let at = align === "right" ? X - total : align === "center" ? X - total / 2 : X;
+for (const p of parts) at += tx(x, p[0], at, cy, p[1], p[2], "left", p[3]);
+return total;
+}
+const num = v => typeof v === "number" && Number.isFinite(v) && v >= 0,
+n0 = v => num(v) ? Math.floor(v) : 0,
+kdr = p => n0(p.kills) / Math.max(1, n0(p.deaths)),
+kdr2 = p => kdr(p).toFixed(2),
+p2 = n => String(n).padStart(2, "0"),
+secs = ms => num(ms) ? Math.floor(ms / 1000) : 0,
+mss = ms => Math.floor(secs(ms) / 60) + ":" + p2(secs(ms) % 60),
+mmss = ms => p2(Math.floor(secs(ms) / 60)) + ":" + p2(secs(ms) % 60),
+ms2 = ms => Math.floor(secs(ms) / 60) + "m " + secs(ms) % 60 + "s",
+withOn = (v, on, show) => n0(v) + (show ? " (" + n0(on) + ")" : "");
+function split(m) {
+const t = {
+1: [],
+2: [],
+0: []
+};
+for (const p of m.players || [])
+if (p && typeof p === "object") t[m.mode !== "ffa" && (p.team === 1 || p.team === 2) ? p.team : 0].push(p);
+for (const k of [0, 1, 2]) t[k].sort((a, b) => n0(b.kills) - n0(a.kills) || n0(a.deaths) - n0(b.deaths));
+const solo = !t[1].length && !t[2].length;
+return {
+solo,
+sides: solo ? [{
+team: 0,
+name: "Players",
+list: t[0],
+score: null
+}] : [1, 2].map(k => ({
+team: k,
+name: k === 1 ? "Blue Team" : "Red Team",
+list: t[k],
+score: n0(m.score && m.score[k])
+})),
+rows: solo ? t[0].length : Math.max(t[1].length, t[2].length)
+};
+}
+function tag(list) {
+const seen = {};
+let best = "";
+for (const p of list) {
+const w = /^[\s\[\(\{<|]*([A-Za-z0-9]{2,5})(?=[\s\]\)\}>|\-_.:])/.exec(String(p.name || "") + " ");
+if (!w) continue;
+const k = w[1].toUpperCase();
+seen[k] = (seen[k] || 0) + 1;
+if (!best || seen[k] > seen[best]) best = k;
+}
+return best && list.length > 1 && seen[best] * 2 > list.length ? best : "";
+}
+function versus(sp) {
+if (sp.solo) return "";
+const a = tag(sp.sides[0].list),
+b = tag(sp.sides[1].list);
+if (!a || !b) return "";
+return sp.sides[1].score > sp.sides[0].score ? b + " vs " + a : a + " vs " + b;
+}
+function canvas(W, H) {
+const c = document.createElement("canvas");
+c.width = Math.round(W);
+c.height = Math.round(H);
+const x = c.getContext("2d");
+x.textBaseline = "alphabetic";
+return [c, x];
+}
+const len = m => typeof m.durationMs === "number" && Number.isFinite(m.durationMs) && m.durationMs >= 0 ? m.durationMs : Math.max(0, (m.endMs || 0) - (m.startMs || 0));
+function shellStrike(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+PW = 888,
+W = sp.solo ? 88 + PW + 88 : 2000,
+PH = 166 + 78 * n,
+H = 196 + PH + 88,
+[c, x] = canvas(W, H),
+GREY = "#8b929c",
+WHITE = "#fcfeff",
+coop = m.coop;
+fill(x, "#0d111a", 0, 0, W, H, 24);
+x.fillStyle = "#3b87fd";
+for (const [bx, by, sx, sy] of [
+[46, 46, 1, 1],
+[W - 46, 46, -1, 1],
+[46, H - 46, 1, -1],
+[W - 46, H - 46, -1, -1]
+]) {
+x.fillRect(Math.min(bx, bx + sx * 151), Math.min(by, by + sy * 5), 151, 5);
+x.fillRect(Math.min(bx, bx + sx * 5), Math.min(by, by + sy * 151), 5, 151);
+}
+const tf = "bold 30.8px " + DV;
+runs(x, [
+[fit(x, m.name || m.code || "Match", tf, W * 0.3), tf, WHITE],
+[" | ", tf, GREY],
+[m.serverId || "", tf, GREY],
+[" | ", tf, GREY],
+[m.map || "", tf, WHITE],
+[" — " + ms2(len(m)), tf, GREY]
+], 98, 165);
+const wf = "bold 57.5px " + DV;
+runs(x, [
+["SHELL ", wf, "#3b87fd"],
+["STRIKE", wf, "#ffffff"]
+], W - 88, sp.solo ? 96 : 135, "right");
+const col = coop ? {
+k: 520,
+d: 588,
+r: 682,
+t: 819,
+c: 869
+} : {
+k: 700,
+d: 800,
+r: 925
+};
+sp.sides.forEach((s, i) => {
+const X = 88 + i * 947,
+Y = 196,
+red = s.team === 2,
+tc = sp.solo ? WHITE : red ? "#f5534a" : "#5ba5fa";
+fill(x, "#1c232e", X - 2, Y - 2, PW + 4, PH + 4, 22);
+fill(x, "#12151b", X, Y, PW, PH, 20);
+x.save();
+rr(x, X, Y, PW, PH, 20);
+x.clip();
+const g = x.createLinearGradient(0, Y, 0, Y + 92);
+g.addColorStop(0, sp.solo ? "#34373d" : red ? "#3e1a17" : "#2c3b5d");
+g.addColorStop(1, "#12151b");
+fill(x, g, X, Y, PW, 92);
+x.restore();
+const nf = "bold 35px " + DV,
+sf = "bold 42px " + DV,
+title = s.name.toUpperCase();
+if (red) {
+tx(x, String(s.score), X + 50, 244, sf, WHITE);
+tx(x, title, X + PW - 50, 246, nf, tc, "right");
+} else {
+tx(x, title, X + 49, 246, nf, tc);
+if (s.score !== null) tx(x, String(s.score), X + PW - 50, 244, sf, WHITE, "right");
+}
+const hf = "bold 21px " + DV,
+o = X - 88;
+tx(x, "PLAYER", o + 137, 324, hf, GREY);
+tx(x, "K", o + col.k, 324, hf, GREY, "right");
+tx(x, "D", o + col.d, 324, hf, GREY, "right");
+tx(x, "KDR", o + col.r, 324, hf, GREY, "right");
+if (coop) {
+tx(x, "TIME", o + col.t, 324, hf, GREY, "right");
+tx(x, "CAP|TAK", o + 841, 324, hf, GREY);
+}
+const rf = "bold 29px " + DV;
+s.list.forEach((p, r) => {
+const cy = 389 + 78 * r;
+drawIcon(x, p.gun, o + 152, cy, 31, "#ffffff");
+tx(x, fit(x, p.name || "Player", rf, col.k - 70 - 186), o + 186, cy, rf, tc);
+tx(x, String(n0(p.kills)), o + col.k, cy, rf, WHITE, "right");
+tx(x, String(n0(p.deaths)), o + col.d, cy, rf, WHITE, "right");
+tx(x, String(parseFloat(kdr2(p))), o + col.r, cy, rf, WHITE, "right");
+if (coop) {
+tx(x, ms2(p.coopMs), o + col.t, cy, rf, GREY, "right");
+tx(x, n0(p.coopCaptures) + "|" + n0(p.coopTakeovers), o + col.c, cy, rf, GREY);
+}
+});
+});
+return c;
+}
+function egg(x, cx, cy, w, h) {
+x.save();
+x.translate(cx, cy);
+x.beginPath();
+x.moveTo(0, -h / 2);
+x.bezierCurveTo(w * 0.42, -h / 2, w / 2, h * 0.1, w / 2, h * 0.16);
+x.bezierCurveTo(w / 2, h * 0.4, w * 0.28, h / 2, 0, h / 2);
+x.bezierCurveTo(-w * 0.28, h / 2, -w / 2, h * 0.4, -w / 2, h * 0.16);
+x.bezierCurveTo(-w / 2, h * 0.1, -w * 0.42, -h / 2, 0, -h / 2);
+x.closePath();
+const g = x.createRadialGradient(-w * 0.15, -h * 0.12, 1, 0, 0, h * 0.6);
+g.addColorStop(0, "#9aa0aa");
+g.addColorStop(0.45, "#4b5059");
+g.addColorStop(1, "#22252b");
+x.fillStyle = g;
+x.fill();
+x.restore();
+}
+function shellStrike2(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+PW = 589,
+W = sp.solo ? 38 + PW + 38 : 1280,
+PB = 186 + 35 * (n + 1) + 14,
+H = PB + 35,
+[c, x] = canvas(W, H),
+coop = m.coop,
+on = m.onPoint,
+TXT = "#f2f3f5";
+fill(x, "#15171c", 0, 0, W, H);
+fill(x, "#5d6dfc", 0, 0, W, H, 12);
+fill(x, "#131415", 5, 5, W - 10, H - 10, 8);
+const vs = versus(sp);
+tx(x, fit(x, [m.server, vs, m.map, mss(len(m))].filter(Boolean).join(" | "), "bold 22.4px " + MONO, W -
+38 - 160), 38, 38, "bold 22.4px " + MONO, "#ffffff");
+const lx = W - 140,
+lf = "bold 30px Arial, Helvetica, sans-serif";
+x.save();
+x.shadowColor = "rgba(0,0,0,0.6)";
+x.shadowBlur = 3;
+x.translate(lx + 1, 0);
+x.scale(0.75, 1);
+let at = tx(x, "SH", 0, 24.5, lf, "#ffffff");
+x.restore();
+egg(x, lx + 1 + at * 0.75 + 8.5, 24.5, 15, 21);
+x.save();
+x.shadowColor = "rgba(0,0,0,0.6)";
+x.shadowBlur = 3;
+x.translate(lx + 1 + at * 0.75 + 17, 0);
+x.scale(0.75, 1);
+tx(x, "LL", 0, 24.5, lf, "#ffffff");
+x.restore();
+fill(x, "#3b82f6", lx, 38, 108, 39, 3);
+fill(x, "#1c2740", lx + 2, 40, 104, 35, 2);
+x.save();
+x.translate(lx + 54, 0);
+x.scale(0.8, 1);
+tx(x, "STRIKE", 0, 57.5, "bold 34px Arial, Helvetica, sans-serif", "#3b82f6", "center");
+x.restore();
+const cx = coop ? {
+k: 227,
+d: 319,
+r: 405,
+t: 474,
+c: 544
+} : {
+k: 330,
+d: 430,
+r: 525
+};
+sp.sides.forEach((s, i) => {
+const X = 38 + i * 615,
+red = s.team === 2,
+tc = sp.solo ? TXT : red ? "#ff504e" : "#6274ff",
+hf = "bold 25.8px " + MONO;
+fill(x, "#212328", X, 108, PW, PB - 108, [16, 16, 16, 16]);
+fill(x, tc, X + 8, 107, PW - 21, 2);
+if (red) {
+tx(x, String(s.score), X + 52, 135, hf, tc);
+tx(x, s.name, X + PW - 57, 135, hf, tc, "right");
+} else {
+tx(x, s.name, X + 19, 135, hf, tc);
+if (s.score !== null) tx(x, String(s.score), X + PW - 48, 135, hf, tc, "right");
+}
+fill(x, tc, X, 157, PW, 2);
+fill(x, "#2e303b", X, 159, PW, 24);
+fill(x, tc, X, 183, PW, 2);
+const cf = "11.5px " + MONO;
+tx(x, "PLAYER", X + 42, 171, cf, TXT);
+tx(x, "KILLS", X + cx.k, 171, cf, TXT, "center");
+tx(x, "DEATHS", X + cx.d, 171, cf, TXT, "center");
+tx(x, "KDR", X + cx.r, 171, cf, TXT, "center");
+if (coop) {
+tx(x, "TIME", X + cx.t, 171, cf, TXT, "center");
+tx(x, "CAP | TAK", X + cx.c, 171, cf, TXT, "center");
+}
+const rf = "bold 15px " + MONO;
+for (let r = 0; r <= n; r++) {
+const y = 186 + 35 * r;
+const p = s.list[r];
+if (!p) continue;
+fill(x, "#2b2d35", X + 12, y + 30, PW - 24, 5);
+const cy = y + 14.5;
+drawIcon(x, p.gun, X + 23, cy, 20, "#ffffff");
+tx(x, fit(x, p.name || "Player", rf, cx.k - 45 - 45), X + 45, cy, rf, tc);
+tx(x, withOn(p.kills, p.onKills, on), X + cx.k, cy, rf, TXT, "center");
+tx(x, withOn(p.deaths, p.onDeaths, on), X + cx.d, cy, rf, TXT, "center");
+tx(x, kdr2(p), X + cx.r, cy, rf, TXT, "center");
+if (coop) {
+tx(x, mss(p.coopMs), X + cx.t, cy, rf, TXT, "center");
+tx(x, n0(p.coopCaptures) + " | " + n0(p.coopTakeovers), X + cx.c, cy, rf, TXT, "center");
+}
+}
+});
+return c;
+}
+function shellRanked(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+PW = 939,
+W = sp.solo ? 42 + PW + 42 : 2000,
+CB = 427 + 63 * n + 14,
+H = CB + (m.coop ? 88 : 42),
+[c, x] = canvas(W, H),
+coop = m.coop,
+on = m.onPoint,
+DIM = "#5f6877",
+MUTE = "#98a2b3",
+YEL = "#facc15",
+BLUE = "#4fc7ff",
+RED = "#fb8c6c";
+fill(x, "#141921", 0, 0, W, H, 36);
+const BX = 42,
+BY = 42,
+BW = W - 84,
+BH = 226,
+mid = W / 2;
+x.save();
+rr(x, BX, BY, BW, BH, 28);
+x.clip();
+fill(x, "#09121b", BX, BY, BW, BH);
+if (!sp.solo) {
+x.fillStyle = "#0e3552";
+x.beginPath();
+x.moveTo(BX, BY);
+x.lineTo(mid - 223, BY);
+x.lineTo(mid - 261, BY + BH);
+x.lineTo(BX, BY + BH);
+x.fill();
+x.fillStyle = "#4c2220";
+x.beginPath();
+x.moveTo(mid + 261, BY);
+x.lineTo(BX + BW, BY);
+x.lineTo(BX + BW, BY + BH);
+x.lineTo(mid + 223, BY + BH);
+x.fill();
+}
+x.restore();
+tx(x, (m.modeName || "").toUpperCase(), mid + 2, 94, "600 24px " + BC, "#a2a9bb", "center", 4.5);
+tx(x, m.map || "", mid, 155, "700 64px " + BC, "#f0f4f9", "center");
+const df = "500 26px " + BA,
+d0 = new Date(m.startMs || 0),
+date = m.startMs ? d0.getMonth() + 1 + "/" + d0.getDate() + "/" + d0.getFullYear() : "";
+runs(x, [
+[date, df, "#a8adb5"],
+[date ? "     " : "", df, "#a8adb5"],
+[mss(len(m)), df, "#a8adb5"]
+], mid, 214, "center");
+if (!sp.solo) {
+const b = sp.sides[0].score,
+r = sp.sides[1].score,
+big = "700 186px " + BC,
+lf = "600 34px " + BC,
+pill = (px, right) => {
+const w = 128,
+l = right ? px - w : px;
+fill(x, YEL, l, 160, w, 37, 18.5);
+tx(x, "WINNER", l + w / 2 + 2, 178.5, "700 23px " + BC, "#2b2005", "center", 3);
+};
+tx(x, String(b), 104, 162, big, BLUE);
+const bw = width(x, String(b), big);
+tx(x, "BLUE", 104 + bw + 40, b > r ? 130 : 156, lf, "#d5e6f3", "left", 6);
+if (b > r) pill(104 + bw + 38, false);
+tx(x, String(r), W - 104, 162, big, RED, "right");
+const rw = width(x, String(r), big);
+tx(x, "RED", W - 104 - rw - 40, r > b ? 130 : 156, lf, "#f3dcd5", "right", 6);
+if (r > b) pill(W - 104 - rw - 38, true);
+}
+const col = coop ? {
+k: 473,
+d: 588,
+r: 715,
+t: 808,
+a: 881,
+c: 953
+} : {
+k: 700,
+d: 815,
+r: 942
+};
+sp.sides.forEach((s, i) => {
+const X = 42 + i * 976,
+red = s.team === 2,
+tc = sp.solo ? "#f3f6fa" : red ? RED : BLUE,
+o = X - 42,
+list = s.list;
+x.save();
+rr(x, X, 302, PW, CB - 302, 18);
+x.clip();
+fill(x, "#171b24", X, 302, PW, CB - 302);
+fill(x, tc, X, 302, PW, 6);
+const top = list.reduce((v, p) => Math.max(v, n0(p.kills)), 0),
+bestK = list.reduce((v, p) => Math.max(v, +kdr2(p)), 0),
+bestT = list.reduce((v, p) => Math.max(v, secs(p.coopMs)), 0);
+list.forEach((p, r) => {
+const y = 427 + 63 * r;
+fill(x, "#20242d", X, y + 62, PW, 1);
+if (top) {
+const w = PW * n0(p.kills) / top;
+fill(x, sp.solo ? "#303238" : red ? "#392c2e" : "#213746", X, y, w, 62);
+fill(x, sp.solo ? "#41434a" : red ? "#463638" : "#2a4253", X, y + 62, w, 1);
+}
+});
+x.restore();
+tx(x, s.name.toUpperCase(), o + 69, 352, "700 42px " + BC, tc, "left", 3);
+const nf = "600 25px " + BA,
+wf = "400 23px " + BA,
+tk = list.reduce((v, p) => v + n0(p.kills), 0),
+td = list.reduce((v, p) => v + n0(p.deaths), 0);
+runs(x, [
+[String(tk), nf, "#ffffff"],
+[" kills", wf, MUTE],
+["     ", wf, MUTE],
+[String(td), nf, "#ffffff"],
+[" deaths", wf, MUTE]
+], o + 955, 357, "right");
+const hf = "600 20.5px " + BC;
+tx(x, "PLAYER", o + 93, 404, hf, MUTE, "left", 2.2);
+tx(x, "KILLS", o + col.k + 40, 404, hf, MUTE, "right", 2.2);
+tx(x, "DEATHS", o + col.d + 40, 404, hf, MUTE, "right", 2.2);
+tx(x, "KDR", o + col.r, 404, hf, MUTE, "right", 2.2);
+if (coop) {
+tx(x, "TOP", o + col.t, 404, hf, MUTE, "right", 2.2);
+tx(x, "TAK", o + col.a, 404, hf, MUTE, "right", 2.2);
+tx(x, "CAP", o + col.c, 404, hf, MUTE, "right", 2.2);
+}
+const big = "600 31px " + BA,
+small = "500 20.5px " + BA,
+val = "500 30px " + BA,
+name = "600 29.5px " + BA;
+list.forEach((p, r) => {
+const cy = 427 + 63 * r + 32,
+pair = (v, onV, at) => {
+tx(x, String(n0(v)), o + at, cy, big, "#ffffff", "right");
+if (on) tx(x, "(" + n0(onV) + ")", o + at + 6, cy + 2, small, MUTE);
+},
+dim = (s2, zero, at, hot) => tx(x, s2, o + at, cy, val, hot ? YEL : zero ? DIM : "#e9edf3",
+"right");
+tx(x, String(r + 1), o + 70, cy, "600 20px " + BA, r ? DIM : YEL, "center");
+drawIcon(x, p.gun, o + 112, cy, 42, sp.solo ? "#e9edf3" : red ? "#f9a98c" : "#35c3f5");
+tx(x, fit(x, p.name || "Player", name, col.k - 60 - 146), o + 146, cy, name, "#f3f6fa");
+pair(p.kills, p.onKills, col.k);
+pair(p.deaths, p.onDeaths, col.d);
+dim(kdr2(p), false, col.r, bestK > 0 && +kdr2(p) === bestK);
+if (coop) {
+dim(mss(p.coopMs), !secs(p.coopMs), col.t, bestT > 0 && secs(p.coopMs) === bestT);
+dim(String(n0(p.coopTakeovers)), !n0(p.coopTakeovers), col.a);
+dim(String(n0(p.coopCaptures)), !n0(p.coopCaptures), col.c);
+}
+});
+});
+if (coop) {
+const ff = "400 19.5px " + BA;
+let at = 42;
+for (const t of ["TOP: time on point", "TAK: takeovers", "CAP: captures"].concat(on ? [
+"(n): on-point kills and deaths"
+] : [])) at += tx(x, t, at, CB + 40, ff, MUTE) + 34;
+}
+return c;
+}
+function shellBlitz(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+W = 1398,
+PW = 626,
+PB = 330 + 54 * n,
+H = PB + 48,
+[c, x] = canvas(W, H),
+SOFT = "#c9cedd",
+MUTE = "#9aa0b6";
+x.save();
+rr(x, 0, 0, W, H, 16);
+x.clip();
+const bg = x.createLinearGradient(0, 0, 0, H);
+bg.addColorStop(0, "#1a1f31");
+bg.addColorStop(1, "#171b2d");
+fill(x, bg, 0, 0, W, H);
+const glow = x.createRadialGradient(W / 2, H * 0.42, 40, W / 2, H * 0.42, W * 0.56);
+glow.addColorStop(0, "rgba(88,96,150,0.5)");
+glow.addColorStop(0.5, "rgba(62,70,118,0.24)");
+glow.addColorStop(1, "rgba(6,9,20,0.62)");
+fill(x, glow, 0, 0, W, H);
+let seed = 1349;
+const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+for (let i = 0; i < 70; i++) {
+const bx = rnd() * W,
+by = rnd() * H,
+br = 30 + rnd() * 90,
+b = x.createRadialGradient(bx, by, 0, bx, by, br);
+b.addColorStop(0, rnd() > 0.5 ? "rgba(255,255,255,0.035)" : "rgba(0,0,0,0.09)");
+b.addColorStop(1, "rgba(0,0,0,0)");
+fill(x, b, bx - br, by - br, br * 2, br * 2);
+}
+for (let i = 0; i < 2600; i++) {
+const a = rnd() * 0.05;
+x.fillStyle = rnd() > 0.5 ? "rgba(255,255,255," + a + ")" : "rgba(0,0,0," + a * 1.6 + ")";
+x.fillRect(rnd() * W, rnd() * H, 1 + rnd() * 2.5, 1 + rnd() * 2.5);
+}
+x.restore();
+x.strokeStyle = "rgba(120,130,170,0.5)";
+x.lineWidth = 1;
+rr(x, 0.5, 0.5, W - 1, H - 1, 16);
+x.stroke();
+const sf = "400 12px " + INT,
+line = (p) => p ? (p.name || "Player") + " (" + n0(p.kills) + " K, " + n0(p.deaths) + " D, KDR: " +
+kdr2(p) + ")" : "–";
+let y = 41;
+for (const s of sp.sides) {
+tx(x, (sp.solo ? "Players" : s.team === 2 ? "Red" : "Blue") + ":", 52, y, sf, SOFT);
+tx(x, "Top Frag: " + line(s.list[0]), 59, y + 16, sf, SOFT);
+tx(x, "Bottom Frag: " + line(s.list[s.list.length - 1]), 59, y + 32, sf, SOFT);
+y += 64;
+}
+const miles = (m.players || []).filter(p => n0(p.bestKs) >= 10).sort((a, b) => n0(b.bestKs) - n0(a
+.bestKs)).slice(0, 6);
+tx(x, "Kill Milestones", W - 52, 41, sf, SOFT, "right");
+if (!miles.length) tx(x, "None", W - 52, 57, sf, SOFT, "right");
+miles.forEach((p, i) => tx(x, (p.name || "Player") + ": " + n0(p.bestKs) + " streak", W - 52, 57 + 16 *
+i, sf, SOFT, "right"));
+tx(x, "SHELL", 700, 50, "900 45px " + ORB, "#ffffff", "center", 1);
+const gl = x.createLinearGradient(590, 0, 808, 0);
+gl.addColorStop(0, "rgba(59,130,246,0)");
+gl.addColorStop(0.5, "rgba(96,165,250,0.95)");
+gl.addColorStop(1, "rgba(59,130,246,0)");
+x.save();
+x.shadowColor = "#3b82f6";
+x.shadowBlur = 6;
+fill(x, gl, 590, 75, 218, 2);
+x.restore();
+x.save();
+x.font = "900 36px " + ORB;
+x.textAlign = "center";
+x.lineJoin = "round";
+x.shadowColor = "rgba(250,204,21,0.9)";
+x.shadowBlur = 7;
+x.strokeStyle = "#facc15";
+x.lineWidth = 2.2;
+x.strokeText("BLITZ", 758, 111);
+x.restore();
+fill(x, "rgba(255,255,255,0.13)", 60, 155, W - 120, 1);
+const lf = "400 16px " + INT,
+bf = "700 16px " + INT,
+d0 = new Date(m.startMs || 0),
+date = m.startMs ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d0.getDay()] + ", " + ["Jan", "Feb",
+"Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+][d0.getMonth()] + " " + d0.getDate() + ", " + d0.getFullYear() : "–",
+bar = ["  |  ", lf, "rgba(255,255,255,0.35)"];
+runs(x, [
+["Map: ", lf, MUTE],
+[m.map || "–", bf, "#f1f3fa"], bar, ["Server: ", lf, MUTE],
+[m.server || "–", bf, "#f1f3fa"], bar, ["Date: ", lf, MUTE],
+[date, bf, "#f1f3fa"]
+], W / 2, 170, "center");
+const l2 = "400 16.1px " + INT;
+runs(x, [
+[[sp.solo ? "FFA scrim" : "Team scrim", fit(x, m.name || m.code || "Match", l2, 400), sp.solo ? "" : sp.sides[0].score +
+"–" + sp.sides[1].score, "Game length: "
+].filter(Boolean).join(" · "), l2, MUTE],
+[ms2(len(m)), "700 16.1px " + INT, "#e6e9f2"]
+], W / 2, 199, "center");
+let no = 0;
+sp.sides.forEach((s, i) => {
+const X = (sp.solo ? (W - PW) / 2 : 52) + i * 667,
+red = s.team === 2,
+PH = PB - 245;
+x.save();
+rr(x, X, 245, PW, PH, 13);
+x.clip();
+const g = x.createLinearGradient(X, 0, X + PW, 0);
+if (sp.solo) {
+g.addColorStop(0, "#292a30");
+g.addColorStop(1, "#34353c");
+} else if (red) {
+g.addColorStop(0, "rgba(74,18,36,0.92)");
+g.addColorStop(1, "rgba(52,34,54,0.75)");
+} else {
+g.addColorStop(0, "rgba(6,26,60,0.92)");
+g.addColorStop(1, "rgba(40,50,84,0.7)");
+}
+fill(x, g, X, 245, PW, PH);
+fill(x, sp.solo ? "rgba(255,255,255,0.12)" : red ? "rgba(255,170,190,0.2)" : "rgba(140,175,235,0.2)", X, 245, PW, 49);
+fill(x, "rgba(0,0,0,0.22)", X, 294, PW, 36);
+for (let r = 0; r < n; r += 2) fill(x, "rgba(255,255,255,0.06)", X, 330 + 54 * r, PW, 54);
+x.fillStyle = "rgba(255,255,255,0.09)";
+for (const sx of [305, 339, 372, 443, 521]) x.fillRect(X + sx, 294, 1, PH);
+for (let r = 0; r <= n; r++) x.fillRect(X, 329 + 54 * r, PW, 1);
+x.fillRect(X, 293, PW, 1);
+x.restore();
+x.strokeStyle = sp.solo ? "#92949c" : red ? "#b96d86" : "#5b8fd6";
+x.lineWidth = 2;
+rr(x, X, 245, PW, PH, 13);
+x.stroke();
+const tf = "700 23.5px " + INT,
+sc = "700 38px " + INT,
+title = sp.solo ? "PLAYERS" : red ? "RED" : "BLUE";
+if (red) {
+tx(x, String(s.score), X + 18, 269, sc, "#fff4f6");
+tx(x, title, X + PW - 18, 270, tf, "#fff0f3", "right");
+} else {
+tx(x, title, X + 18, 270, tf, sp.solo ? "#f3f5fb" : "#f0f8ff");
+if (s.score !== null) tx(x, String(s.score), X + PW - 18, 269, sc, "#f4f9ff", "right");
+}
+const hf = "600 11.5px " + INT,
+HC = "#c6ccdf";
+tx(x, "PLAYER", X + 32, 312, hf, HC);
+tx(x, "K", X + 322, 312, hf, HC, "center");
+tx(x, "D", X + 356, 312, hf, HC, "center");
+tx(x, "KDR", X + 407, 312, hf, HC, "center");
+tx(x, "ACES", X + 482, 312, hf, HC, "center");
+tx(x, "Best KS", X + 573, 312, hf, HC, "center");
+const vf = "400 22.8px " + INT,
+nf = "400 22.7px " + INT,
+VC = "#f3f5fb";
+s.list.forEach((p, r) => {
+const cy = 357 + 54 * r;
+x.strokeStyle = "#ffffff";
+x.lineWidth = 2;
+x.beginPath();
+x.arc(X + 44, cy, 12.5, 0, Math.PI * 2);
+x.stroke();
+tx(x, String(++no), X + 44, cy, "700 13px " + INT, "#ffffff", "center");
+drawIcon(x, p.gun, X + 84, cy, 32, sp.solo ? VC : "#3f9d9c");
+tx(x, fit(x, p.name || "Player", nf, 188), X + 110, cy, nf, sp.solo ? VC : red ? "#f6bccb" : "#a9d6ff");
+tx(x, String(n0(p.kills)), X + 322, cy, vf, VC, "center");
+tx(x, String(n0(p.deaths)), X + 356, cy, vf, VC, "center");
+tx(x, kdr2(p), X + 407, cy, vf, VC, "center");
+tx(x, n0(p.aces) ? String(n0(p.aces)) : "—", X + 482, cy, vf, VC, "center");
+tx(x, num(p.bestKs) ? String(n0(p.bestKs)) : "—", X + 573, cy, vf, VC, "center");
+});
+});
+tx(x, fit(x, (m.name || m.code || "Match") + " · [SB] BlitzBot", "400 15px " + INT, W - 104), 52, H - 20, "400 15px " + INT, "#858aa0");
+return c;
+}
+function shellDrill(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 7),
+SH = 61 + 69 * n + 3,
+order = sp.solo ? sp.sides : [sp.sides[1], sp.sides[0]],
+W = 2000,
+H = 157 + order.length * (SH + 23) - 23 + 36,
+[c, x] = canvas(W, H),
+GOLD = "#ccaa66",
+coop = m.coop,
+on = m.onPoint;
+fill(x, GOLD, 0, 0, W, H, 34);
+fill(x, "#333333", 4, 5, W - 8, H - 23, 30);
+fill(x, "#dddddd", 35, 35, 189, 102, 14);
+const lf = "bold 66px " + DV;
+tx(x, "Shell", 40, 84, lf, "#333333");
+tx(x, "Drill", 229, 84, lf, "#dddddd");
+const vs = versus(sp);
+tx(x, [m.server, vs, m.map, mmss(len(m))].filter(Boolean).join(" // "), W - 28, 119, "bold 26.8px " + DV,
+"#e4e4e4", "right");
+const heads = ["Name", "Kills", "Deaths", "KDR"].concat(coop ? ["Coop Time", "CAP | TAK"] : []),
+cw = coop ? 312 : 468,
+cc = k => 293 + cw * k,
+edges = coop ? [123, 466, 776, 1087, 1397, 1690, 1975] : [123, 527, 995, 1463, 1975];
+order.forEach((s, i) => {
+const Y = 157 + i * (SH + 23),
+red = s.team === 2,
+base = sp.solo ? "#505050" : red ? "#985250" : "#526f9a",
+light = sp.solo ? "#5c5c5c" : red ? "#a05e5c" : "#5c79a0";
+fill(x, GOLD, 33, Y - 4, 72, SH + 8, 12);
+fill(x, base, 37, Y, 64, SH, 8);
+x.save();
+x.translate(69, Y + SH / 2);
+x.rotate(-Math.PI / 2);
+tx(x, s.name + (s.score !== null ? " // " + s.score : ""), 0, 0, "bold 28px " + DV, "#ececec",
+"center");
+x.restore();
+fill(x, GOLD, 119, Y - 4, 1858, SH + 8, 12);
+x.save();
+rr(x, 123, Y, 1850, SH, 8);
+x.clip();
+fill(x, base, 123, Y, 1850, SH);
+for (let k = 1; k < edges.length - 1; k += 2) fill(x, light, edges[k], Y, edges[k + 1] - edges[k],
+SH);
+fill(x, "#fff4ee", 123, Y + 57, 1850, 3);
+x.restore();
+heads.forEach((h, k) => tx(x, h, cc(k), Y + 30, "bold 28.7px " + DV, "#efe9e9", "center"));
+const rf = "25px " + DV,
+RC = "#f1eaea";
+s.list.forEach((p, r) => {
+const cy = Y + 99 + 69 * r,
+cells = [fit(x, p.name || "Player", rf, cw - 62), withOn(p.kills, p.onKills, on), withOn(p
+.deaths, p.onDeaths, on), kdr2(p)].concat(coop ? [mss(p.coopMs), n0(p.coopCaptures) +
+" | " + n0(p.coopTakeovers)
+] : []);
+drawIcon(x, p.gun, 163, cy - 6, 50, "#ffffff");
+cells.forEach((t, k) => tx(x, t, cc(k), cy, rf, RC, "center"));
+});
+});
+return c;
+}
+function ogStats(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+coop = m.coop,
+on = m.onPoint,
+RH = 35.75,
+BW = 589,
+TW = 559,
+W = sp.solo ? 30 + BW + 30 : 1263,
+BH = 100 + RH * n + 15.5,
+H = Math.floor(68 + BH + 29.5),
+[c, x] = canvas(W, H),
+heads = ["Name", "Kills", "Deaths", "KDR"].concat(coop ? ["TOP", "TAK", "CAP"] : []),
+hf = "bold 16px " + AR,
+rf = "16px " + AR,
+tf = "bold 27.8px " + AR,
+d0 = new Date(m.startMs || 0);
+fill(x, "#ffa800", 0, 0, W, H);
+fill(x, "#222222", 4, 4, W - 8, H - 8);
+tx(x, m.startMs ? d0.getMonth() + 1 + "/" + d0.getDate() + "/" + d0.getFullYear() : "", 30, 44.5, tf,
+"#ffffff");
+tx(x, m.map || "", W / 2, 44.5, tf, "#ffffff", "center");
+tx(x, mss(len(m)), W - 30, 44.5, tf, "#ffffff", "right");
+sp.sides.forEach((s, i) => {
+const X = 30 + i * 615,
+red = s.team === 2,
+tc = sp.solo ? "#eeeeee" : red ? "#ffc0a0" : "#40e0ff",
+TX = X + 15,
+TY = 68 + 71,
+rows = s.list.map(p => [fit(x, p.name || "Player", rf, 190), withOn(p.kills, p.onKills, on),
+withOn(p.deaths, p.onDeaths, on), kdr2(p)
+].concat(coop ? [mss(p.coopMs), String(n0(p.coopTakeovers)), String(n0(p.coopCaptures))] : [])),
+need = heads.map((h, k) => rows.reduce((v, r) => Math.max(v, width(x, r[k], rf)), width(x, h,
+hf)) + (k ? 12 : 54)),
+sum = need.reduce((v, w) => v + w, 0),
+cols = [0];
+need.forEach(w => cols.push(cols[cols.length - 1] + w * TW / sum));
+fill(x, tc, X, 68, BW, BH);
+fill(x, "#1e1e1e", X + 4, 72, BW - 8, BH - 8);
+fill(x, "#2c2c2c", TX, 82, TW, 37);
+tx(x, s.name + (s.score !== null ? " - " + s.score : ""), TX + 5, 100.5, "bold 23.8px " + AR, tc);
+fill(x, "#000000", TX, TY, TW + 1, 29 + RH * n + 1);
+const cell = (k, y, h, bg) => {
+const l = Math.round(TX + cols[k]) + 1,
+r = Math.round(TX + cols[k + 1]);
+fill(x, bg, l, Math.round(y) + 1, r - l, Math.round(y + h) - Math.round(y) - 1);
+};
+heads.forEach((h, k) => {
+cell(k, TY, 29, "#2c2c2c");
+if (k) tx(x, h, TX + (cols[k] + cols[k + 1]) / 2, TY + 15, hf, tc, "center");
+else tx(x, h, TX + 6, TY + 15, hf, tc);
+});
+for (let r = 0; r < n; r++) {
+const y = TY + 29 + RH * r,
+p = s.list[r];
+heads.forEach((h, k) => cell(k, y, RH, "#1e1e1e"));
+if (!p) continue;
+tx(x, rows[r][0], TX + 6, y + 14, rf, tc);
+drawIcon(x, p.gun, TX + cols[1] - 17, y + RH / 2, 26, tc);
+for (let k = 1; k < heads.length; k++) tx(x, rows[r][k], TX + (cols[k] + cols[k + 1]) / 2,
+y + 17, rf, tc, "center");
+}
+});
+return c;
+}
+function nameless(m) {
+const sp = split(m),
+n = Math.max(sp.rows, 1),
+coop = m.coop,
+solo = sp.solo,
+W = solo ? 615 : 1200,
+top = solo ? 32 : 0,
+bottom = 170 + top + 50 * n,
+H = bottom + 35,
+[c, x] = canvas(W, H),
+GREY = "#a8abb1",
+TXT = "#ededed",
+YEL = "#fcc200",
+cols = coop ? [255, 300, 355, 422, 501] : [355, 422, 501],
+heads = ["K", "D", "KDR"].concat(coop ? ["TOP", "TAK | CAP"] : []),
+ff = "bold 17px " + DV,
+rf = "bold 16px " + DV;
+fill(x, "#0d0d0d", 0, 0, W, H);
+tx(x, "NAMELESS", 50, 39, "bold 34px " + DV, YEL);
+fill(x, YEL, 50, 59, 150, 2);
+x.beginPath();
+x.arc(210, 60, 3, 0, Math.PI * 2);
+x.fillStyle = YEL;
+x.fill();
+const rest = [m.server, m.map, mss(len(m))].filter(Boolean).join(" | "),
+room = solo ? W - 100 : W - 340;
+const facts = fit(x, m.name || m.code || "Match", ff, Math.max(80, room - width(x, " | " + rest, ff))) +
+(rest ? " | " + rest : "");
+if (solo) tx(x, facts, 50, 92, ff, GREY);
+else tx(x, facts, W - 40, 60, ff, GREY, "right");
+sp.sides.forEach((s, i) => {
+const X = 25 + i * 585,
+Y = 85 + top,
+tc = solo ? "#b5bac1" : s.team === 2 ? "#ed4245" : "#5865f2";
+x.lineWidth = 3;
+x.strokeStyle = tc;
+rr(x, X, Y, 565, bottom - Y, 10);
+x.stroke();
+tx(x, fit(x, s.name + (s.score !== null ? " - " + s.score : ""), "bold 20px " + DV, cols[0] - 50), X +
+25, Y + 42, "bold 20px " + DV, tc);
+heads.forEach((h, k) => tx(x, h, X + cols[k], Y + 42.5, "bold 14px " + DV, GREY, "center"));
+fill(x, "#2b2d31", X + 25, Y + 64, 515, 2);
+s.list.forEach((p, r) => {
+const cy = Y + 89.5 + 50 * r,
+cells = [String(n0(p.kills)), String(n0(p.deaths)), kdr2(p)].concat(coop ? [mss(p.coopMs),
+n0(p.coopTakeovers) + " | " + n0(p.coopCaptures)
+] : []);
+drawIcon(x, p.gun, X + 35, cy, 24, "#fff2f2");
+tx(x, fit(x, p.name || "Player", rf, cols[0] - 83), X + 53, cy, rf, tc);
+cells.forEach((t, k) => tx(x, t, X + cols[k], cy, rf, TXT, "center"));
+});
+});
+return c;
+}
+const draw = [null, shellStrike, shellStrike2, shellRanked, shellBlitz, shellDrill, ogStats, nameless];
+return {
+render(style, m) {
+return fonts(style).then(() => draw[style](m))
+}
+};
+})();
+const _lgNames = ["Better HUD", "Shell Strike", "ShellStrike2", "Shell Ranked", "Shell Blitz", "Shell Drill",
+"OG Stats Mod", "Nameless"
+];
+function _lgStyle() {
+const s = d.stats.style;
+return Number.isInteger(s) && s > 0 && s < _lgNames.length ? s : 0
+}
+function _lgMatch(h) {
+const live = !h,
+saved = live ? _stSavedMatch(_stLiveCode(), eb.matchStartMs) : h,
+mode = live ? eb.mode || e0() : h.mode || "ffa",
+list = (live ? eb.snapshot : h.players) || [],
+server = live ? eb.server : h.server,
+sc = (live ? eb.kotcScore : h.kotc) || {},
+fin = v => typeof v === "number" && Number.isFinite(v) && v >= 0;
+return {
+map: (live ? eb.map : h.map) || "",
+server: server ? eSN(server) : "",
+serverId: server || "",
+mode,
+modeName: _stMode(mode),
+startMs: _stTimeStart(h),
+durationMs: _stTimeMs(h),
+endMs: live ? eb.matchEndMs || Date.now() : h.endMs,
+score: {
+1: +sc[1] || 0,
+2: +sc[2] || 0
+},
+name: saved && saved.label || _stRoomCode(live ? _stLiveCode() : h.code) || "Match",
+code: _stRoomCode(live ? _stLiveCode() : h.code),
+coop: mode === "king" && list.some(p => p && fin(p.coopMs)),
+onPoint: mode === "king" && list.some(p => p && fin(p.onKills)),
+players: list.map(p => p && typeof p === "object" ? Object.assign({}, p, {
+gun: d.stats.showGuns ? _lgGun(p) : null
+}) : p)
+}
+}
+function _lgShot(cb, h) {
+let m;
+try {
+if (!h) _ssbSaveStats(1);
+m = _lgMatch(h)
+} catch (x) {
+window.__ssbErr("stats.league", x);
+return Promise.resolve(null)
+}
+return _lgCore.render(_lgStyle(), m).then(c => new Promise((ok, no) => c.toBlob(b => b ? ok(b) : no(Error(
+"the picture came out empty")), "image/png"))).then(blob => {
+if (cb) try {
+cb(blob)
+} catch (x) {
+window.__ssbErr("stats.shot", x)
+}
+return blob
+}, err => {
+console.error("[Better HUD] League stats picture failed:", err);
+window.__ssbUI.toast("Screenshot failed" + (err && err.message ? ": " + err.message : "."), {
+type: "error"
+});
+return null
+})
+}
+function _ssbUnpackNum(valStr, scale = 100, offset = 0) {
+let parsed = parseInt(valStr, 36);
+return isNaN(parsed) ? 0 : (parsed / scale) - offset;
+}
+function _ssbUnpackColor(valStr) {
+if (!valStr) return "#ffffff";
+let parsed = parseInt(valStr, 36);
+return "#" + (isNaN(parsed) ? "ffffff" : parsed.toString(16).padStart(6, "0"));
+}
+function _ssbIsValorantCode(v) {
+return /^\s*0\s*;/.test(String(v));
+}
+function _ssbValorantCrosshair(code, defaults, height) {
+const bad = () => new Error("Invalid code format");
+const tok = String(code).trim().replace(/;+$/, "").split(";").map(x => x.trim());
+if (tok[0] !== "0") throw bad();
+const secs = {
+"0": {}
+};
+let cur = "0";
+for (let i = 1; i < tok.length;) {
+if (/^[A-Z]$/.test(tok[i])) {
+cur = tok[i];
+secs[cur] = secs[cur] || {};
+i++;
+continue
+}
+if (i + 1 >= tok.length) throw bad();
+secs[cur][tok[i]] = tok[i + 1];
+i += 2;
+}
+const P = secs.P;
+if (!P) throw bad();
+const num = (k, def) => {
+if (!(k in P)) return def;
+const v = parseFloat(P[k]);
+if (!isFinite(v)) throw bad();
+return v
+};
+const R2 = v => Math.round(v * 100) / 100,
+CL = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const em = px => px / 21.06,
+k = (height > 0 ? height : 1080) / 1080;
+const fsH = .0195 * (height > 0 ? height : 1080),
+Bt = Math.max(1, Math.round(.05 *
+fsH));
+const PRESET = ["#ffffff", "#00ff00", "#7fff00", "#dfff00", "#ffff00", "#00ffff",
+"#ff00ff", "#ff0000"
+];
+const ci = Math.round(num("c", 0));
+let col = PRESET[ci] || "#ffffff";
+if (ci === 8 && /^[0-9a-f]{6}([0-9a-f]{2})?$/i.test(P.u || "")) col = "#" + P.u
+.slice(0, 6).toLowerCase();
+const outline = num("h", 1) !== 0 && num("t", 1) > 0 && num("o", .5) >= .2;
+const ob = outline ? 1.053 : 0;
+const iT = num("0t", 2),
+iA = num("0a", .8),
+iO = num("0o", 3);
+let iL = num("0l", 6);
+if (iL <= 0 && "0v" in P) iL = Math.max(0, num("0v", 0));
+const inner = num("0b", 1) !== 0 && iT > 0 && iL > 0 && iA > .02;
+const oT = num("1t", 2),
+oA = num("1a", .35),
+oO = num("1o", 10);
+let oL = num("1l", 2);
+if (oL <= 0 && "1v" in P) oL = Math.max(0, num("1v", 0));
+const outer = num("1b", 1) !== 0 && oT > 0 && oL > 0 && oA > .02;
+const dZ = num("z", 2),
+dA = num("a", 1);
+const dot = num("d", 0) !== 0 && dZ > 0 && dA > .02;
+const p = Object.assign({}, defaults),
+notes = [];
+p.armColor = p.dotColor = p.staticColor = col;
+p.armBorder = p.dotBorder = outline ? "#000000" : col;
+p.staticBorder = "#000000";
+p.staticOutlineEnabled = outline;
+p.hideCrosshair = !inner;
+if (inner) {
+p.armLength = R2(CL(em(iL + 2 * ob), 0, 3));
+p.armWidth = R2(CL(em(iT + 2 * ob), .05, 2));
+p.armOpacity = R2(CL(iA, 0, 1));
+p.armGap = Math.round(CL((iO - ob) * k, -3, 60));
+}
+if (dot) {
+const F = dZ / 21.06;
+p.hideDot = false;
+p.dotShape = "dot";
+p.dotRound = false;
+p.dotOpacity = R2(CL(dA, 0, 1));
+p.dotScale = 1;
+p.dotBorderWidth = outline ? .05 : 0;
+if (!inner) p.armWidth = R2(.1 + F);
+else {
+const u = Math.max(0, p.armWidth - .1),
+need = u > 0 ? F / u : 99;
+if (outline ? need <= 1.15 : need <= 4) {
+p.dotScale = R2(CL(need, outline ? .23 : .1, 5));
+if (outline) p.dotBorderWidth = Math.min(.2, Math.ceil(Math.max(1, Math
+.round(Bt / p.dotScale)) / fsH * 100) / 100);
+} else {
+const wide = R2(.1 + F),
+s = R2(CL(em(iT + 2 * ob) / wide, .1, 5));
+p.armLength = R2(CL(em(iL + 2 * ob) / s, 0, 3));
+p.armWidth = wide;
+p.armScale = s;
+}
+}
+} else if (outer) {
+p.hideDot = false;
+p.dotShape = "still";
+p.stillScale = 1;
+p.staticOpacity = R2(CL(oA, 0, 1));
+p.staticLength = R2(CL(em(oL + 2 * ob), 0, 3));
+p.staticWidth = R2(CL(em(oT + 2 * ob), .05, 2));
+p.staticGap = Math.round(CL((oO - ob) * k, 0, 60));
+} else p.hideDot = true;
+if (dot && outer) notes.push(
+"The outer lines were left out, since the center dot takes their place.");
+if (!inner && !dot && !outer) notes.push("This code shows no lines and no dot.");
+Object.defineProperty(p, "__notes", {
+value: notes
+});
+return p;
+}
+function unpackCrosshair(code) {
+if (!code) throw new Error("Invalid code format");
+if (_ssbIsValorantCode(code)) return _ssbValorantCrosshair(code, B, window
+.innerHeight);
+if (code.startsWith("X-")) {
+let body = code.substring(2);
+let p = Object.assign({}, B),
+sawDb = false;
+let regex = /([A-Z][a-z])([0-9a-z]*)/g;
+let match;
+while ((match = regex.exec(body)) !== null) {
+let key = match[1];
+let valStr = match[2];
+switch (key) {
+case "Hc":
+p.hideCrosshair = valStr === "1";
+break;
+case "Ac":
+p.armColor = _ssbUnpackColor(valStr);
+break;
+case "Ab":
+p.armBorder = _ssbUnpackColor(valStr);
+break;
+case "Al":
+p.armLength = _ssbUnpackNum(valStr);
+break;
+case "Aw":
+p.armWidth = _ssbUnpackNum(valStr);
+break;
+case "Ao":
+p.armOpacity = _ssbUnpackNum(valStr);
+break;
+case "Ar":
+p.armRotation = _ssbUnpackNum(valStr, 1);
+break;
+case "Ag":
+p.armGap = _ssbUnpackNum(valStr, 1, 100);
+break;
+case "As":
+p.armScale = _ssbUnpackNum(valStr);
+break;
+case "Hd":
+p.hideDot = valStr === "1";
+break;
+case "Ds":
+p.dotShape = valStr === "p" ? "plus" : valStr === "s" ? "still" :
+"dot";
+break;
+case "Dc":
+p.dotColor = _ssbUnpackColor(valStr);
+break;
+case "Dr":
+p.dotRound = valStr === "1";
+break;
+case "Db":
+p.dotBorder = _ssbUnpackColor(valStr);
+sawDb = true;
+break;
+case "Dw":
+p.dotBorderWidth = _ssbUnpackNum(valStr);
+break;
+case "Do":
+p.dotOpacity = _ssbUnpackNum(valStr);
+break;
+case "Pl":
+p.dotPlusLen = _ssbUnpackNum(valStr, 1);
+break;
+case "Pw":
+p.dotPlusWidth = _ssbUnpackNum(valStr, 1);
+break;
+case "Dz":
+p.dotScale = _ssbUnpackNum(valStr);
+break;
+case "Ps":
+p.plusScale = _ssbUnpackNum(valStr);
+break;
+case "Sc":
+p.staticColor = _ssbUnpackColor(valStr);
+break;
+case "Sb":
+p.staticBorder = _ssbUnpackColor(valStr);
+break;
+case "So":
+p.staticOpacity = _ssbUnpackNum(valStr);
+break;
+case "Sl":
+p.staticLength = _ssbUnpackNum(valStr);
+break;
+case "Sw":
+p.staticWidth = _ssbUnpackNum(valStr);
+break;
+case "Sg":
+p.staticGap = _ssbUnpackNum(valStr);
+break;
+case "Se":
+p.staticOutlineEnabled = valStr !== "0";
+break;
+case "Ae":
+p.armOutlineEnabled = valStr !== "0";
+break;
+case "De":
+p.dotOutlineEnabled = valStr !== "0";
+break;
+case "Ss":
+p.stillScale = _ssbUnpackNum(valStr);
+break;
+}
+}
+if (!sawDb) p.dotBorder = p.armBorder;
+return p;
+}
+if (!code.startsWith("SSB-")) {
+try {
+let parsed = JSON.parse(atob(code.trim()));
+if (parsed && typeof parsed === "object") {
+return _withDot(parsed);
+}
+} catch (err) {
+window.__ssbErr("crosshair#1", err)
+}
+throw new Error("Invalid code format");
+}
+let body = code.substring(4);
+if (!body.includes(".")) {
+try {
+let parsed = JSON.parse(atob(body));
+if (parsed && typeof parsed === "object") {
+return _withDot(parsed);
+}
+} catch (err) {
+window.__ssbErr("crosshair#2", err)
+}
+}
+let p = Object.assign({}, B);
+let parts = body.split(".");
+parts.forEach(part => {
+if (!part) return;
+let key, valStr;
+if (part.startsWith("ss")) {
+key = "ss";
+valStr = part.substring(2);
+} else {
+key = part.substring(0, 1);
+valStr = part.substring(1);
+}
+switch (key) {
+case "a":
+p.hideCrosshair = valStr === "1";
+break;
+case "c":
+p.armColor = "#" + valStr;
+break;
+case "b":
+p.armBorder = "#" + valStr;
+break;
+case "l":
+p.armLength = parseFloat(valStr);
+break;
+case "w":
+p.armWidth = parseFloat(valStr);
+break;
+case "o":
+p.armOpacity = parseFloat(valStr);
+break;
+case "r":
+p.armRotation = parseInt(valStr, 10);
+break;
+case "g":
+p.armGap = parseInt(valStr, 10);
+break;
+case "s":
+p.armScale = parseFloat(valStr);
+break;
+case "h":
+p.hideDot = valStr === "1";
+break;
+case "d":
+p.dotShape = valStr === "p" ? "plus" : valStr === "s" ?
+"still" : "dot";
+break;
+case "x":
+p.dotColor = "#" + valStr;
+break;
+case "n":
+p.dotRound = valStr === "1";
+break;
+case "p":
+p.dotOpacity = parseFloat(valStr);
+break;
+case "k":
+p.dotPlusLen = parseInt(valStr, 10);
+break;
+case "j":
+p.dotPlusWidth = parseInt(valStr, 10);
+break;
+case "z":
+p.dotScale = parseFloat(valStr);
+break;
+case "f":
+p.plusScale = parseFloat(valStr);
+break;
+case "q":
+p.staticColor = "#" + valStr;
+break;
+case "v":
+p.staticOpacity = parseFloat(valStr);
+break;
+case "e":
+p.staticLength = parseFloat(valStr);
+break;
+case "t":
+p.staticWidth = parseFloat(valStr);
+break;
+case "i":
+p.staticGap = parseFloat(valStr);
+break;
+case "m":
+p.staticOutlineEnabled = valStr !== "0";
+break;
+case "ss":
+p.stillScale = parseFloat(valStr);
+break;
+}
+});
+p.dotBorder = p.armBorder;
+return p;
+}
+window.__ssbXh = {
+read(code) {
+let p;
+code = String(code == null ? "" : code).trim();
+if (!/^(?:X-|SSB-)./.test(code) && !_ssbIsValorantCode(code)) return null;
+try {
+p = unpackCrosshair(code)
+} catch (e) {
+return null
+}
+if (!p || typeof p !== "object") return null;
+p = Object.assign({}, B, p);
+const out = {};
+for (const k of Object.keys(B)) {
+const dflt = B[k],
+v = p[k];
+if (typeof dflt === "number") {
+if (typeof v !== "number" || !Number.isFinite(v) || Math.abs(v) > 1000) return null;
+out[k] = v
+} else if (typeof dflt === "boolean") out[k] = !!v;
+else if (k === "dotShape") {
+if (v !== "dot" && v !== "plus" && v !== "still") return null;
+out[k] = v
+} else {
+if (typeof v !== "string" || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v)) return null;
+out[k] = v.toLowerCase()
+}
+}
+out.enabled = true;
+return out
+},
+mini: (p, px) => xhMini(p, px),
+names: () => Object.keys(N()),
+add(name, p) {
+const all = N();
+all[name] = Object.assign({}, p, {
+enabled: true
+});
+M(all);
+try {
+if (window.__ssbXhRefresh && document.getElementById("mod-crosshair-section")) window.__ssbXhRefresh()
+} catch (e) {
+window.__ssbErr("xh.refresh", e)
+}
+}
+};
+function _ssbCleanHistoryLimit(v) {
+return [0, 40, 100, 250, 500, 1000].includes(v) ? v : 40;
+}
+function _stHistoryId(h) {
+return JSON.stringify([h.code || "", h.startMs || 0]);
+}
+function _stHistoryBulkBar(count, visible) {
+return `<div class="ssb-bulk" role="group" aria-label="Select matches"><label><input type="checkbox" data-bulk="visible" aria-label="Select shown matches" ${visible ? "" : "disabled"}>Select shown</label><span role="status" title="${count} selected${count ? " · Export uses your selection" : ""}">${count} selected${count ? " · Export uses your selection" : ""}</span><button type="button" class="ssb-btn ssb-sm" data-bulk="clear" ${count ? "" : "disabled"}>Clear Selection</button><button type="button" class="ssb-btn ssb-sm" data-bulk="keep" ${count ? "" : "disabled"}>Keep</button><button type="button" class="ssb-btn ssb-sm" data-bulk="unkeep" ${count ? "" : "disabled"}>Unkeep</button><button type="button" class="ssb-btn ssb-sm ssb-danger" data-bulk="delete" ${count ? "" : "disabled"}>Delete</button></div>`;
+}
+function _stHistoryBulkWire(ov, all, visible, selected, top) {
+const exportButton = ov.querySelector('[data-act="exstats"]');
+if (selected.size && exportButton) { exportButton.setAttribute("aria-label", "Export Selected Stats"); exportButton.title = "Export Selected Stats"; }
+const input = ov.querySelector('[data-bulk="visible"]'), n = visible.filter(h => selected.has(_stHistoryId(h))).length;
+if (!input) return;
+const after = () => selected.size ? '[data-bulk="visible"]' : ".ssb-hist-pick";
+input.checked = visible.length > 0 && n === visible.length;
+input.indeterminate = n > 0 && n < visible.length;
+input.onchange = () => {
+for (const h of visible) { const id = _stHistoryId(h); if (input.checked) selected.add(id); else selected.delete(id); }
+ef("ui_onchange"); eHIST(after(), top());
+};
+ov.querySelectorAll("button[data-bulk]").forEach(button => button.onclick = async () => {
+const action = button.dataset.bulk;
+ef("ui_click");
+if (action === "clear") { selected.clear(); eHIST(after(), top()); return; }
+let history = _ssbHist(), matches = history.filter(h => h && selected.has(_stHistoryId(h)));
+if (!matches.length) return;
+if (action === "delete") {
+if (!await window.__ssbUI.confirm({title: "Delete Selected Matches", text: "Delete " + matches.length +
+" selected matches, including any kept matches? This cannot be undone.", ok: "Delete", danger: true})) return;
+history = _ssbHist().filter(h => !h || !selected.has(_stHistoryId(h)));
+selected.clear();
+} else if (action === "keep") {
+const total = history.filter(h => h && (h.kept || selected.has(_stHistoryId(h)))).length;
+if (total > _HIST_KEPT) { window.__ssbUI.toast("You can keep up to " + _HIST_KEPT + " matches. Unkeep some first."); return; }
+for (const h of matches) h.kept = true;
+} else if (action === "unkeep") { for (const h of matches) delete h.kept; }
+_ssbHistSet(history); eHIST(after(), top());
+});
+}
+function _ssbHistoryLimit() {
+return _ssbCleanHistoryLimit(d.stats.historyLimit);
+}
+async function _ssbChooseHistoryLimit(value, apply) {
+value = _ssbCleanHistoryLimit(value);
+const hist = _ssbHist(), next = hist.map(h => h && Object.assign({}, h));
+_ssbHistTrim(next, value);
+const removed = hist.length - next.length;
+if (removed && !await window.__ssbUI.dialog({title: "Change History Limit", cancel: false,
+text: "Keep the newest " + value + " matches and up to 20 kept matches? This removes " + removed +
+" older matches. Export your history first to keep a copy.",
+buttons: [{label: "Cancel", value: false}, {label: "Export JSON", run: () => _ssbHistExport(_ssbHist(), "json")},
+{label: "Apply Limit", kind: "red", value: true}]})) return false;
+const fresh = _ssbHist().map(h => h && Object.assign({}, h));
+_ssbHistTrim(fresh, value);
+const previous = localStorage.getItem("tp-statsHistoryLimit");
+try {
+localStorage.setItem("tp-statsHistoryLimit", JSON.stringify(value));
+localStorage.setItem("tp-statsHistory", JSON.stringify(fresh));
+} catch (err) {
+try { if (previous === null) localStorage.removeItem("tp-statsHistoryLimit");
+else localStorage.setItem("tp-statsHistoryLimit", previous); } catch (_) {}
+window.__ssbUI.toast("Couldn't change the limit: " + err.message, {type: "error"});
+return false;
+}
+apply(value);
+_ssbHistSet(fresh);
+document.dispatchEvent(new Event("ssb:settings-change"));
+return true;
+}
+function _ssbStorageCard(own) {
+const card = document.createElement("div"), title = document.createElement("b"),
+text = document.createElement("div"), refresh = document.createElement("button");
+card.className = "ssb-storage-card";
+card.dataset.keywords = "storage usage space size backup history retention";
+title.textContent = "Local Storage";
+text.setAttribute("role", "status");
+refresh.type = "button";
+refresh.className = "ch2-profile-btn";
+refresh.textContent = "Refresh Usage";
+const bytes = n => n < 1024 ? n + " B" : n < 1048576 ? (n / 1024).toFixed(1) + " KB" : (n / 1048576).toFixed(2) + " MB",
+paint = () => {
+try {
+let total = 0, mod = 0, history = 0, crosshair = 0;
+for (let i = 0; i < localStorage.length; i++) {
+const key = localStorage.key(i), size = 2 * (key.length + (localStorage.getItem(key) || "").length);
+total += size;
+if (own(key)) mod += size;
+if (key === "tp-statsHistory") history += size;
+if (key.startsWith("ch2-")) crosshair += size;
+}
+text.textContent = "Better HUD: " + bytes(mod) + " · History: " + bytes(history) +
+" · Crosshairs: " + bytes(crosshair) + "\nThis site: " + bytes(total) +
+". Approximate sizes; browser limits vary. Save a backup before clearing data.";
+} catch (_) { text.textContent = "Local storage is unavailable in this browser."; }
+};
+refresh.onclick = () => { ef("ui_click"); paint(); };
+card.append(title, text, refresh);
+paint();
+return card;
+}
+function _ssbBackupProfile(value) {
+if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+const out = {};
+for (const key of Object.keys(B)) {
+const v = value[key], def = B[key];
+if (v === undefined) continue;
+if (typeof def === "boolean") { if (typeof v !== "boolean") return null; }
+else if (typeof def === "number") { if (!Number.isFinite(v) || v < 0 || v > 1000) return null; }
+else if (/Color|Border$/.test(key)) { if (typeof v !== "string" || !/^#[0-9a-f]{6}$/i.test(v)) return null; }
+else if (key === "dotShape") { if (!["dot", "plus", "still"].includes(v)) return null; }
+else if (typeof v !== typeof def) return null;
+out[key] = v;
+}
+return Object.keys(out).length ? _withDot(out) : null;
+}
+async function _ssbBackupRestore(backup, allowed) {
+const U = window.__ssbUI, obj = v => v && typeof v === "object" && !Array.isArray(v),
+parse = (v, fallback) => { try { const x = JSON.parse(v); return x == null ? fallback : x; } catch (_) { return fallback; } },
+has = (o, k) => Object.prototype.hasOwnProperty.call(o, k), src = Object.create(null);
+if (!obj(backup) || backup.app !== "better-hud-backup" || !obj(backup.keys)) throw Error("Choose a Better HUD backup file.");
+for (const key of Object.keys(backup.keys)) {
+if (!allowed(key) || typeof backup.keys[key] !== "string") continue;
+src[key] = backup.keys[key];
+}
+if (!has(src, "tp-statsHistoryLimit") && has(src, "tp-statsUnlimited") && allowed("tp-statsHistoryLimit"))
+src["tp-statsHistoryLimit"] = parse(src["tp-statsUnlimited"], false) === true ? "0" : "40";
+const rawProfiles = parse(src["ch2-profiles"], {}), profiles = Object.create(null);
+if (obj(rawProfiles)) for (const name of Object.keys(rawProfiles).slice(0, 1000)) {
+if (!name.trim() || name.length > 120 || /[\u0000-\u001f]/.test(name)) continue;
+const clean = _ssbBackupProfile(rawProfiles[name]);
+if (clean) profiles[name] = clean;
+}
+const special = new Set(["ch2-profiles", "ch2-profileOrder", "ch2-currentProfile", "tp-favItems", "tp-statsHistory", "tp-statsRecords", "tp-statsGameNo"]),
+keys = Object.keys(src).filter(k => !special.has(k)),
+groups = [
+{id: "settings", label: "MODS Settings", keys: keys.filter(k => !k.startsWith("ch2-"))},
+{id: "crosshair", label: "Current Crosshair", keys: keys.filter(k => k.startsWith("ch2-"))},
+{id: "profiles", label: "Crosshair Profiles", keys: []},
+{id: "favorites", label: "Favorites", keys: []},
+{id: "history", label: "Match History and Records", keys: []}
+], body = document.createElement("div"), choices = new Map(), profileChoices = new Map(),
+have = parse(localStorage.getItem("ch2-profiles"), {});
+body.className = "ssb-restore-picker";
+body.addEventListener("change", () => ef("ui_onchange"));
+body.addEventListener("pointerdown", ev => { if (ev.button === 0 && ev.target.closest("select") && !ev.target.closest("select").disabled) ef("ui_toggletab"); });
+const label = (name, parent, checked = true) => {
+const row = document.createElement("label"), cb = document.createElement("input"), span = document.createElement("span");
+row.className = "ssb-restore-choice"; cb.type = "checkbox"; cb.checked = checked;
+span.textContent = name; row.append(cb, span); parent.appendChild(row); return cb;
+};
+for (const group of groups) {
+const present = group.keys.length || group.id === "profiles" && Object.keys(profiles).length ||
+group.id === "favorites" && has(src, "tp-favItems") || group.id === "history" &&
+["tp-statsHistory", "tp-statsRecords", "tp-statsGameNo"].some(k => has(src, k));
+if (!present) continue;
+const section = document.createElement("div"); section.className = "ssb-restore-group";
+const cb = label(group.label, section); cb.dataset.restore = group.id; choices.set(group.id, cb);
+if (group.id === "profiles") {
+const list = document.createElement("div"); list.className = "ssb-restore-profiles";
+for (const name of Object.keys(profiles)) {
+const row = document.createElement("div"), take = label(name, row), select = document.createElement("select");
+row.className = "ssb-restore-profile";
+select.setAttribute("aria-label", "Conflict action for " + name);
+for (const [value, text] of [["both", "Keep Both"], ["replace", "Replace"], ["skip", "Skip"]]) {
+const option = document.createElement("option"); option.value = value; option.textContent = text; select.appendChild(option);
+}
+select.hidden = !obj(have) || !has(have, name);
+if (!select.hidden) row.appendChild(select);
+list.appendChild(row); profileChoices.set(name, {take, select});
+}
+cb.onchange = () => { for (const {take, select} of profileChoices.values()) { take.disabled = !cb.checked; select.disabled = !cb.checked; } };
+section.appendChild(list);
+}
+body.appendChild(section);
+}
+if (!choices.size) { U.toast("No supported data was found in that backup."); return false; }
+const hint = document.createElement("p"); hint.className = "ssb-restore-note";
+hint.textContent = "Choose individual profiles below. Favorites and history merge with your saved data. Settings replace only the categories you select.";
+body.prepend(hint);
+const when = Number.isFinite(+backup.created) && +backup.created > 0 ? new Date(+backup.created).toLocaleString() : "an unknown date";
+if (!await U.dialog({title: "Choose What to Restore", text: "Backup from " + when + ". The page reloads after loading.",
+body, wide: true, cancel: false, buttons: [{label: "Cancel", value: false}, {label: "Review Changes", value: true, primary: true}]})) return false;
+const selected = id => !!choices.get(id)?.checked, plan = new Map(), summary = [];
+for (const group of groups) if (selected(group.id)) {
+let count = 0;
+for (const key of group.keys) {
+let value = src[key];
+const core = _ssbCore.find(x => x[2] === key), reg = window.__ssbSettings.items.find(x => x.key === key);
+if (core) {
+const v = core[5] === "key" ? value : parse(value, null);
+if (core[5] === "key" ? typeof v !== "string" || v.length > 40 : core[5] === "b" ? typeof v !== "boolean" : !Number.isFinite(v)) continue;
+if (key === "tp-statsHistoryLimit") value = JSON.stringify(_ssbCleanHistoryLimit(v));
+} else if (reg && typeof parse(value, null) !== "boolean") continue;
+else if (key.startsWith("ch2-")) {
+const field = key.slice(4);
+if (has(B, field)) {
+const v = typeof B[field] === "string" ? value.replace(/^"|"$/g, "") : parse(value, null),
+clean = _ssbBackupProfile({[field]: v});
+if (!clean) continue;
+value = typeof v === "string" ? v : JSON.stringify(v);
+} else if (field === "perWeapon") { if (typeof parse(value, null) !== "boolean") continue; }
+else if (field === "perWeaponMap") {
+const map = parse(value, null);
+if (!obj(map) || Object.values(map).some(v => typeof v !== "string" || v.length > 120)) continue;
+} else if (field === "previewBg") { if (!/^#[0-9a-f]{6}$/i.test(value)) continue; }
+else continue;
+}
+if (localStorage.getItem(key) !== value) { plan.set(key, value); count++; }
+}
+if (count) summary.push(group.label + ": " + count + " changed");
+}
+if (selected("profiles")) {
+const current = parse(localStorage.getItem("ch2-profiles"), {}), merged = Object.assign(Object.create(null), obj(current) ? current : {}), names = [];
+for (const [name, choice] of profileChoices) {
+if (!choice.take.checked || choice.select.value === "skip") continue;
+let target = name;
+if (has(merged, name) && choice.select.value !== "replace") {
+let n = 2; while (has(merged, target = name + " (" + n++ + ")")) {}
+}
+merged[target] = profiles[name]; names.push(target);
+}
+if (names.length) { plan.set("ch2-profiles", JSON.stringify(merged)); summary.push(names.length + " crosshair profiles loaded"); }
+}
+if (selected("favorites")) {
+const incoming = parse(src["tp-favItems"], []), current = parse(localStorage.getItem("tp-favItems"), []),
+clean = a => Array.isArray(a) ? a.filter(v => typeof v === "string" && v.length < 200 || Number.isSafeInteger(v) && v >= 0) : [],
+merged = [...new Set(clean(current).concat(clean(incoming)))];
+if (JSON.stringify(merged) !== JSON.stringify(current)) { plan.set("tp-favItems", JSON.stringify(merged)); summary.push("Favorites merged"); }
+}
+let newHistory = null;
+if (selected("history")) {
+const raw = parse(src["tp-statsHistory"], []), incoming = Array.isArray(raw) ? raw.slice(0, 10000).map(_stImportClean).filter(Boolean) : [],
+merged = _stImportMerge(incoming, _ssbHist());
+if (merged.added) {
+newHistory = merged.history;
+const effective = plan.has("tp-statsHistoryLimit") ? _ssbCleanHistoryLimit(parse(plan.get("tp-statsHistoryLimit"), 40)) : _ssbHistoryLimit();
+_ssbHistTrim(newHistory, effective);
+plan.set("tp-statsHistory", JSON.stringify(newHistory));
+summary.push(merged.added + " new matches merged; history limit applies");
+}
+for (const key of ["tp-statsRecords", "tp-statsGameNo"]) if (has(src, key) && localStorage.getItem(key) !== src[key]) {
+const value = parse(src[key], null);
+if (key === "tp-statsRecords" ? !obj(value) : !Number.isSafeInteger(value) || value < 0) continue;
+plan.set(key, src[key]); summary.push(key === "tp-statsRecords" ? "Personal records restored" : "Match counter restored");
+}
+}
+if (!plan.size) { U.toast("Nothing selected would change your saved data."); return false; }
+const proposedLimit = plan.has("tp-statsHistoryLimit") ? _ssbCleanHistoryLimit(parse(plan.get("tp-statsHistoryLimit"), 40)) : _ssbHistoryLimit(),
+preview = _ssbHist().map(h => h && Object.assign({}, h));
+_ssbHistTrim(preview, proposedLimit);
+const removes = _ssbHist().length - preview.length;
+if (!await U.dialog({title: "Load Selected Data", text: summary.join("\n") +
+(removes ? "\nThe selected limit removes " + removes + " older matches at the next history save. Export them first to keep a copy." : "") +
+"\nThe page reloads afterwards.", cancel: false,
+buttons: [{label: "Cancel", value: false}, ...(removes ? [{label: "Export JSON", run: () => _ssbHistExport(_ssbHist(), "json")}] : []),
+{label: "Load", kind: "red", value: true, primary: true}]})) return false;
+if (newHistory) {
+const raw = parse(src["tp-statsHistory"], []), incoming = Array.isArray(raw) ? raw.slice(0, 10000).map(_stImportClean).filter(Boolean) : [];
+newHistory = _stImportMerge(incoming, _ssbHist()).history;
+const effective = plan.has("tp-statsHistoryLimit") ? _ssbCleanHistoryLimit(parse(plan.get("tp-statsHistoryLimit"), 40)) : _ssbHistoryLimit();
+_ssbHistTrim(newHistory, effective);
+plan.set("tp-statsHistory", JSON.stringify(newHistory));
+}
+const before = new Map([...plan.keys()].map(k => [k, localStorage.getItem(k)])), written = [];
+try {
+for (const [key, value] of plan) { localStorage.setItem(key, value); written.push(key); }
+} catch (err) {
+let restored = true;
+for (const key of written.reverse()) try { const old = before.get(key); if (old === null) localStorage.removeItem(key); else localStorage.setItem(key, old); } catch (_) { restored = false; }
+throw Error("Storage is full or unavailable. " + (restored ? "Existing data was restored." : "Some changes could not be rolled back.") + " Export history or free some space before loading.");
+}
+if (newHistory) _ssbHistSet(newHistory);
+ef("ui_equip"); U.toast("Selected backup data loaded. Reloading…", {type: "success"});
+setTimeout(() => location.reload(), 900);
+return true;
+}
 function e5(_force) {
 ! function e() {
 if (document.getElementById("mod-server-style")) return;
@@ -7680,7 +10453,7 @@ let _lv = [];
 Array.from(e.options).forEach(op => {
 if (!op.value) return;
 _lv.push(op.value);
-let _lb = (op.textContent || "").replace(/[\s ]*[-\d.]*[\s ]*ms[\s ]*$/i, "")
+let _lb = (op.textContent || "").replace(/\s*[-\d.]*\s*ms\s*$/i, "")
 .trim();
 let _ok = _lb && !/ms$/i.test(_lb);
 let _n = eB.find(x => x.value === op.value);
@@ -7770,6 +10543,7 @@ if (window.__ssbUI) window.__ssbUI.toast(
 }
 }, 1500);
 let eW = () => {
+if (_ssbSettingsShadeSync.ready) _ssbSettingsShadeSync();
 if (!document.hidden && !document.pointerLockElement) {
 try {
 ! function e() {
@@ -7809,6 +10583,9 @@ let o = {
 "Show Changed Tab": "Shows the Changed tab in the MODS sidebar, listing settings that differ from their defaults with a Reset for each. Off by default.",
 "Advanced Settings": "Shows the Effects and Gameplay tabs in the MODS sidebar, and what each Manage button does under it. Off by default. The settings on the hidden tabs keep working, and searching still finds them.",
 "King of the Coop Stats": "Adds each player's time on the coop, captures and takeovers to the King of the Coop scoreboard and match history. Needs Stats Tracker on.",
+"Show Guns": "Shows each player's gun by their name in the stats window, Match History and the pictures (Copy Image, Download, every Stats Style): the primary they got the most kills with. Pistol, grenade and melee kills don't count. Before their first kill with a primary, it's the primary they last held; a dash when that isn't known (matches saved by older versions).",
+"Stats Style":"How Copy Image and Download draw a match: Better HUD's own look, or a league's result card (Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod, Nameless). The stats window itself stays the same. The numbers in brackets on the league cards and the coop columns need King of the Coop Stats on.",
+"Match Time": "Which duration the stats window, Match History and exports show. Time in Lobby (default) counts the whole time connected to the match, including waiting, respawns and menus. Time Spawned In counts time playing and pauses in menus. Both are saved for new matches; older matches keep their original recorded duration.",
 "When King of the Coop Ends": "When a team wins a King of the Coop game, copies the scoreboard picture to your clipboard or downloads it. It's the picture Copy Image and Download make in the stats window. Needs Stats Tracker on.",
 "Stats Tracker": "Tracks kills, deaths, KDR and local match history.",
 "Kill Bars": "Adds a team-colored bar behind each player in the stats window and its pictures. The team's top kill count fills the row; the other bars are proportional. Off by default.",
@@ -7821,12 +10598,14 @@ let o = {
 "Tab Out Key": "The keyboard key that releases pointer lock so you can tab away without snapping the camera. Clear removes the key.",
 "Render Scale": "The resolution the game is drawn at. 1 is normal. Above 1 is a lower resolution for more FPS: 2 is half the width and height, and looks blurrier. Below 1 is a higher resolution for a sharper picture: 0.5 is twice the width and height, and costs a lot of FPS. Type any value from 0.25 to 4. Smart Auto Detail can still lower the resolution when your FPS drops.",
 "GUI Scale": "Makes the game's HUD, menus, chat and scoreboard smaller or larger. 1 is the normal size and most of the range makes things smaller. The crosshair keeps its size. Applies when you let go of the slider.",
+"Coop Icon Size": "Makes the King of the Coop marker over the coop (its ring, crown and distance) smaller, so it covers less of the players on the coop. 1 is the game's size and 0.25 a quarter of it. Hide Game Stats still hides it completely.",
 "FOV (Black Bars)": "Widens your view by adding black bars at the top and bottom. The HUD and menus keep their normal size unless Resize Everything is on. Only in matches; 1 turns it off.",
 "Reset All Mod Settings": "Restore every MODS setting to its default, including Infinite Chat History, the Match History button and the favorites options. Your crosshairs aren't affected."
 };
-if (!document.getElementById("mod-settings-style")) {
+if (!document.querySelector('style#mod-settings-style[data-ssb-owner="better-hud"]')) {
 let n = document.createElement("style");
 n.id = "mod-settings-style";
+n.setAttribute("data-ssb-owner", "better-hud");
 n.textContent =
 `#mod-settings-section { font-family: "Nunito", system-ui, sans-serif !important; }
 #mod-settings-section .mod-header { font-family:"Sigmar One", sans-serif !important; font-weight:normal; font-size: 24px; text-transform:uppercase; color:var(--ssb-ink); margin: 0 0 12px 0; }
@@ -8169,8 +10948,8 @@ font-size:15px !important; font-weight:900 !important; line-height:1.2;
 #mod-settings-section.ssb-paged:not(.ssb-adv) .mod-grid[data-section="manage"] > button::after { display:none; }
 /* Game Fixes (MODS > Gameplay): the fixes under the gear look off while the Game Fixes switch is off */
 #mod-settings-section .mod-grid.ssb-gf-off > .ssb-gf-sub { opacity:0.55; }
-#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button:nth-child(1) { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E"); }
-#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button:nth-child(2) { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M4 20h16'/%3E%3C/svg%3E"); }
+#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="ccopy"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E"); }
+#mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="cimport"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M4 20h16'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="bsave"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='5' rx='1'/%3E%3Cpath d='M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="bload"] { --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V8M7 13l5-5 5 5M4 4h16'/%3E%3C/svg%3E"); }
 #mod-settings-section.ssb-paged .mod-grid[data-section="manage"] > button[data-pm="support"] { min-height:84px; --pm-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M5.6 5.6l3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6'/%3E%3C/svg%3E"); }
@@ -8294,7 +11073,7 @@ white-space:nowrap !important; cursor:pointer !important; transform:none !import
 #popupInnards > #mod-crosshair-section .ch2-hist-btn:active:not(:disabled) { background:rgba(14,118,151,0.2) !important; }
 #popupInnards > #mod-crosshair-section .ch2-hist-btn:hover:not(:disabled)::before, #popupInnards > #mod-crosshair-section .ch2-hist-btn:hover:not(:disabled) + .ch2-hist-btn::before { opacity:0; }
 #popupInnards > #mod-crosshair-section .ch2-hist-btn:disabled { color:rgba(14,118,151,0.36) !important; cursor:default !important; }
-#popupInnards > #mod-crosshair-section .ch2-hist-btn:focus-visible { outline:2px solid var(--ssb-focus) !important; outline-offset:-2px !important; }
+#popupInnards > #mod-crosshair-section .ch2-hist-btn:focus-visible { outline:none !important; background:rgba(14,118,151,0.12) !important; }
 /* too narrow for the words: icons only (the tooltips still name them) */
 @container (max-width:220px) { #popupInnards > #mod-crosshair-section .ch2-hist-btn > span { display:none; } }
 #popupInnards > #mod-crosshair-section #ch2-open-gallery-btn {
@@ -8304,9 +11083,11 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 0 var(--ssb-yolk-shadow),
 font-size:13px !important; font-weight:900 !important; letter-spacing:0.1px !important; text-transform:none !important; text-shadow:0 1px 2px rgba(0,0,0,0.3) !important; transition:background-color 0.12s, box-shadow 0.12s;
 }
 #popupInnards > #mod-crosshair-section #ch2-open-gallery-btn::before { content:""; flex:none; width:14px; height:14px; background:#fff; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='13.5' y='3' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='3' y='13.5' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='13.5' y='13.5' width='7.5' height='7.5' rx='1.5'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='13.5' y='3' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='3' y='13.5' width='7.5' height='7.5' rx='1.5'/%3E%3Crect x='13.5' y='13.5' width='7.5' height='7.5' rx='1.5'/%3E%3C/svg%3E") center / contain no-repeat; }
-#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn::after { content:attr(data-count); min-width:18px; height:18px; padding:0 5px; box-sizing:border-box; border-radius:999px; background:rgba(255,255,255,0.3); color:#fff; font-size:11px; font-weight:900; line-height:18px; text-align:center; }
-#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn:hover { background:var(--ssb-yolk-hi) !important; }
-#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn:active { transform:translateY(1px) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 0 var(--ssb-yolk-shadow) !important; }
+#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn { display:inline-flex !important; align-items:center; height:32px !important; padding:0 12px !important; gap:7px !important; border:1px solid rgba(255,255,255,0.8) !important; border-radius:10px !important; background:linear-gradient(180deg,#f3fcff,#d3edf5) !important; color:var(--ssb-ink) !important; text-shadow:none !important; box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(8,62,84,0.12) !important; }
+#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn::before { background:currentColor; }
+#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn::after { content:""; width:6px; height:6px; margin-left:3px; border-top:2px solid currentColor; border-right:2px solid currentColor; transform:rotate(45deg); }
+#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn:hover { background:#fff !important; box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(8,62,84,0.18) !important; }
+#popupInnards > #mod-crosshair-section #ch2-open-gallery-btn:active { transform:translateY(1px) !important; box-shadow:inset 0 1px 3px rgba(8,62,84,0.12) !important; }
 #popupInnards > #mod-crosshair-section .ch2-mini-row { margin:10px 0 0 !important; }
 #popupInnards > #mod-crosshair-section .ch2-mini-tile { border:2px solid #fff !important; border-radius:10px !important; box-shadow:0 2px 6px rgba(8,62,84,0.16) !important; transition:transform 0.12s, box-shadow 0.12s; }
 #popupInnards > #mod-crosshair-section .ch2-mini-tile.selected { box-shadow:0 0 0 2.5px #ff981f, 0 4px 10px rgba(247,147,30,0.35) !important; }
@@ -8365,7 +11146,7 @@ letter-spacing:0 !important; line-height:1.3; text-transform:none !important; co
 #popupInnards > #mod-crosshair-section .ch2-card-weapon > .ch2-card-title::after { content:"Use one of your saved profiles while you hold a weapon."; }
 #popupInnards > #mod-crosshair-section .ch2-card-weapon .ch2-collapse-body { border-top:1px solid var(--pm-line); }
 #popupInnards > #mod-crosshair-section .ch2-pw-select { width:190px; max-width:100%; height:28px; padding:0 4px !important; border:0 !important; border-radius:6px !important; background:transparent !important; color:var(--ssb-ink) !important; font-family:"Nunito",system-ui,sans-serif !important; font-size:14px !important; font-weight:700 !important; cursor:pointer; outline:none; text-overflow:ellipsis; }
-#popupInnards > #mod-crosshair-section .ch2-control-right:has(.ch2-pw-select:focus-visible) { outline:2px solid var(--ssb-focus); outline-offset:1px; }
+#popupInnards > #mod-crosshair-section .ch2-control-right:has(.ch2-pw-select:focus-visible) { outline:none; background:rgba(14,118,151,0.08); }
 
 /* Rows: one line each, a hairline between them, every control ending on the same right edge */
 #popupInnards > #mod-crosshair-section .ch2-right-col :is(.ch2-check-label, .ch2-control-row, .ch2-slider-wrap) { box-sizing:border-box; min-height:52px; margin:0 !important; padding:8px 0 !important; border-top:1px solid var(--pm-line) !important; }
@@ -8403,8 +11184,10 @@ border:0 !important; border-radius:50%; background:#fff; box-shadow:0 2px 5px rg
 #popupInnards > #mod-crosshair-section .ch2-slider-wrap::before, #popupInnards > #mod-crosshair-section .ch2-slider-wrap::after { font-size:11px; font-weight:700; line-height:1; color:#216a80; opacity:0.75; white-space:nowrap; }
 #popupInnards > #mod-crosshair-section .ch2-slider-wrap::before { content:attr(data-min); grid-area:1 / 2; text-align:right; }
 #popupInnards > #mod-crosshair-section .ch2-slider-wrap::after { content:attr(data-max); grid-area:1 / 4; text-align:left; }
-#popupInnards > #mod-crosshair-section .ch2-slider { grid-area:1 / 3; width:100% !important; height:10px !important; margin:0; border:1px solid rgba(12,87,111,0.15) !important; border-radius:5px !important; background:#fff !important; }
-#popupInnards > #mod-crosshair-section .ch2-slider::-webkit-slider-thumb { width:21px !important; height:21px !important; margin-top:-7px !important; box-sizing:border-box !important; border:4.5px solid #fff !important; border-radius:50% !important; background:var(--ssb-yolk) !important; box-shadow:0 1px 4px rgba(0,0,0,0.35) !important; }
+#popupInnards > #mod-crosshair-section .ch2-slider { appearance:none; grid-area:1 / 3; width:100% !important; height:21px !important; margin:0; padding:0 !important; border:0 !important; border-radius:0 !important; background:transparent !important; }
+#popupInnards > #mod-crosshair-section .ch2-slider::-webkit-slider-runnable-track { height:8px; box-sizing:border-box; border:0; border-radius:5px; background:#fff; box-shadow:inset 0 0 0 1px rgba(12,87,111,0.15); }
+#popupInnards > #mod-crosshair-section .ch2-slider::-moz-range-track { height:8px; box-sizing:border-box; border:0; border-radius:5px; background:#fff; box-shadow:inset 0 0 0 1px rgba(12,87,111,0.15); }
+#popupInnards > #mod-crosshair-section .ch2-slider::-webkit-slider-thumb { appearance:none; width:21px !important; height:21px !important; margin-top:-6.5px !important; box-sizing:border-box !important; border:4.5px solid #fff !important; border-radius:50% !important; background:var(--ssb-yolk) !important; box-shadow:0 1px 4px rgba(0,0,0,0.35) !important; }
 #popupInnards > #mod-crosshair-section .ch2-slider::-moz-range-thumb { width:21px !important; height:21px !important; box-sizing:border-box !important; border:4.5px solid #fff !important; border-radius:50% !important; background:var(--ssb-yolk) !important; box-shadow:0 1px 4px rgba(0,0,0,0.35) !important; }
 #popupInnards > #mod-crosshair-section .ch2-slider-wrap .ch2-num { grid-area:1 / 5; }
 #popupInnards > #mod-crosshair-section .ch2-num { width:64px !important; height:36px !important; box-sizing:border-box; padding:0 6px !important; border:0 !important; border-radius:10px !important; background:#fff !important; box-shadow:inset 0 1px 3px rgba(8,62,84,0.16); font-size:15px !important; font-weight:700 !important; }
@@ -8548,6 +11331,10 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #mod-settings-section .mod-seg-btn { flex:1 1 0; min-width:84px; height:36px; margin:0; padding:0 12px; border:1px solid transparent; border-radius:10px; background:transparent; box-shadow:none; color:var(--ssb-ink); font-family:"Nunito", system-ui, sans-serif; font-size:14px; font-weight:800; letter-spacing:0.2px; line-height:1; text-transform:none; text-shadow:none; white-space:nowrap; cursor:pointer; transition:background 0.12s; }
 #mod-settings-section .mod-seg-btn:hover:not([aria-pressed="true"]) { background:var(--pm-glass-hi, rgba(255,255,255,0.42)); }
 #mod-settings-section .mod-seg-btn[aria-pressed="true"] { border-color:var(--pm-orange-edge, #cf700c); background:var(--pm-orange, #ff961d); color:#fff; text-shadow:0 1px 0 rgba(0,0,0,0.22); box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12), 0 4px 10px rgba(247,147,30,0.3); }
+/* One native selector surface, like Crosshair Profiles; the value itself opens the menu. */
+#mod-settings-section .mod-style-row > .mod-slider-label { flex:1 1 auto; min-width:0; }
+#mod-settings-section .mod-style-select { appearance:auto; flex:0 1 220px; width:220px; max-width:60%; min-width:0; height:42px; box-sizing:border-box; margin:0; padding:0 12px; border:0; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.52) 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(14,118,151,0.14), 0 1px 2px rgba(8,62,84,0.12), 0 8px 18px rgba(8,62,84,0.16); color:var(--ssb-ink); font-family:"Nunito",system-ui,sans-serif; font-size:14px; font-weight:800; text-transform:none; text-shadow:none; cursor:pointer; outline:none; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; }
+#mod-settings-section .mod-style-select:focus-visible { outline:none !important; filter:brightness(1.05); }
 /* Changed page: a "Reset" text link on each card there, styled like Clear. The word is CSS, so search doesn't read it. */
 #mod-settings-section .mod-reset-one { display:none; flex:none; margin:0; padding:2px 4px; border:none; background:none; color:var(--ssb-muted); font-family:"Nunito", system-ui, sans-serif; font-size:14px; font-weight:800; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 #mod-settings-section .mod-reset-one::before { content:"Reset"; }
@@ -8565,13 +11352,34 @@ background:var(--pm-glass) !important; box-shadow:inset 0 1px 0 rgba(255,255,255
 #mod-settings-section [data-tooltip], #mod-settings-section .mod-slider-label[data-tooltip] {
 cursor: default;
 }
+
+#ssb-dialog-panel .ssb-restore-picker { max-height:52vh; overflow:auto; text-align:left; font-size:15px; }
+#ssb-dialog-panel .ssb-restore-note { margin:0 0 10px; font-size:13px; line-height:1.4; color:#fff; }
+#ssb-dialog-panel .ssb-restore-group { padding:10px 12px; margin:7px 0; border-radius:9px; background:rgba(255,255,255,.9); color:var(--ssb-ink); }
+#ssb-dialog-panel .ssb-restore-choice { display:flex; align-items:center; gap:10px; min-height:28px; font-weight:800; cursor:pointer; overflow-wrap:anywhere; }
+/* The game's tick box, as in Match History: white, rounded, a thick blue tick. These sit on white cards,
+so a soft blue edge keeps an empty box visible. Profiles are greyed out while Crosshair Profiles is unticked. */
+#ssb-dialog-panel .ssb-restore-choice input { -webkit-appearance:none; appearance:none; flex:none; box-sizing:border-box; width:20px; height:20px; margin:0; border:0; border-radius:5px; background:#fff no-repeat center / 80%; box-shadow:inset 0 0 0 2px rgba(14,118,151,.5); cursor:pointer; }
+#ssb-dialog-panel .ssb-restore-choice input:checked { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 12.5l5 5L19.5 6.5' fill='none' stroke='%230E7697' stroke-width='4.2'/%3E%3C/svg%3E"); }
+#ssb-dialog-panel .ssb-restore-choice input:disabled { opacity:.45; cursor:default; }
+#ssb-dialog-panel .ssb-restore-choice input:focus-visible { outline:2px solid var(--ssb-blue); outline-offset:2px; }
+#ssb-dialog-panel .ssb-restore-choice span { min-width:0; }
+#ssb-dialog-panel .ssb-restore-profiles { margin:6px 0 0 12px; }
+#ssb-dialog-panel .ssb-restore-profile { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:5px 0; }
+#ssb-dialog-panel .ssb-restore-profile label { flex:1; min-width:120px; font-size:14px; }
+#ssb-dialog-panel .ssb-restore-profile select { max-width:130px; margin:0; padding:4px 7px; border:1px solid var(--ssb-blue); border-radius:6px; background:#fff; color:var(--ssb-ink); font-family:inherit; font-size:14px; }
+#ssb-dialog-panel .ssb-restore-profile select[hidden] { display:none; }
+#mod-settings-section .ssb-storage-card { grid-column:1 / -1; padding:14px 16px; border:1px solid var(--ssb-card-edge); border-radius:12px; background:var(--ssb-card); color:var(--ssb-ink); font-family:Nunito,sans-serif; }
+#mod-settings-section .ssb-storage-card b { font-size:16px; }
+#mod-settings-section .ssb-storage-card div { margin:7px 0 10px; font-size:13px; font-weight:700; line-height:1.45; white-space:pre-line; }
 `
 ;
 (document.head || document.documentElement).appendChild(n);
 }
-if (!document.getElementById("mod-crosshair-compact")) {
+if (!document.querySelector('style#mod-crosshair-compact[data-ssb-owner="better-hud"]')) {
 let cs = document.createElement("style");
 cs.id = "mod-crosshair-compact";
+cs.setAttribute("data-ssb-owner", "better-hud");
 cs.textContent =
 `#mod-crosshair-section .ch2-preview-col{flex:1!important}#mod-crosshair-section .ch2-preview-wrap{margin-bottom:12px!important;border-radius:12px!important}#mod-crosshair-section .ch2-label{font-size:14px!important}#mod-crosshair-section .ch2-check-text{font-size:18px!important}#mod-crosshair-section .ch2-check-label{gap:14px!important;margin-bottom:8px!important}#mod-crosshair-section .ch2-check-box{width:30px!important;height:30px!important;border-radius:7px!important}#mod-crosshair-section .ch2-color{width:48px!important;height:28px!important;border-radius:7px!important}#mod-crosshair-section .ch2-hex{width:76px!important;padding:4px 8px!important;font-size:14px!important;border-radius:8px!important}#mod-crosshair-section .ch2-num{width:56px!important;padding:4px 8px!important;font-size:14px!important;border-radius:8px!important}#mod-crosshair-section .ch2-control-row{gap:13px!important;margin-bottom:9px!important}#mod-crosshair-section .ch2-slider{height:5px!important;border-radius:4px!important}#mod-crosshair-section .ch2-slider::-webkit-slider-thumb{-webkit-appearance:none!important;appearance:none!important;width:21px!important;height:21px!important;border:4.5px solid #ffffff!important;margin-top:-8px!important;box-sizing:border-box!important}#mod-crosshair-section .ch2-slider::-moz-range-thumb{width:21px!important;height:21px!important;border-width:4.5px!important;box-sizing:border-box!important}#mod-crosshair-section .ch2-slider-wrap{margin-bottom:14px!important}#mod-crosshair-section .ch2-slider-lrow{margin-bottom:6px!important}#mod-crosshair-section .ch2-shape-row{gap:5px!important;margin-bottom:10px!important}#mod-crosshair-section .ch2-shape-btn{font-size:15px!important;padding:0 8px!important;height:36px!important;border-radius:10px!important;letter-spacing:0.4px!important;box-shadow:0 3px 0 var(--ssb-card-shadow-hi)!important}#mod-crosshair-section .ch2-shape-btn:hover{box-shadow:0 3px 0 var(--ssb-card-shadow-hi)!important}#mod-crosshair-section .ch2-shape-btn:active{box-shadow:0 1px 0 var(--ssb-card-shadow-hi)!important}#mod-crosshair-section .ch2-shape-btn.active{box-shadow:0 3px 0 var(--ssb-ink)!important}#mod-crosshair-section .ch2-reset-btn{padding:0 18px!important;font-size:15px!important;height:36px!important;border-radius:10px!important;margin-top:10px!important;letter-spacing:0.4px!important;box-shadow:0 3px 0 var(--ssb-red-shadow)!important}#mod-crosshair-section .ch2-reset-btn:hover{box-shadow:0 3px 0 var(--ssb-red-shadow-hi)!important}#mod-crosshair-section .ch2-reset-btn:active{box-shadow:0 1px 0 var(--ssb-red-shadow-hi)!important}#mod-crosshair-section .ch2-profile-btn{font-size: 14px !important;height:34px!important;padding:0 10px!important;border-radius:9px!important;letter-spacing:0.3px!important;white-space:nowrap!important;box-shadow:0 3px 0 #123d4b!important}#mod-crosshair-section .ch2-profile-btn:hover{box-shadow:0 3px 0 var(--ssb-blue-shadow)!important}#mod-crosshair-section .ch2-profile-btn:active{box-shadow:0 1px 0 var(--ssb-blue-shadow)!important}#mod-crosshair-section .ch2-profile-btn.danger{box-shadow:0 3px 0 var(--ssb-red-shadow)!important}`;
 (document.head || document.documentElement).appendChild(cs)
@@ -8607,7 +11415,10 @@ let kw = {
 "Stats Tracker": "enable stats kdr kills deaths",
 "Kill Bars": "scoreboard row fill kills team bar graph",
 "Highlight Your Name": "stats scoreboard own player me highlight row",
+"Show Guns": "stats weapon gun icon primary class kills league picture",
 "Pin Stats on Pause Menu": "keep stats pinned",
+"Stats Style": "league stats style format picture image copy download export shell strike shellstrike2 ranked blitz drill og stats mod nameless scoreboard card",
+"Match Time": "duration timer time lobby match connected waiting respawn menus spawned playing alive",
 "When King of the Coop Ends": "kotc game over win round end copy download save picture image screenshot scoreboard",
 "Stats Hotkey": "keybind",
 "Tab Out Key": "keybind pointer lock",
@@ -8616,6 +11427,7 @@ let kw = {
 "Auto Fullscreen": "full screen f11",
 "Render Scale": "resolution quality pixels hardware scaling blurry sharp lag low fps performance",
 "GUI Scale": "ui size zoom smaller bigger shrink resize text hud menus interface font 4k big screen",
+"Coop Icon Size": "king of the coop kotc capture ring crown marker icon hill zone smaller shrink resize size",
 "FOV (Black Bars)": "field of view stretch letterbox widescreen aspect ratio window resolution"
 };
 function a(e, id) {
@@ -8838,6 +11650,45 @@ paint();
 a.appendChild(r);
 a.appendChild(g);
 return a;
+}
+function choice(e, opts, cur, save, key) {
+const row = document.createElement("div"), label = document.createElement("label"),
+select = document.createElement("select");
+row.className = "mod-slider-container mod-style-row";
+row.setAttribute("data-setting", key);
+if (kw[e]) row.setAttribute("data-keywords", kw[e]);
+label.className = "mod-slider-label";
+label.textContent = e;
+label.htmlFor = "ssb-select-" + key;
+if (o[e]) label.setAttribute("data-tooltip", o[e]);
+select.id = label.htmlFor;
+select.className = "mod-style-select";
+opts.forEach((name, value) => {
+const option = document.createElement("option");
+option.value = String(value);
+option.textContent = name;
+select.appendChild(option);
+});
+select.value = String(cur);
+row.__ssbSet = v => {
+const value = save(v);
+select.value = String(value);
+return value;
+};
+select.addEventListener("change", () => {
+ef("ui_onchange");
+row.__ssbSet(Number(select.value));
+});
+select.addEventListener("pointerdown", ev => {
+if (ev.button === 0) ef("ui_toggletab");
+});
+for (const type of ["keydown", "keyup"]) select.addEventListener(type, ev => {
+if (type === "keydown" && !ev.repeat && (ev.key === " " || ev.key === "Enter" || ev.altKey && ev.key === "ArrowDown")) ef("ui_toggletab");
+if (ev.key !== "Escape") ev.stopPropagation();
+});
+row.appendChild(label);
+row.appendChild(select);
+return row;
 }
 i.id = "mod-settings-section";
 i.style.cssText =
@@ -9242,6 +12093,69 @@ _guC.appendChild(_guIW);
 _guC.appendChild(
 _guN);
 C.appendChild(_guC);
+C.appendChild(_coopSizeRow());
+function _coopSizeRow() {
+const row = document.createElement("div"), label = document.createElement("div"),
+wrap = document.createElement("div"), range = document.createElement("input"),
+box = document.createElement("input"), name = "Coop Icon Size",
+lim = (t, side) => {
+const x = document.createElement("span");
+x.className = "mod-slider-limit";
+x.style.cssText = "font-size: 11px; color: #216a80; font-weight: 700; opacity: 0.75; min-width: 20px; text-align: " + side + ";";
+x.textContent = t;
+return x;
+};
+row.className = "mod-slider-container";
+row.setAttribute("data-setting", "tp-coopIconSize");
+row.setAttribute("data-keywords", kw[name]);
+label.className = "mod-slider-label";
+label.textContent = name;
+if (o[name]) {
+label.setAttribute("data-tooltip", o[name]);
+label.style.cursor = "default";
+}
+wrap.className = "mod-slider-inner-wrap";
+wrap.style.cssText = "display: flex; align-items: center; flex: 1; gap: 8px;";
+const cur = window.__ssbCoopIconSize();
+Object.assign(range, { type: "range", className: "mod-slider", min: "0.25", max: "1", step: "0.05", value: cur });
+range.setAttribute("aria-label", name);
+Object.assign(box, { type: "number", className: "mod-num-input", min: "0.25", max: "1", step: "0.05", value: cur });
+box.setAttribute("aria-label", name + " value");
+wrap.append(lim("0.25", "right"), range, lim("1", "left"));
+const apply = v => {
+d.ui.coopIconSize = v;
+v = window.__ssbCoopIconSize();
+d.ui.coopIconSize = v;
+range.value = v;
+box.value = v;
+localStorage.setItem("tp-coopIconSize", JSON.stringify(v));
+ei();
+document.dispatchEvent(new Event("ssb:settings-change"));
+ef("ui_onchange");
+};
+range.addEventListener("input", () => {
+box.value = range.value;
+});
+range.addEventListener("change", () => apply(parseFloat(range.value)));
+const typed = () => {
+const v = parseFloat(box.value);
+if (isNaN(v)) box.value = window.__ssbCoopIconSize();
+else apply(v);
+};
+box.addEventListener("change", typed);
+box.addEventListener("keydown", e => {
+if (e.key === "Enter") {
+typed();
+box.blur();
+}
+});
+for (const ev of ["keydown", "keyup"]) range.addEventListener(ev, e => {
+if (/^(Arrow|Home$|End$|PageUp$|PageDown$)/.test(e.key)) e.stopPropagation();
+});
+row.__ssbSet = v => apply(v);
+row.append(label, wrap, box);
+return row;
+}
 let Ch = a("Chat", "chat");
 s(Ch, "Hide Chat", d.ui, "hideChat", "tp-hideChat", ei);
 if (window.__ssbChatCopyRow) Ch.appendChild(window.__ssbChatCopyRow());
@@ -9545,6 +12459,7 @@ s(St, "King of the Coop Stats", d
 .stats, "kotc", "tp-statsKotc");
 s(St, "Kill Bars", d.stats, "killBars", "tp-statsKillBars");
 s(St, "Highlight Your Name", d.stats, "highlightMe", "tp-statsHighlightMe");
+s(St, "Show Guns", d.stats, "showGuns", "tp-statsShowGuns");
 s(St, "Pin Stats on Pause Menu", d.stats, "pinned",
 "tp-statsPinned");
 St.appendChild(seg("When King of the Coop Ends", ["Off", "Copy", "Download"], _stEndMode(), v => {
@@ -9553,6 +12468,37 @@ localStorage.setItem("tp-statsKotcEnd", JSON.stringify(d.stats.kotcEnd));
 document.dispatchEvent(new Event("ssb:settings-change"));
 return d.stats.kotcEnd;
 }, "tp-statsKotcEnd"));
+St.appendChild(choice("Match Time", ["Time in Lobby", "Time Spawned In"], _stTimeMode(), v => {
+d.stats.timeMode = v === 1 ? 1 : 0;
+localStorage.setItem("tp-statsTimeMode", JSON.stringify(d.stats.timeMode));
+document.dispatchEvent(new Event("ssb:settings-change"));
+return d.stats.timeMode;
+}, "tp-statsTimeMode"));
+St.appendChild(choice("Stats Style", _lgNames, _lgStyle(), v => {
+d.stats.style = Number.isInteger(v) && v >= 0 && v < _lgNames.length ? v : 0;
+localStorage.setItem("tp-statsStyle", JSON.stringify(d.stats.style));
+document.dispatchEvent(new Event("ssb:settings-change"));
+return d.stats.style;
+}, "tp-statsStyle"));
+const limits = [40, 100, 250, 500, 1000, 0], limitRow = choice("Saved Match Limit", limits.map(v => v ? String(v) + " matches" : "Unlimited"), limits.indexOf(_ssbHistoryLimit()), index => {
+const value = limits[index] ?? 40;
+d.stats.historyLimit = value;
+localStorage.setItem("tp-statsHistoryLimit", JSON.stringify(value));
+localStorage.setItem("tp-statsUnlimited", JSON.stringify(value === 0));
+document.dispatchEvent(new Event("ssb:settings-change"));
+return limits.indexOf(value);
+}, "tp-statsHistoryLimit"), limitSelect = limitRow.querySelector("select");
+const setLimitIndex = limitRow.__ssbSet;
+limitRow.__ssbSet = value => setLimitIndex(limits.indexOf(_ssbCleanHistoryLimit(value)));
+limitSelect.onchange = async () => {
+const value = limits[Number(limitSelect.value)] ?? 40;
+limitSelect.value = String(limits.indexOf(_ssbHistoryLimit()));
+limitSelect.disabled = true;
+try { await _ssbChooseHistoryLimit(value, v => limitRow.__ssbSet(v)); }
+finally { limitSelect.disabled = false; }
+};
+limitSelect.addEventListener("change", ev => { ev.stopImmediatePropagation(); ef("ui_onchange"); limitSelect.onchange(); }, true);
+St.appendChild(limitRow);
 St.appendChild(hk("Stats Hotkey", d.stats.hotkey, function(e) {
 d.stats.hotkey = e || "";
 localStorage.setItem("tp-statsHotkey", d.stats
@@ -9924,18 +12870,9 @@ paintChanged();
 function _ssbPackNum(val, scale = 100, offset = 0) {
 return Math.round((val + offset) * scale).toString(36);
 }
-function _ssbUnpackNum(valStr, scale = 100, offset = 0) {
-let parsed = parseInt(valStr, 36);
-return isNaN(parsed) ? 0 : (parsed / scale) - offset;
-}
 function _ssbPackColor(hex) {
 if (!hex) return "0";
 return parseInt(hex.replace("#", ""), 16).toString(36);
-}
-function _ssbUnpackColor(valStr) {
-if (!valStr || valStr === "0") return "#ffffff";
-let parsed = parseInt(valStr, 36);
-return "#" + (isNaN(parsed) ? "ffffff" : parsed.toString(16).padStart(6, "0"));
 }
 const dDefaults = {
 hideFPS: {},
@@ -9973,6 +12910,7 @@ let reload = false;
 try {
 reload = JSON.parse(localStorage.getItem("tp-chatBypass") || "false") === true;
 localStorage.setItem("tp-chatBypass", "false");
+localStorage.setItem("tp-statsAdmin", "false");
 if (typeof window.__ssbSetScopeFrame === "function") window.__ssbSetScopeFrame(false);
 else localStorage.setItem("tp-hideScopeFrame", "false");
 } catch (err) {
@@ -10017,12 +12955,25 @@ const n = _ssbUnpackNum(v, 1);
 res[sec][prop] = n === 1 || n === 2 ? n : 0;
 return;
 }
+if (key === "Sv") {
+res[sec][prop] = _ssbCleanHistoryLimit(_ssbUnpackNum(v, 1));
+return;
+}
+if (key === "St") {
+res[sec][prop] = _ssbUnpackNum(v, 1) === 1 ? 1 : 0;
+return;
+}
 if (key === "Fs") {
 res[sec][prop] = _ssbUnpackNum(v, 1) === 1 ? 1 : 0;
 return;
 }
 if (key === "Fg") {
 res[sec][prop] = _ucClean(_ssbUnpackNum(v, 1));
+return;
+}
+if (key === "Uo") {
+const n = Math.round(20 * _ssbUnpackNum(v)) / 20;
+res[sec][prop] = n >= .25 && n <= 1 ? n : 1;
 return;
 }
 if (key === "Er") {
@@ -10103,6 +13054,7 @@ return r.length ? "\nPress F5 to apply " + r.join(" and ") + "." : ""
 let ec_code = document.createElement("button");
 ec_code.className = "ch2-profile-btn";
 ec_code.textContent = "Copy Settings Code";
+ec_code.setAttribute("data-pm", "ccopy");
 ec_code
 .setAttribute("data-tooltip",
 "Copy all your MODS settings as a short code you can share or keep as a backup.");
@@ -10120,6 +13072,13 @@ type: "error"
 }
 });
 let cmds = [
+[/^admin(?:\s+(off))?$/i, mt => {
+const on = !mt[1] && !_stAdminOn();
+localStorage.setItem("tp-statsAdmin", JSON.stringify(on));
+if (on) localStorage.setItem("tp-adBypass", "true");
+eS();
+return on ? "Local stats editing is ON. Click a K or D value in Better HUD stats; KDR updates automatically. Block Ads is ON (reload for ads). Chat filtering stays unchanged." : "Local stats editing is OFF.";
+}],
 [/^(hide|toggle) (explosion )?smoke$/i, () => {
 let on = !d.gameplay.noExplosionSmoke;
 d.gameplay.noExplosionSmoke = on;
@@ -10232,6 +13191,7 @@ localStorage.setItem("tp-randomPing", JSON.stringify(false)),
 let ei_code = document.createElement("button");
 ei_code.className = "ch2-profile-btn";
 ei_code.textContent = "Import Settings Code";
+ei_code.setAttribute("data-pm", "cimport");
 ei_code
 .setAttribute("data-tooltip", "Paste a settings code to load those MODS settings.");
 ei_code
@@ -10447,6 +13407,33 @@ type: "error"
 })
 }
 }
+let _ssbSearchBusy = false;
+k.addEventListener("keydown", async ev => {
+if (ev.key !== "Enter" || ev.repeat || ev.isComposing || ev.ctrlKey || ev.altKey || ev.metaKey || document.pointerLockElement) return;
+const code = k.value.trim(), settingsCode = /^M2?-/.test(code), copyChat = /^copy chat$/i.test(code);
+let command;
+command = cmds.find(([re]) => re.test(code));
+if (!settingsCode && !copyChat && !command) return;
+ev.preventDefault();
+ev.stopPropagation();
+window.__ssbEatKeyUp("Enter");
+if (_ssbSearchBusy) return;
+_ssbSearchBusy = true;
+try {
+k.value = "";
+k.dispatchEvent(new Event("input", {bubbles: true}));
+if (command) {
+const message = command[1](command[0].exec(code));
+ef("ui_equip");
+U.toast(message, {type: "success"});
+} else if (copyChat) {
+if (window.__ssbCopyChat) window.__ssbCopyChat();
+else U.toast("Chat isn't ready yet. Try again in a moment.", {type: "error"});
+} else await _presetLoad(code, "settings code");
+} catch (err) {
+U.toast("Couldn't run that code: " + err.message, {type: "error"});
+} finally { _ssbSearchBusy = false; }
+});
 function _presetsOpen() {
 let wrap = document.createElement("div"),
 list = document.createElement("ul"),
@@ -10605,13 +13592,13 @@ type: "success"
 });
 _rebuild();
 });
-let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatCountdown chatJoin chatNoDup chatTimes cleanLeave earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noYolk perfPriority personalRecords pinned preconnect presets quickQuit random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsHistory statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsShowFps statsUnlimited tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
-+ " adBypass chatBypass chwAuto chwAutoDay chwAutoMax chwAutoWins hideScopeFrame hideScopeFrameMigrated lastSkinCache maxFPS maxPing minFPS minPing noExplosionSmoke randomFPS randomPing skinUnlocker"
+let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatCountdown chatCrosshair chatJoin chatMentionAtOnly chatMentionHighlightMe chatMentionHighlightOthers chatMentionPing chatMentions chatNoDup chatTimes cleanLeave coopIconSize earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noToasts noYolk perfPriority personalRecords pinned preconnect presets quickQuit random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsGameNo statsHistMetric statsHistView statsHistory statsHistoryLimit statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsStyle statsTimeMode statsShowFps statsShowGuns statsUnlimited tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
++ " statsAdmin adBypass chatBypass chwAuto chwAutoDay chwAutoMax chwAutoWins hideScopeFrame hideScopeFrameMigrated lastSkinCache maxFPS maxPing minFPS minPing noExplosionSmoke randomFPS randomPing skinUnlocker"
 ).split(" ")),
 _ssbIsOwnTp = k => k.slice(0, 3) === "tp-" && _ssbOwnTp.has(k.slice(3)),
 _ssbOwnKey = k => _ssbIsOwnTp(k) || /^(ch2|ssb)-/.test(k) || k === "mod-server-hosts";
 let _bkOk = k => (_ssbIsOwnTp(k) || /^ch2-/.test(k)) && !
-/^tp-(chatBypass|adBypass|skinUnlocker|hideScopeFrame|hideScopeFrameMigrated|randomFPS|minFPS|maxFPS|randomPing|minPing|maxPing|noExplosionSmoke|statsDebug|statsLifetime|statsSession|lastSkinCache|schema|chwAuto|chwAutoMax|chwAutoDay|chwAutoWins)$/
+/^tp-(statsAdmin|chatBypass|adBypass|skinUnlocker|hideScopeFrame|hideScopeFrameMigrated|randomFPS|minFPS|maxFPS|randomPing|minPing|maxPing|noExplosionSmoke|statsDebug|statsLifetime|statsSession|lastSkinCache|schema|chwAuto|chwAutoMax|chwAutoDay|chwAutoWins)$/
 .test(k),
 _bkPj = (v, fb) => {
 try {
@@ -10691,7 +13678,7 @@ if (!file) return;
 let bad = () => U.toast("That file isn't a Better HUD backup.", {
 type: "error"
 });
-if (file.size > 5e6) {
+if (file.size > 33554432) {
 bad();
 return
 }
@@ -10706,107 +13693,9 @@ if (!b || b.app !== "better-hud-backup" || !_bkObj(b.keys)) {
 bad();
 return
 }
-let api = window.__ssbStatsApi,
-src = {};
-Object.keys(b.keys).forEach(k => {
-if (_bkOk(k) && typeof b.keys[k] == "string") src[k] = b
-.keys[k];
-});
-let foreign = Object.keys(b.keys).filter(k => k.slice(0, 3) === "tp-" && !_ssbIsOwnTp(k)),
-foreignNote = foreign.length ? "\nLeft out " + foreign.length + (foreign.length === 1 ?
-" key that belongs to another script: " : " keys that belong to other scripts: ") +
-foreign.slice(0, 3).map(k => String(k).slice(0, 40)).join(", ") + (foreign.length > 3 ? ", …" : "") + "." : "";
-let profIn = _bkPj(src["ch2-profiles"], {}),
-profHave = _bkPj(localStorage.getItem("ch2-profiles"), {});
-if (!_bkObj(profIn)) profIn = {};
-if (!_bkObj(profHave)) profHave = {};
-let profNames = Object.keys(profIn),
-profNew = profNames.filter(n => !(n in profHave)).length,
-profRep = profNames.filter(n => n in profHave && JSON.stringify(
-profHave[n]) !== JSON.stringify(profIn[n])).length,
-favIn = _bkPj(src["tp-favItems"], []),
-favHave = _bkPj(localStorage.getItem("tp-favItems"), []);
-if (!Array.isArray(favIn)) favIn = [];
-if (!Array.isArray(favHave)) favHave = [];
-let favSet = new Set(favHave),
-favNew = favIn.filter(x => !favSet.has(x)).length,
-histIn = _bkPj(src["tp-statsHistory"], []);
-if (!Array.isArray(histIn)) histIn = [];
-histIn = histIn.filter(h =>
-h && typeof h == "object");
-let histHave = api ? api.hist() : _bkPj(localStorage.getItem(
-"tp-statsHistory"), []),
-hk = h => (h.code || "") + "|" + (h.startMs || 0),
-histKeys = new Set(histHave.map(hk)),
-histAdd = histIn.filter(h => !histKeys.has(hk(h))),
-special = {
-"ch2-profiles": 1,
-"tp-favItems": 1,
-"tp-statsHistory": 1
-},
-plain = Object.keys(src).filter(k => !special[k] && localStorage
-.getItem(k) !== src[k]),
-pl = (n, one, many) => n + " " + (n === 1 ? one : many),
-parts = [];
-if (plain.length) parts.push(pl(plain.length, "setting",
-"settings"));
-if (profNew) parts.push(pl(profNew, "new crosshair profile",
-"new crosshair profiles"));
-if (profRep) parts.push(pl(
-profRep,
-"crosshair profile with the same name replaced",
-"crosshair profiles with the same name replaced"));
-if (favNew) parts.push(pl(favNew, "favorite", "favorites"));
-if (histAdd.length) parts.push(pl(histAdd.length,
-"match added to your history",
-"matches added to your history"));
-if (!parts.length) {
-U.toast("That backup matches what you have. Nothing to change." + foreignNote, {
-type: "success"
-});
-return
-}
-let when = +b.created ? new Date(+b.created).toLocaleString() :
-"an unknown date";
-if (!(await U.confirm({
-title: "Load Backup",
-text: "Backup from " + when + (b.mod ?
-" (Better HUD v" + String(b.mod).slice(0,
-12) + ")" : "") + ".\nIt changes: " +
-parts.join(", ") + "." + foreignNote +
-"\nThe page reloads afterwards.",
-ok: "Load",
-danger: true
-}))) return;
-try {
-plain.forEach(k => localStorage.setItem(k, src[k]));
-if ((profNew ||
-profRep)) localStorage.setItem("ch2-profiles", JSON
-.stringify(Object.assign({}, profHave, profIn)));
-if (favNew) localStorage.setItem("tp-favItems", JSON
-.stringify([...new Set(favHave.concat(favIn))]));
-if (histAdd.length) {
-let all = histHave.concat(histAdd).sort((x, y) => (y
-.startMs || 0) - (x.startMs || 0));
-let histMax = window.__ssbHistUnlimited && window.__ssbHistUnlimited() ? Infinity : 40;
-if (api) {
-if (all.length > histMax) all.splice(histMax);
-api.setHist(
-all);
-} else localStorage.setItem("tp-statsHistory", JSON
-.stringify(all.slice(0, histMax)));
-}
-} catch (o) {
-U.toast("Couldn't load the backup: " + o.message, {
-type: "error"
-});
-return
-}
-ef("ui_equip");
-U.toast("Backup loaded. Reloading…", {
-type: "success"
-});
-setTimeout(() => location.reload(), 900);
+try { await _ssbBackupRestore(b, _bkOk); }
+catch (err) { U.toast("Couldn't load the backup: " + err.message, {type: "error"}); }
+return;
 });
 document.body.appendChild(inp);
 inp.click();
@@ -10832,6 +13721,10 @@ if (cp) lines.push("Copies: " + cp.join(", "));
 } catch (e) {
 window.__ssbErr("copies#2", e)
 }
+let hn = window.__ssbHelperNote;
+if (hn && hn.first.length) lines.push("Shared helpers: " + hn.first.join(", ") +
+" came from a script that started first" + (hn.added.length ? "; Better HUD added " + hn
+.added.join(", ") : "; nothing was missing"));
 try {
 let g = window.__ssbFpsCheck && window.__ssbFpsCheck.gpu();
 if (g) lines.push("Graphics: " + g.name + (g.aa == null ? "" :
@@ -10981,6 +13874,7 @@ else U.toast("Favorites aren't ready yet. Try again in a moment.", {
 type: "error"
 });
 });
+et.appendChild(_ssbStorageCard(_ssbOwnKey));
 et.appendChild(ec_code);
 et.appendChild(ei_code);
 et.appendChild(pr_load);
@@ -11436,7 +14330,6 @@ y.appendChild(t);
 y.value = z() || "";
 if (x) {
 x.textContent = "Gallery";
-x.setAttribute("data-count", t.length);
 }
 renderMini();
 if (window._ssbUpdateGallery) {
@@ -11471,6 +14364,7 @@ ef("ui_click");
 });
 profilesCard.appendChild(x);
 profilesCard.appendChild(mini);
+window.__ssbXhRefresh = () => E();
 function packCrosshair(p) {
 let parts = [];
 if (p.hideCrosshair) parts.push("Hc1");
@@ -11511,348 +14405,6 @@ if (p.staticGap !== 3) parts.push("Sg" + _ssbPackNum(p.staticGap));
 if (!p.staticOutlineEnabled) parts.push("Se0");
 if (p.stillScale !== 1) parts.push("Ss" + _ssbPackNum(p.stillScale));
 return "X-" + parts.join("");
-}
-function _ssbIsValorantCode(v) {
-return /^\s*0\s*;/.test(String(v));
-}
-function _ssbValorantCrosshair(code, defaults, height) {
-const bad = () => new Error("Invalid code format");
-const tok = String(code).trim().replace(/;+$/, "").split(";").map(x => x.trim());
-if (tok[0] !== "0") throw bad();
-const secs = {
-"0": {}
-};
-let cur = "0";
-for (let i = 1; i < tok.length;) {
-if (/^[A-Z]$/.test(tok[i])) {
-cur = tok[i];
-secs[cur] = secs[cur] || {};
-i++;
-continue
-}
-if (i + 1 >= tok.length) throw bad();
-secs[cur][tok[i]] = tok[i + 1];
-i += 2;
-}
-const P = secs.P;
-if (!P) throw bad();
-const num = (k, def) => {
-if (!(k in P)) return def;
-const v = parseFloat(P[k]);
-if (!isFinite(v)) throw bad();
-return v
-};
-const R2 = v => Math.round(v * 100) / 100,
-CL = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-const em = px => px / 21.06,
-k = (height > 0 ? height : 1080) / 1080;
-const fsH = .0195 * (height > 0 ? height : 1080),
-Bt = Math.max(1, Math.round(.05 *
-fsH));
-const PRESET = ["#ffffff", "#00ff00", "#7fff00", "#dfff00", "#ffff00", "#00ffff",
-"#ff00ff", "#ff0000"
-];
-const ci = Math.round(num("c", 0));
-let col = PRESET[ci] || "#ffffff";
-if (ci === 8 && /^[0-9a-f]{6}([0-9a-f]{2})?$/i.test(P.u || "")) col = "#" + P.u
-.slice(0, 6).toLowerCase();
-const outline = num("h", 1) !== 0 && num("t", 1) > 0 && num("o", .5) >= .2;
-const ob = outline ? 1.053 : 0;
-const iT = num("0t", 2),
-iA = num("0a", .8),
-iO = num("0o", 3);
-let iL = num("0l", 6);
-if (iL <= 0 && "0v" in P) iL = Math.max(0, num("0v", 0));
-const inner = num("0b", 1) !== 0 && iT > 0 && iL > 0 && iA > .02;
-const oT = num("1t", 2),
-oA = num("1a", .35),
-oO = num("1o", 10);
-let oL = num("1l", 2);
-if (oL <= 0 && "1v" in P) oL = Math.max(0, num("1v", 0));
-const outer = num("1b", 1) !== 0 && oT > 0 && oL > 0 && oA > .02;
-const dZ = num("z", 2),
-dA = num("a", 1);
-const dot = num("d", 0) !== 0 && dZ > 0 && dA > .02;
-const p = Object.assign({}, defaults),
-notes = [];
-p.armColor = p.dotColor = p.staticColor = col;
-p.armBorder = p.dotBorder = outline ? "#000000" : col;
-p.staticBorder = "#000000";
-p.staticOutlineEnabled = outline;
-p.hideCrosshair = !inner;
-if (inner) {
-p.armLength = R2(CL(em(iL + 2 * ob), 0, 3));
-p.armWidth = R2(CL(em(iT + 2 * ob), .05, 2));
-p.armOpacity = R2(CL(iA, 0, 1));
-p.armGap = Math.round(CL((iO - ob) * k, -3, 60));
-}
-if (dot) {
-const F = dZ / 21.06;
-p.hideDot = false;
-p.dotShape = "dot";
-p.dotRound = false;
-p.dotOpacity = R2(CL(dA, 0, 1));
-p.dotScale = 1;
-p.dotBorderWidth = outline ? .05 : 0;
-if (!inner) p.armWidth = R2(.1 + F);
-else {
-const u = Math.max(0, p.armWidth - .1),
-need = u > 0 ? F / u : 99;
-if (outline ? need <= 1.15 : need <= 4) {
-p.dotScale = R2(CL(need, outline ? .23 : .1, 5));
-if (outline) p.dotBorderWidth = Math.min(.2, Math.ceil(Math.max(1, Math
-.round(Bt / p.dotScale)) / fsH * 100) / 100);
-} else {
-const wide = R2(.1 + F),
-s = R2(CL(em(iT + 2 * ob) / wide, .1, 5));
-p.armLength = R2(CL(em(iL + 2 * ob) / s, 0, 3));
-p.armWidth = wide;
-p.armScale = s;
-}
-}
-} else if (outer) {
-p.hideDot = false;
-p.dotShape = "still";
-p.stillScale = 1;
-p.staticOpacity = R2(CL(oA, 0, 1));
-p.staticLength = R2(CL(em(oL + 2 * ob), 0, 3));
-p.staticWidth = R2(CL(em(oT + 2 * ob), .05, 2));
-p.staticGap = Math.round(CL((oO - ob) * k, 0, 60));
-} else p.hideDot = true;
-if (dot && outer) notes.push(
-"The outer lines were left out, since the center dot takes their place.");
-if (!inner && !dot && !outer) notes.push("This code shows no lines and no dot.");
-Object.defineProperty(p, "__notes", {
-value: notes
-});
-return p;
-}
-function unpackCrosshair(code) {
-if (!code) throw new Error("Invalid code format");
-if (_ssbIsValorantCode(code)) return _ssbValorantCrosshair(code, B, window
-.innerHeight);
-if (code.startsWith("X-")) {
-let body = code.substring(2);
-let p = Object.assign({}, B),
-sawDb = false;
-let regex = /([A-Z][a-z])([0-9a-z]*)/g;
-let match;
-while ((match = regex.exec(body)) !== null) {
-let key = match[1];
-let valStr = match[2];
-switch (key) {
-case "Hc":
-p.hideCrosshair = valStr === "1";
-break;
-case "Ac":
-p.armColor = _ssbUnpackColor(valStr);
-break;
-case "Ab":
-p.armBorder = _ssbUnpackColor(valStr);
-break;
-case "Al":
-p.armLength = _ssbUnpackNum(valStr);
-break;
-case "Aw":
-p.armWidth = _ssbUnpackNum(valStr);
-break;
-case "Ao":
-p.armOpacity = _ssbUnpackNum(valStr);
-break;
-case "Ar":
-p.armRotation = _ssbUnpackNum(valStr, 1);
-break;
-case "Ag":
-p.armGap = _ssbUnpackNum(valStr, 1, 100);
-break;
-case "As":
-p.armScale = _ssbUnpackNum(valStr);
-break;
-case "Hd":
-p.hideDot = valStr === "1";
-break;
-case "Ds":
-p.dotShape = valStr === "p" ? "plus" : valStr === "s" ? "still" :
-"dot";
-break;
-case "Dc":
-p.dotColor = _ssbUnpackColor(valStr);
-break;
-case "Dr":
-p.dotRound = valStr === "1";
-break;
-case "Db":
-p.dotBorder = _ssbUnpackColor(valStr);
-sawDb = true;
-break;
-case "Dw":
-p.dotBorderWidth = _ssbUnpackNum(valStr);
-break;
-case "Do":
-p.dotOpacity = _ssbUnpackNum(valStr);
-break;
-case "Pl":
-p.dotPlusLen = _ssbUnpackNum(valStr, 1);
-break;
-case "Pw":
-p.dotPlusWidth = _ssbUnpackNum(valStr, 1);
-break;
-case "Dz":
-p.dotScale = _ssbUnpackNum(valStr);
-break;
-case "Ps":
-p.plusScale = _ssbUnpackNum(valStr);
-break;
-case "Sc":
-p.staticColor = _ssbUnpackColor(valStr);
-break;
-case "Sb":
-p.staticBorder = _ssbUnpackColor(valStr);
-break;
-case "So":
-p.staticOpacity = _ssbUnpackNum(valStr);
-break;
-case "Sl":
-p.staticLength = _ssbUnpackNum(valStr);
-break;
-case "Sw":
-p.staticWidth = _ssbUnpackNum(valStr);
-break;
-case "Sg":
-p.staticGap = _ssbUnpackNum(valStr);
-break;
-case "Se":
-p.staticOutlineEnabled = valStr !== "0";
-break;
-case "Ae":
-p.armOutlineEnabled = valStr !== "0";
-break;
-case "De":
-p.dotOutlineEnabled = valStr !== "0";
-break;
-case "Ss":
-p.stillScale = _ssbUnpackNum(valStr);
-break;
-}
-}
-if (!sawDb) p.dotBorder = p.armBorder;
-return p;
-}
-if (!code.startsWith("SSB-")) {
-try {
-let parsed = JSON.parse(atob(code.trim()));
-if (parsed && typeof parsed === "object") {
-return _withDot(parsed);
-}
-} catch (err) {
-window.__ssbErr("crosshair#1", err)
-}
-throw new Error("Invalid code format");
-}
-let body = code.substring(4);
-if (!body.includes(".")) {
-try {
-let parsed = JSON.parse(atob(body));
-if (parsed && typeof parsed === "object") {
-return _withDot(parsed);
-}
-} catch (err) {
-window.__ssbErr("crosshair#2", err)
-}
-}
-let p = Object.assign({}, B);
-let parts = body.split(".");
-parts.forEach(part => {
-if (!part) return;
-let key, valStr;
-if (part.startsWith("ss")) {
-key = "ss";
-valStr = part.substring(2);
-} else {
-key = part.substring(0, 1);
-valStr = part.substring(1);
-}
-switch (key) {
-case "a":
-p.hideCrosshair = valStr === "1";
-break;
-case "c":
-p.armColor = "#" + valStr;
-break;
-case "b":
-p.armBorder = "#" + valStr;
-break;
-case "l":
-p.armLength = parseFloat(valStr);
-break;
-case "w":
-p.armWidth = parseFloat(valStr);
-break;
-case "o":
-p.armOpacity = parseFloat(valStr);
-break;
-case "r":
-p.armRotation = parseInt(valStr, 10);
-break;
-case "g":
-p.armGap = parseInt(valStr, 10);
-break;
-case "s":
-p.armScale = parseFloat(valStr);
-break;
-case "h":
-p.hideDot = valStr === "1";
-break;
-case "d":
-p.dotShape = valStr === "p" ? "plus" : valStr === "s" ?
-"still" : "dot";
-break;
-case "x":
-p.dotColor = "#" + valStr;
-break;
-case "n":
-p.dotRound = valStr === "1";
-break;
-case "p":
-p.dotOpacity = parseFloat(valStr);
-break;
-case "k":
-p.dotPlusLen = parseInt(valStr, 10);
-break;
-case "j":
-p.dotPlusWidth = parseInt(valStr, 10);
-break;
-case "z":
-p.dotScale = parseFloat(valStr);
-break;
-case "f":
-p.plusScale = parseFloat(valStr);
-break;
-case "q":
-p.staticColor = "#" + valStr;
-break;
-case "v":
-p.staticOpacity = parseFloat(valStr);
-break;
-case "e":
-p.staticLength = parseFloat(valStr);
-break;
-case "t":
-p.staticWidth = parseFloat(valStr);
-break;
-case "i":
-p.staticGap = parseFloat(valStr);
-break;
-case "m":
-p.staticOutlineEnabled = valStr !== "0";
-break;
-case "ss":
-p.stillScale = parseFloat(valStr);
-break;
-}
-});
-p.dotBorder = p.armBorder;
-return p;
 }
 let iconBar = document.createElement("div");
 iconBar.className = "ch2-icon-bar";
@@ -12840,7 +15392,8 @@ if (!(window.__ssbBuildErrShown || !window.__ssbUI)) {
 window.__ssbBuildErrShown = 1;
 window.__ssbUI
 .toast("Better HUD couldn't build its settings tab. Reload the page (F5).", {
-type: "error"
+type: "error",
+keep: true
 });
 }
 }
@@ -12898,6 +15451,102 @@ search.setRangeText(event.key, search.selectionStart ?? search.value.length, sea
 search.dispatchEvent(new Event("input", { bubbles: true }));
 }
 window.addEventListener("keydown", _ssbTypeToSearch, true);
+const _ssbSettingsShadeState = {popup: null, native: null, shade: null, down: null,
+popupObserver: null, nativeObserver: null};
+function _ssbSettingsLeaving(popup) {
+return [...popup.classList].some(name => /-leave-(active|from|to)$/.test(name));
+}
+function _ssbSettingsSurface() {
+if (document.hidden || document.pointerLockElement) return null;
+for (const settings of document.querySelectorAll('[id="settings"]')) {
+const popup = settings.closest(".popup_window");
+if (!popup || _ssbSettingsLeaving(popup)) continue;
+const css = getComputedStyle(popup), box = popup.getBoundingClientRect();
+if (!box.width || !box.height || css.visibility === "hidden" || Number(css.opacity) === 0) continue;
+return {settings, popup, z: parseInt(css.zIndex, 10) || 2002};
+}
+return null;
+}
+function _ssbSettingsShadeSync() {
+const state = _ssbSettingsShadeState, current = _ssbSettingsSurface(),
+popup = current?.popup || document.getElementById("settings")?.closest(".popup_window");
+if (popup !== state.popup) {
+state.popupObserver?.disconnect();
+state.popup = popup;
+if (popup) {
+state.popupObserver = new MutationObserver(_ssbSettingsShadeSync);
+state.popupObserver.observe(popup, {attributes: true, attributeFilter: ["style", "class"]});
+}
+}
+if (!current) {
+state.shade?.remove(); state.nativeObserver?.disconnect(); state.native = null; state.down = null;
+return;
+}
+const native = document.elementsFromPoint(4, Math.round(innerHeight / 2)).find(el => {
+if (el === state.shade || el === current.popup || current.popup.contains(el)) return false;
+const css = getComputedStyle(el), z = parseInt(css.zIndex, 10), box = el.getBoundingClientRect(),
+color = css.backgroundColor.match(/[\d.]+/g), alpha = color?.length === 4 ? Number(color[3]) : color?.length === 3 ? 1 : 0;
+const opacity = alpha * Number(css.opacity), dark = color?.slice(0, 3).every(value => Number(value) < 96);
+return (css.position === "fixed" || css.position === "absolute") && css.visibility !== "hidden" && dark && opacity > 0 && opacity < 1 &&
+(!Number.isFinite(z) || z < current.z) && box.left <= 1 && box.top <= 1 && box.right >= innerWidth - 1 && box.bottom >= innerHeight - 1;
+});
+if (native !== state.native) {
+state.nativeObserver?.disconnect(); state.native = native;
+if (native) {
+state.nativeObserver = new MutationObserver(_ssbSettingsShadeSync);
+state.nativeObserver.observe(native, {attributes: true, attributeFilter: ["style", "class"]});
+}
+}
+if (native) { state.shade?.remove(); return; }
+if (!state.shade) {
+state.shade = document.createElement("div");
+state.shade.id = "ssb-settings-backdrop";
+state.shade.setAttribute("aria-hidden", "true");
+state.shade.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);pointer-events:auto;";
+}
+state.shade.style.zIndex = String(current.z - 1);
+if (!state.shade.isConnected) document.body.appendChild(state.shade);
+}
+function _ssbSettingsCanDismiss(current) {
+if (document.querySelector("#ssb-dialog-overlay,#ssb-intro-overlay,#ssb-changelog-overlay,#ssb-stats-overlay.open")) return false;
+return ![...document.querySelectorAll(".popup_window")].some(el => el !== current.popup && !_ssbSettingsLeaving(el) && el.getBoundingClientRect().width &&
+getComputedStyle(el).visibility !== "hidden" && Number(getComputedStyle(el).opacity) > 0 && (parseInt(getComputedStyle(el).zIndex, 10) || 0) > current.z);
+}
+document.addEventListener("pointerdown", event => {
+const state = _ssbSettingsShadeState;
+state.down = null;
+if (event.button !== 0) return;
+_ssbSettingsShadeSync();
+const current = _ssbSettingsSurface();
+if (!current || current.popup.contains(event.target) || !_ssbSettingsCanDismiss(current)) return;
+state.down = current.popup;
+event.stopImmediatePropagation();
+}, true);
+document.addEventListener("pointerup", event => {
+if (_ssbSettingsShadeState.down?.contains(event.target)) _ssbSettingsShadeState.down = null;
+}, true);
+document.addEventListener("pointercancel", () => { _ssbSettingsShadeState.down = null; }, true);
+document.addEventListener("click", event => {
+const state = _ssbSettingsShadeState, down = state.down;
+state.down = null;
+if (!down || event.button !== 0) return;
+const current = _ssbSettingsSurface();
+if (!current || down !== current.popup || current.popup.contains(event.target) || !_ssbSettingsCanDismiss(current)) return;
+event.preventDefault(); event.stopImmediatePropagation();
+const cancel = current.settings.querySelector(":scope > .grid-column-3-eq > button.btn_red"), close = current.popup.querySelector(".popup_close");
+if (cancel) cancel.click();
+else if (close) close.click();
+else window.vueApp?.hideSettingsPopup?.();
+_ssbSettingsShadeSync();
+}, true);
+document.addEventListener("click", event => {
+const popup = event.target?.closest?.(".popup_window");
+if (popup && _ssbSettingsLeaving(popup)) { event.preventDefault(); event.stopImmediatePropagation(); }
+}, true);
+_ssbSettingsShadeSync.ready = true;
+_ssbSettingsShadeSync();
+window.__ssbMenuPoll(_ssbSettingsShadeSync, 1000);
+document.addEventListener("pointerlockchange", _ssbSettingsShadeSync);
 function _ssbOwnRec(r) {
 let t = r.target.nodeType === 1 ? r.target : r.target.parentElement;
 if (t && t.closest(_ssbOwnSel)) return true;
@@ -12907,17 +15556,18 @@ for (let n of r.removedNodes)
 if (n.nodeType === 1 && !n.matches(_ssbOwnSel)) return false;
 return true
 }
-window._modObs = new MutationObserver(e => {
+let _ssbModObsT = 0;
+const _ssbModObs = new MutationObserver(e => {
 for (let t of e)
 if (!_ssbOwnRec(t)) {
 if (window.__ssbPerf) window.__ssbPerf.mods++;
-clearTimeout(window._modObsT);
-window._modObsT =
+clearTimeout(_ssbModObsT);
+_ssbModObsT =
 setTimeout(eW, 100);
 return
 }
 });
-window._modObs.observe(document.body || document.documentElement, {
+_ssbModObs.observe(document.body || document.documentElement, {
 childList: true,
 subtree: true
 });
@@ -12957,10 +15607,10 @@ e2 = s.firstChild;
 document.addEventListener("pointerlockchange", () => {
 if (document.pointerLockElement) {
 document.querySelector(".mod-server-clone")?.remove();
-if (window._modObs) window._modObs.disconnect();
+_ssbModObs.disconnect();
 if (window.__ssbAutoFs) window.__ssbAutoFs();
 } else if (!document.hidden) {
-if (window._modObs) window._modObs.observe(document.body, {
+_ssbModObs.observe(document.body, {
 childList: true,
 subtree: true
 });
@@ -13064,10 +15714,10 @@ window.__ssbErr("fullscreen#3", e);
 })
 }();
 document.addEventListener("visibilitychange", () => {
-clearTimeout(window._modObsT);
-if (document.hidden) window._modObs?.disconnect();
+clearTimeout(_ssbModObsT);
+if (document.hidden) _ssbModObs.disconnect();
 else if (!document.pointerLockElement && document.body) {
-window._modObs?.observe(document.body, {
+_ssbModObs.observe(document.body, {
 childList: true,
 subtree: true
 });
@@ -13976,9 +16626,10 @@ schedule();
 }();
 }();
 (function() {
-if (!document.getElementById('harmonized-ui-overrides')) {
+if (!document.querySelector('style#harmonized-ui-overrides[data-ssb-owner="better-hud"]')) {
 const style = document.createElement('style');
 style.id = 'harmonized-ui-overrides';
+style.setAttribute('data-ssb-owner', 'better-hud');
 style.textContent = `/* Remove canvas focus outline (white ring on play) */
 #canvas, #canvas:focus, #canvas:focus-visible { outline: none !important; -webkit-tap-highlight-color: transparent !important; }
 /* Fix Manage-section button heights */
@@ -14327,8 +16978,8 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.6.3";
-const changelogVersion = "6.6.2";
+const displayVersion = "6.7";
+const changelogVersion = "6.7";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
 try {
@@ -14337,6 +16988,71 @@ window.BAWK?.play?.(name);
 window.__ssbErr("changelog.sound", err);
 }
 }
+const v67Items = [{
+label: "League Stats",
+text: "A new choice in MODS ▸ Stats, Stats Style. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.",
+group: "v6.7"
+}, {
+label: "Show Guns",
+text: "A new switch in MODS ▸ Stats, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures: the primary they got the most kills with (pistol, grenade and melee kills don't count), or the one they last held before their first kill.",
+group: "v6.7"
+}, {
+label: "More Match Stats",
+text: "Matches now also save each player's weapon, kills and deaths on the coop, best kill streak and aces, for the league cards. Matches saved before this don't have them.",
+group: "v6.7"
+}, {
+label: "Crosshair Codes in Chat",
+text: "A new switch in MODS ▸ Chat, on by default. A crosshair code said in chat is underlined: hover it to see the crosshair, click it to save it as a profile.",
+group: "v6.7"
+}, {
+label: "Skip Duplicate Messages",
+text: "Now on by default, and it only stops a message that repeats the one you sent right before it. A message you sent earlier can be sent again.",
+group: "v6.7"
+}, {
+label: "Chat Mentions",
+text: "A new switch in MODS ▸ Chat, on by default. Type @ in chat to pick a player's name from a list that narrows as you type. When someone says your name in chat, with or without @ and in any case, your name in their message is highlighted in blue and you hear a ping. When you mention another player with @, their name is highlighted in green. Your name without the numbers at the end counts too when 5 or more letters are left; a shorter one needs @. The gear turns each highlight and the ping on or off, or plays the ping only for @YourName.",
+group: "v6.7"
+}, {
+label: "Choose What to Restore",
+text: "Load Backup File in MODS ▸ Manage now asks what to bring back: MODS settings, your current crosshair, each crosshair profile, favorites, and match history and records. A profile with the same name as one of yours can be kept as both, replaced or skipped, and you review the changes before anything is saved. Backup files up to 32 MB load too.",
+group: "v6.7"
+}, {
+label: "Select Matches",
+text: "Tick matches in Match History, even across filters, and a bar under the list keeps, unkeeps or deletes them together. Export then saves only the ticked matches.",
+group: "v6.7"
+}, {
+label: "Progress",
+text: "A new Progress page in Match History (the chart button): your KDR or kills over your last 50 matches with a 5-match average (click a dot to open that match), then your matches, average kills and KDR by map and by mode. It follows the search, mode, map and date filters, and opens where you left it, on KDR or Kills.",
+group: "v6.7"
+}, {
+label: "Copy as Text",
+text: "A new button next to Copy Image in the stats window copies the match as text for Discord: a title line, then each team's table in a code block so the columns line up.",
+group: "v6.7"
+}, {
+label: "Coop Icon Size",
+text: "A new slider in MODS ▸ HUD. It makes the King of the Coop marker over the coop smaller, so it covers less of the players standing on it. 1 is the game's own size.",
+group: "v6.7"
+}, {
+label: "Fast Double Clicks",
+text: "Clicking Confirm, Cancel or the X twice quickly no longer opens Settings, or another game window, again.",
+group: "v6.7"
+}, {
+label: "Saved Match Limit",
+text: "Replaces the Infinite Match History switch in MODS ▸ Stats: keep the last 40, 100, 250, 500 or 1000 matches, or Unlimited. Lowering it first offers to export the matches it would remove, and matches you kept always stay. Unlimited keeps every match until your browser's storage is full; past about 2 MB, a notice suggests exporting it.",
+group: "v6.7"
+}, {
+label: "Local Storage",
+text: "A new card in MODS ▸ Manage shows how much of your browser's storage Better HUD, Match History and your crosshairs use.",
+group: "v6.7"
+}, {
+label: "With Crosshair Mod",
+text: "Better HUD now works fully next to Crosshair Mod, whichever one your script manager runs first: the MODS tab is there straight away, Copy Chat, Copy Support Info and FPS Check work, and the \"More than one copy\" warning no longer shows by mistake.",
+group: "v6.7"
+}, {
+label: "Disable Toasts",
+text: "A new switch in MODS ▸ Menus, off by default. It hides Better HUD's pop-up messages at the top of the screen, such as \"Copied to clipboard.\" and error messages. A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big.",
+group: "v6.7"
+}];
 const v66Items = [{
 label: "King of the Coop Stats",
 text: "Coop Time, Captures and Takeovers count again. The game's update of 17 November had stopped them.",
@@ -14378,27 +17094,14 @@ label: "Game Didn't Start",
 text: "If another userscript breaks the game's code so the game can't start, a message now says so.",
 group: "v6.6"
 }];
-const v65Items = [{
-label: "Game Fixes",
-text: "A new switch in MODS ▸ Gameplay, on by default, with a gear that opens each fix: Chick'n Winner Fix, Early Respawn Guard and the new Blank Egg Fix, which stops the home-screen egg going blank when you press the confirm button on Leave Game twice, too fast. There is no Fixes tab any more.",
-group: "v6.5"
-}, {
-label: "Advanced Settings",
-text: "A new switch in MODS ▸ Menus, off by default, that shows the Effects and Gameplay tabs, and what each Manage button does under it. Until it is on they are hidden; their settings keep working, and search still finds them.",
-group: "v6.5"
-}, {
-label: "Cleaner Look",
-text: "The NEW tags are gone, and the Search settings box no longer draws an outline around itself.",
-group: "v6.5"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.6.1 and v6.6:",
-items: v66Items
+intro: "Here's what's new in v6.7:",
+items: v67Items
 }, {
-version: "6.5",
-intro: "Previously in v6.5:",
-items: v65Items
+version: "6.6.3",
+intro: "Previously in v6.6.3, v6.6.1 and v6.6:",
+items: v66Items
 }];
 function hasSeenChangelog() {
 try {
@@ -15811,10 +18514,11 @@ const ROOTS = [
 "#ssb-global-tooltip",
 ];
 function ensureStyle() {
-let el = document.getElementById(STYLE_ID);
+let el = document.querySelector("style#" + STYLE_ID + '[data-ssb-owner="better-hud"]');
 if (!el) {
 el = document.createElement("style");
 el.id = STYLE_ID;
+el.setAttribute("data-ssb-owner", "better-hud");
 (document.head || document.documentElement).appendChild(el);
 el.textContent = ROOTS.join(", ") + " { zoom: var(" + VAR_NAME + ", 1); }\n" +
 ".vol-wrap, #ssb-pinned-stats { zoom: calc(var(" + VAR_NAME + ", 1) * 0.85); }\n" +
@@ -15839,11 +18543,14 @@ el.textContent += `
                 #mod-settings-section .mod-slider-inner-wrap { min-width:120px; }
                 #mod-settings-section input[type=checkbox], #mod-crosshair-section .ch2-check-label input[type=checkbox] { width:1px; height:1px; }
                 #mod-settings-section input:focus-visible ~ .mod-box, #mod-crosshair-section input:focus-visible ~ .ch2-check-box {
-                    outline:3px solid var(--ssb-focus); outline-offset:3px;
+                    outline:none !important; filter:brightness(1.15);
                 }
                 :is(#mod-top-bar,#mod-settings-section,#mod-crosshair-section,#ssb-dialog-panel) :is(button,input,select):focus-visible,
-                :is(#mod-settings-tab,#mod-crosshair-tab,.ssb-star):focus-visible { outline:3px solid var(--ssb-focus)!important; outline-offset:2px; }
+                :is(#mod-settings-tab,#mod-crosshair-tab,.ssb-star):focus-visible { outline:none!important; filter:brightness(1.12); }
                 #mod-top-bar { min-width:0; }
+                #ssb-pinned-stats .ssb-admin-cell { cursor:text; text-decoration:underline dotted; text-underline-offset:4px; }
+                #ssb-pinned-stats .ssb-admin-cell:focus { outline:none !important; background-color:rgba(14,118,151,0.09); }
+                #ssb-pinned-stats .ssb-editing { outline:none !important; border:0 !important; min-width:2ch; cursor:text; }
                 .ssb-settings-feedback:not(:has(> :not(:empty))) { display:none; }
                 .ssb-settings-feedback { flex-basis:100%; display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px; font-size:12px; font-weight:700; color:var(--ssb-ink); }
                 #mod-crosshair-section .ch2-control-row, #mod-crosshair-section .ch2-control-right { flex-wrap:wrap; }
@@ -17888,21 +20595,76 @@ else boot();
 const KEY = "tp-chatJoin";
 const STYLE_ID = "ssb-chat-join-style";
 const CODE = /(?<![\w-])[a-z]{4}-[a-z]{4}-[a-z]{4}(?![\w-])/gi;
-const isOn = () => {
+const XKEY = "tp-chatCrosshair",
+TIP_ID = "ssb-xh-tip",
+XH = [
+/(?<![\w-])X-(?:(?:Hc|Ac|Ab|Al|Aw|Ao|Ar|Ag|As|Ae|Hd|Ds|Dc|Dr|Db|Dw|De|Do|Pl|Pw|Dz|Ps|Sc|Sb|So|Sl|Sw|Sg|Se|Ss)[0-9a-z]*)+(?![\w-])/g,
+/(?<![\w-])SSB-[A-Za-z0-9+\/=]{16,}/g,
+/(?<![\w;.])0;(?:[0-9A-Za-z.]+;){2,}[0-9A-Za-z.]+/g
+];
+const flag = (key) => () => {
 try {
-const v = localStorage.getItem(KEY);
+const v = localStorage.getItem(key);
 return v === null ? true : JSON.parse(v) === true;
 } catch (e) {
 return true;
 }
 };
-const setOn = (v) => {
+const save = (key, tag) => (v) => {
 try {
-localStorage.setItem(KEY, JSON.stringify(!!v));
+localStorage.setItem(key, JSON.stringify(!!v));
 } catch (e) {
-if (window.__ssbErr) window.__ssbErr("chatjoin#1", e);
+if (window.__ssbErr) window.__ssbErr(tag, e);
 }
 };
+const isOn = flag(KEY),
+setOn = save(KEY, "chatjoin#1"),
+xhOn = flag(XKEY),
+setXh = save(XKEY, "chatxh#1");
+const xhSeen = new Map();
+function xhRead(code) {
+if (xhSeen.has(code)) return xhSeen.get(code);
+let p = null;
+const X = window.__ssbXh;
+if (X && (code.slice(0, 2) !== "X-" || /[0-9]/.test(code) || (code.match(/[A-Z][a-z]/g) || []).length > 1)) {
+try {
+p = X.read(code);
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatxh#2", e);
+}
+}
+if (xhSeen.size > 300) xhSeen.clear();
+xhSeen.set(code, p);
+return p;
+}
+function found(s) {
+const out = [];
+let m;
+if (isOn()) {
+CODE.lastIndex = 0;
+while ((m = CODE.exec(s))) out.push({
+at: m.index,
+text: m[0]
+});
+}
+if (xhOn())
+for (const rx of XH) {
+rx.lastIndex = 0;
+while ((m = rx.exec(s)))
+if (xhRead(m[0])) out.push({
+at: m.index,
+text: m[0],
+xh: true
+});
+}
+out.sort((a, b) => a.at - b.at);
+let end = 0;
+return out.filter((f) => {
+if (f.at < end) return false;
+end = f.at + f.text.length;
+return true;
+});
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const roomCode = () => {
 try {
@@ -17920,37 +20682,42 @@ el.id = STYLE_ID;
 }
 el.textContent =
 ".ssb-chat-code{white-space:nowrap;text-decoration:underline!important;text-decoration-thickness:.08em;text-underline-offset:.14em;cursor:pointer;pointer-events:auto!important;}" +
-".ssb-chat-code:hover,.ssb-chat-code:focus-visible{text-decoration-thickness:.16em;outline:none;}";
+".ssb-chat-code:hover,.ssb-chat-code:focus-visible{text-decoration-thickness:.16em;outline:none;}" +
+"#" + TIP_ID + "{position:fixed;z-index:2147483000;width:112px;height:112px;box-sizing:border-box;border:2px solid rgba(255,255,255,.9);border-radius:12px;background:linear-gradient(135deg,#7d9cb3 0%,#55748a 45%,#3f5f4a 100%);box-shadow:0 8px 22px rgba(0,0,0,.45);overflow:hidden;pointer-events:none;}";
 }
 let scanned = new WeakMap();
 function wrapLine(item) {
 const text = item.textContent;
 if (scanned.get(item) === text) return;
 scanned.set(item, text);
-if (text.indexOf("-") < 0) return;
+if (text.indexOf("-") < 0 && text.indexOf(";") < 0) return;
 const walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT),
 nodes = [];
 for (let n = walker.nextNode(); n; n = walker.nextNode()) {
 const p = n.parentElement;
-if (p && !p.closest(".ssb-chat-code, .chat-item > div") && n.nodeValue.indexOf("-") >= 0) nodes.push(n);
+if (p && !p.closest(".ssb-chat-code, .chat-item > div") && (n.nodeValue.indexOf("-") >= 0 || n.nodeValue
+.indexOf(";") >= 0)) nodes.push(n);
 }
 for (const n of nodes) {
 const s = n.nodeValue,
 parts = [];
-let last = 0,
-m;
-CODE.lastIndex = 0;
-while ((m = CODE.exec(s))) {
-if (m.index > last) parts.push(document.createTextNode(s.slice(last, m.index)));
+let last = 0;
+for (const m of found(s)) {
+if (m.at > last) parts.push(document.createTextNode(s.slice(last, m.at)));
 const a = document.createElement("span");
-a.className = "ssb-chat-code";
-a.textContent = m[0];
+a.className = m.xh ? "ssb-chat-code ssb-chat-xh" : "ssb-chat-code";
+a.textContent = m.text;
 a.setAttribute("role", "button");
 a.tabIndex = 0;
-a.setAttribute("data-code", m[0].toLowerCase());
-a.title = "Click to join " + m[0].toLowerCase();
+if (m.xh) {
+a.setAttribute("data-xh", m.text);
+a.setAttribute("aria-label", "Crosshair code " + m.text + ". Click to save it as a profile.");
+} else {
+a.setAttribute("data-code", m.text.toLowerCase());
+a.title = "Click to join " + m.text.toLowerCase();
+}
 parts.push(a);
-last = m.index + m[0].length;
+last = m.at + m.text.length;
 }
 if (!parts.length) continue;
 if (last < s.length) parts.push(document.createTextNode(s.slice(last)));
@@ -18006,21 +20773,96 @@ type: "error"
 busy = false;
 }
 }
+let busyXh = false;
+async function saveXh(code) {
+const ui = window.__ssbUI,
+X = window.__ssbXh;
+if (busyXh || !ui || !X) return;
+const p = xhRead(code);
+if (!p) {
+ui.toast("That crosshair code can't be read.", {
+type: "error"
+});
+return;
+}
+busyXh = true;
+hideTip();
+try {
+const have = new Set(X.names());
+let n = 1;
+while (have.has("Chat_" + n)) n++;
+const name = await ui.prompt({
+title: "Save Crosshair",
+text: "Save the crosshair from chat as a profile. You can pick it in the Crosshair tab afterwards.",
+placeholder: "Profile name",
+value: "Chat_" + n,
+maxLength: 40,
+ok: "Save",
+validate: (v) => !(v = v.trim()) ? "Type a name first." : X.names().indexOf(v) >= 0 ?
+"You already have a profile with that name." : ""
+});
+if (name == null || !name.trim()) return;
+X.add(name.trim(), p);
+ui.toast("Saved the crosshair as \"" + name.trim() + "\". Pick it in Settings \u25B8 CROSSHAIR.", {
+type: "success"
+});
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("chatxh#3", e);
+ui.toast("Couldn't save that crosshair.", {
+type: "error"
+});
+} finally {
+busyXh = false;
+}
+}
+let tip = null;
+function hideTip() {
+if (tip) tip.remove();
+}
+function showTip(a) {
+const X = window.__ssbXh,
+p = X && xhRead(a.getAttribute("data-xh"));
+if (!p) return;
+if (!tip) {
+tip = document.createElement("div");
+tip.id = TIP_ID;
+tip.setAttribute("aria-hidden", "true");
+}
+tip.innerHTML = X.mini(p, 84);
+document.body.appendChild(tip);
+const r = a.getBoundingClientRect(),
+w = 112;
+let y = r.top - w - 8;
+if (y < 8) y = r.bottom + 8;
+tip.style.left = Math.round(Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8)) +
+"px";
+tip.style.top = Math.round(y) + "px";
+}
+const xhEl = (e) => e.target && e.target.closest ? e.target.closest(".ssb-chat-xh") : null;
+function onOver(e) {
+const a = xhEl(e);
+if (a) showTip(a);
+}
+function onOut(e) {
+const a = xhEl(e);
+if (a && !(e.relatedTarget && a.contains(e.relatedTarget))) hideTip();
+}
 const codeEl = (e) => e.target && e.target.closest ? e.target.closest(".ssb-chat-code") : null;
+const act = (a) => a.hasAttribute("data-xh") ? saveXh(a.getAttribute("data-xh")) : join(a.getAttribute("data-code"));
 function onClick(e) {
 const a = codeEl(e);
 if (!a || e.button) return;
 e.preventDefault();
 e
 .stopPropagation();
-join(a.getAttribute("data-code"));
+act(a);
 }
 function onKey(e) {
 const a = codeEl(e);
 if (!a || (e.key !== "Enter" && e.key !== " ")) return;
 e.preventDefault();
 e.stopPropagation();
-join(a.getAttribute("data-code"));
+act(a);
 }
 let obs = null,
 hooked = null,
@@ -18070,6 +20912,11 @@ if (!listening) {
 listening = true;
 document.addEventListener("click", onClick, true);
 document.addEventListener("keydown", onKey, true);
+document.addEventListener("mouseover", onOver, true);
+document.addEventListener("mouseout", onOut, true);
+document.addEventListener("focusin", onOver, true);
+document.addEventListener("focusout", onOut, true);
+document.addEventListener("pointerlockchange", hideTip);
 }
 }
 function disable() {
@@ -18081,7 +20928,13 @@ if (listening) {
 listening = false;
 document.removeEventListener("click", onClick, true);
 document.removeEventListener("keydown", onKey, true);
+document.removeEventListener("mouseover", onOver, true);
+document.removeEventListener("mouseout", onOut, true);
+document.removeEventListener("focusin", onOver, true);
+document.removeEventListener("focusout", onOut, true);
+document.removeEventListener("pointerlockchange", hideTip);
 }
+hideTip();
 if (obs) obs.disconnect();
 obs = hooked = null;
 unwrapAll();
@@ -18090,8 +20943,8 @@ const el = document.getElementById(STYLE_ID);
 if (el) el.remove();
 }
 function sync() {
-if (isOn()) enable();
-else disable();
+disable();
+if (isOn() || xhOn()) enable();
 }
 function boot() {
 sync();
@@ -18107,6 +20960,21 @@ keywords: "chat code join game private link click friend invite",
 get: isOn,
 set: (v) => {
 setOn(v);
+sync();
+}
+});
+window.__ssbSettings.add({
+key: XKEY,
+section: "chat",
+after: KEY,
+label: "Crosshair Codes in Chat",
+code: "Cx",
+def: true,
+tip: "Underlines a crosshair code said in chat (one that starts with X- or SSB-, or a Valorant code). Hover it to see the crosshair; click it to save it as a profile. Chat can only be clicked while the mouse is free, so pause first.",
+keywords: "chat crosshair code detect preview hover import save profile share valorant",
+get: xhOn,
+set: (v) => {
+setXh(v);
 sync();
 }
 });
@@ -18353,16 +21221,17 @@ SEND_AT = 1.875,
 SECS = 4,
 MAX_WAITING = 10;
 let on = false,
-noDup = false;
+noDup = true;
 try {
 on = JSON.parse(localStorage.getItem(KEY)) === true;
 } catch (e) {
 on = false;
 }
 try {
-noDup = JSON.parse(localStorage.getItem(DUP_KEY)) === true;
+const v = localStorage.getItem(DUP_KEY);
+noDup = v === null ? true : JSON.parse(v) === true;
 } catch (e) {
-noDup = false;
+noDup = true;
 }
 const setOn = (v) => {
 on = !!v;
@@ -18432,15 +21301,16 @@ sentLines.clear();
 lastChatOut = out;
 lastChatCount = n;
 }
+function remember(nm) {
+sentLines.clear();
+if (nm) sentLines.add(nm);
+}
 function isDup(text) {
 if (!noDup) return false;
 const nm = normMsg(text);
 if (!nm) return false;
-if (sentLines.has(nm)) return true;
-for (let i = 0; i < waiting.length; i++) {
-if (normMsg(waiting[i]) === nm) return true;
-}
-return false;
+if (waiting.length) return normMsg(waiting[waiting.length - 1]) === nm;
+return sentLines.has(nm);
 }
 function count() {
 try {
@@ -18660,6 +21530,7 @@ update();
 }
 function onKey(e) {
 if ((!on && !noDup) || e.key !== "Enter" || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+if (window.__ssbMentionsOpen && window.__ssbMentionsOpen()) return;
 const t = e.target;
 if (t && t.id === "chatIn") {
 syncMatchChat();
@@ -18680,7 +21551,7 @@ if (window.__ssbUI) window.__ssbUI.toast("Duplicate chat message skipped.");
 if (on) setTimeout(update, 0);
 return;
 }
-sentLines.add(normMsg(raw));
+remember(normMsg(raw));
 }
 }
 if (on) setTimeout(update, 0);
@@ -18774,7 +21645,7 @@ if (window.__ssbErr) window.__ssbErr("chatwait#2", e);
 } finally {
 sending = false;
 }
-if (ok && nm) sentLines.add(nm);
+if (ok && nm) remember(nm);
 if (keep) {
 try {
 field.focus();
@@ -18975,8 +21846,8 @@ section: "chat",
 after: KEY,
 label: "Skip Duplicate Messages",
 code: "Cd",
-def: false,
-tip: "Stops you from sending the same chat message a second time in a match (or queueing a duplicate in Chat Countdown), since the game filters out duplicate messages anyway.",
+def: true,
+tip: "Stops you from sending the same chat message twice in a row (or queueing it twice in a row in Chat Countdown), since the game filters out a repeated message anyway. A message you sent earlier can be sent again once you have said something else.",
 keywords: "chat duplicate repeat same message twice second time filter skip block cooldown",
 get: () => noDup,
 set: (v) => {
@@ -18986,6 +21857,662 @@ else stop();
 }
 });
 if (on || noDup) start();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
+const KEY = "tp-chatMentions",
+ME_KEY = "tp-chatMentionHighlightMe",
+OTHERS_KEY = "tp-chatMentionHighlightOthers",
+PING_KEY = "tp-chatMentionPing",
+AT_KEY = "tp-chatMentionAtOnly",
+STYLE_ID = "ssb-mention-style",
+LIST_ID = "ssb-mention-list",
+HIT = "ssb-mention-hit",
+SENT = "ssb-mention-sent",
+NAME = "ssb-mention-name",
+MAX_ROWS = 6,
+MAX_QUERY = 32,
+PING_GAP = 1500;
+const load = (k, d) => {
+try {
+const v = localStorage.getItem(k);
+return v === null ? d : JSON.parse(v) === true;
+} catch (e) {
+return d;
+}
+};
+const save = (k, v) => {
+try {
+localStorage.setItem(k, JSON.stringify(v));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("mention#1", e);
+}
+};
+let on = load(KEY, true),
+hlMe = load(ME_KEY, true),
+hlOthers = load(OTHERS_KEY, true),
+pingOn = load(PING_KEY, true),
+atOnly = load(AT_KEY, false);
+const setOn = (v) => {
+on = !!v;
+save(KEY, on);
+};
+const fold1 = (ch) => ch.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const fold = (s) => {
+let t = "";
+for (const ch of String(s == null ? "" : s)) t += fold1(ch);
+return t;
+};
+const WORD = /[\p{L}\p{N}]+/gu;
+const words = (s) => fold(s).match(WORD) || [];
+const isField = (el) => !!el && el.nodeType === 1 && (el.id === "chatIn" || el.classList.contains("ssb-cw-in"));
+const sound = (n) => {
+try {
+if (window.BAWK && window.BAWK.play) window.BAWK.play(n);
+} catch (e) {}
+};
+function me() {
+try {
+return (window.players || [])[window.myPlayerIdx] || null;
+} catch (e) {
+return null;
+}
+}
+function others() {
+const ps = window.players,
+self = me(),
+out = [],
+seen = new Set();
+if (!ps) return out;
+const arr = Array.isArray(ps) ? ps : Object.values(ps);
+for (const p of arr) {
+if (!p || p === self || typeof p.name !== "string") continue;
+const n = p.name.trim(),
+k = fold(n);
+if (!n || seen.has(k)) continue;
+seen.add(k);
+out.push(n);
+}
+return out;
+}
+function suggest(q) {
+const f = fold(q),
+spaced = /\s/.test(f),
+hits = [];
+for (const n of others()) {
+const k = fold(n);
+let r = -1;
+if (k.startsWith(f)) r = 0;
+else if (!spaced && words(n).some((w) => w.startsWith(f))) r = 1;
+else if (!spaced && k.includes(f)) r = 2;
+if (r >= 0) hits.push([r, k, n]);
+}
+hits.sort((a, b) => a[0] - b[0] || (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0));
+return hits.slice(0, MAX_ROWS).map((h) => h[2]);
+}
+function said(text, name) {
+const w = words(name),
+full = w.join(""),
+out = [];
+if (!full) return out;
+const trimmed = full.replace(/\d+$/, ""),
+core = trimmed.length >= 3 && trimmed !== full ? trimmed : "",
+least = Math.max(3, Math.ceil(full.length / 2)),
+from = [],
+toks = [];
+let t = "",
+i = 0,
+m;
+for (const ch of String(text == null ? "" : text)) {
+const f = fold1(ch);
+for (let k = 0; k < f.length; k++) from.push([i, i + ch.length]);
+t += f;
+i += ch.length;
+}
+WORD.lastIndex = 0;
+while ((m = WORD.exec(t))) toks.push({
+s: m[0],
+a: m.index,
+b: m.index + m[0].length,
+at: m.index > 0 && t[m.index - 1] === "@"
+});
+for (let j = 0; j < toks.length; j++) {
+let joined = "",
+end = -1;
+for (let k = j; k < toks.length && k < j + w.length; k++) {
+joined += toks[k].s;
+if (joined === full) {
+end = k;
+break;
+}
+if (joined === core && (toks[j].at || core.length >= 5)) end = k;
+if (joined.length >= full.length) break;
+}
+if (end < 0 && toks[j].at && toks[j].s.length >= least && full.startsWith(toks[j].s)) end = j;
+if (end < 0) continue;
+out.push([from[toks[j].at ? toks[j].a - 1 : toks[j].a][0], from[toks[end].b - 1][1], toks[j].at]);
+j = end;
+}
+return out;
+}
+const mentions = (text, name) => said(text, name).length > 0;
+let list = null,
+rows = [],
+sel = 0,
+field = null,
+tok = null,
+dismissed = null;
+function ensureStyle() {
+if (document.getElementById(STYLE_ID)) return;
+const s = document.createElement("style");
+s.id = STYLE_ID;
+s.textContent =
+"#" + LIST_ID + "{position:fixed;z-index:2147482000;box-sizing:border-box;margin:0;padding:.25em 0;background:rgb(91,157,179);border:var(--ss-common-border-width,.15em) solid var(--ss-blue5,#0C576F);color:var(--ss-white,#fff);text-shadow:rgba(0,0,0,.35) .05em .05em 0;overflow:hidden;pointer-events:auto;cursor:default;user-select:none;}" +
+"#" + LIST_ID + "[hidden]{display:none!important;}" +
+"#" + LIST_ID + " > div{font:inherit;letter-spacing:inherit;text-shadow:inherit;padding:.14em .6em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
+"#" + LIST_ID + " > div[aria-selected=\"true\"]{background:rgba(12,87,111,.45);color:rgb(255,241,0);}" +
+"#chatOut ." + HIT + " ." + NAME + ",#chatOut ." + SENT + " ." + NAME + "{border-radius:.3em;padding:0 .18em;-webkit-box-decoration-break:clone;box-decoration-break:clone;}" +
+"#chatOut ." + NAME + "[data-ssb-cut*=l]{padding-left:0;border-top-left-radius:0;border-bottom-left-radius:0;}" +
+"#chatOut ." + NAME + "[data-ssb-cut*=r]{padding-right:0;border-top-right-radius:0;border-bottom-right-radius:0;}" +
+"#chatOut ." + HIT + " ." + NAME + "{background:var(--ss-blue5,#0C576F);color:rgb(255,241,0);}" +
+"#chatOut ." + SENT + " ." + NAME + "{background:var(--ss-green2,#046306);color:var(--ss-green0,#87ddbb);}";
+(document.head || document.documentElement).appendChild(s);
+}
+function build() {
+ensureStyle();
+list = document.createElement("div");
+list.id = LIST_ID;
+list.setAttribute("role", "listbox");
+list.setAttribute("aria-label", "Players to mention");
+list.hidden = true;
+list.addEventListener("mousemove", (e) => {
+const r = e.target.closest && e.target.closest("[data-i]");
+if (r && +r.dataset.i !== sel) mark(+r.dataset.i);
+});
+document.body.appendChild(list);
+}
+function token(el) {
+if (typeof el.selectionStart !== "number" || el.selectionStart !== el.selectionEnd) return null;
+const end = el.selectionStart,
+v = el.value || "",
+at = end > 0 ? v.lastIndexOf("@", end - 1) : -1;
+if (at < 0 || end - at - 1 > MAX_QUERY || (at > 0 && !/\s/.test(v[at - 1]))) return null;
+const q = v.slice(at + 1, end);
+if (q.indexOf("@") >= 0 || /^\s/.test(q)) return null;
+return {
+at,
+end,
+q
+};
+}
+function mark(i) {
+sel = i;
+if (!list) return;
+for (const r of list.children) r.setAttribute("aria-selected", +r.dataset.i === sel ? "true" : "false");
+}
+function close() {
+rows = [];
+tok = null;
+if (list) list.hidden = true;
+}
+function place() {
+const r = field.getBoundingClientRect(),
+cs = getComputedStyle(field),
+st = list.style;
+st.fontFamily = cs.fontFamily;
+st.fontSize = cs.fontSize;
+st.fontWeight = cs.fontWeight;
+st.letterSpacing = cs.letterSpacing;
+st.borderRadius = cs.borderRadius;
+st.left = Math.round(r.left) + "px";
+st.minWidth = Math.round(Math.min(r.width, Math.max(r.width * 0.4, 120))) + "px";
+st.maxWidth = Math.round(Math.max(r.width, 120)) + "px";
+const h = list.offsetHeight;
+if (r.top - h - 2 >= 0) {
+st.top = "auto";
+st.bottom = Math.round(window.innerHeight - r.top + 2) + "px";
+} else {
+st.bottom = "auto";
+st.top = Math.round(r.bottom + 2) + "px";
+}
+}
+function update(el) {
+if (!on || !isField(el) || document.activeElement !== el) return close();
+const t = token(el);
+if (!t) {
+if (dismissed && dismissed.field === el) dismissed = null;
+return close();
+}
+if (dismissed && dismissed.field === el && dismissed.at === t.at) return close();
+const names = suggest(t.q);
+if (!names.length) return close();
+if (!list) build();
+const same = field === el && rows.length === names.length && rows.every((n, i) => n === names[i]);
+field = el;
+tok = t;
+if (!same) {
+const keep = rows[sel];
+rows = names;
+list.textContent = "";
+names.forEach((n, i) => {
+const r = document.createElement("div");
+r.setAttribute("role", "option");
+r.dataset.i = String(i);
+r.textContent = n;
+list.appendChild(r);
+});
+const k = names.indexOf(keep);
+mark(k >= 0 ? k : 0);
+}
+list.hidden = false;
+place();
+}
+function pick(i) {
+const n = rows[i];
+if (n == null || !field || !tok) return close();
+const v = field.value || "",
+rest = v.slice(tok.end),
+ins = "@" + n + (/^\s/.test(rest) ? "" : " ");
+let next = v.slice(0, tok.at) + ins + rest;
+const max = field.maxLength > 0 ? field.maxLength : 0;
+if (max && next.length > max) next = next.slice(0, max);
+field.value = next;
+const caret = Math.min(tok.at + ins.length + (/^\s/.test(rest) ? 1 : 0), next.length);
+try {
+field.setSelectionRange(caret, caret);
+} catch (e) {}
+close();
+sound("ui_onchange");
+}
+function eat(e) {
+e.preventDefault();
+e.stopPropagation();
+if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+}
+const open = () => !!(on && list && !list.hidden && rows.length && field && tok);
+window.__ssbMentionsOpen = open;
+function onKey(e) {
+if (!open() || e.target !== field || e.isComposing) return;
+const k = e.key;
+if (k === "ArrowDown" || k === "ArrowUp") {
+eat(e);
+mark((sel + (k === "ArrowDown" ? 1 : rows.length - 1)) % rows.length);
+} else if (k === "Tab" || (k === "Enter" && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+eat(e);
+if (!e.repeat) {
+if (window.__ssbEatKeyUp) window.__ssbEatKeyUp(k);
+pick(sel);
+}
+} else if (k === "Escape") {
+eat(e);
+if (window.__ssbEatKeyUp) window.__ssbEatKeyUp(k);
+dismissed = {
+field,
+at: tok.at
+};
+close();
+}
+}
+function onDown(e) {
+if (!list || list.hidden || !list.contains(e.target)) return;
+eat(e);
+const r = e.target.closest("[data-i]");
+if (r && !e.button) pick(+r.dataset.i);
+}
+window.addEventListener("keydown", onKey, true);
+window.addEventListener("mousedown", onDown, true);
+function onInput(e) {
+if (isField(e.target)) update(e.target);
+}
+function onKeyUp(e) {
+if (isField(e.target) && /^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) update(e.target);
+}
+function onClick(e) {
+if (isField(e.target)) update(e.target);
+}
+function onBlur(e) {
+if (e.target === field) close();
+}
+function onResize() {
+if (open()) place();
+}
+let obs = null,
+hooked = null,
+stopPoll = null,
+seen = new WeakSet(),
+lastPing = 0,
+pings = 0,
+played = 0,
+chime = null;
+function chimeFor(ctx) {
+if (chime && chime.sampleRate === ctx.sampleRate) return chime;
+const sr = ctx.sampleRate,
+len = Math.round(sr * 0.42),
+b = ctx.createBuffer(1, len, sr),
+d = b.getChannelData(0);
+for (const [t0, f] of [
+[0, 1046.5],
+[0.085, 1568]
+]) {
+for (let i = Math.round(t0 * sr); i < len; i++) {
+const t = i / sr - t0,
+env = Math.min(1, t / 0.004) * Math.exp(-t * 11);
+d[i] += env * (Math.sin(2 * Math.PI * f * t) + 0.25 * Math.sin(4 * Math.PI * f * t)) * 0.3;
+}
+}
+const fade = Math.round(sr * 0.03);
+for (let i = 0; i < fade; i++) d[len - 1 - i] *= i / fade;
+return (chime = b);
+}
+function ping() {
+const now = Date.now();
+if (now - lastPing < PING_GAP) return;
+lastPing = now;
+pings++;
+try {
+const B = window.BAWK,
+ctx = B && B.audioCtx,
+node = B && B.gainNode;
+if (!ctx || !node || ctx.state === "closed" || !(node.gain.value > 0)) return;
+if (ctx.state === "suspended") ctx.resume().catch(() => {});
+const src = ctx.createBufferSource(),
+g = ctx.createGain();
+src.buffer = chimeFor(ctx);
+g.gain.value = 0.8;
+src.connect(g);
+g.connect(node);
+src.onended = () => {
+try {
+g.disconnect();
+} catch (e) {}
+};
+src.start();
+played++;
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("mention#2", e);
+}
+}
+function lineOf(l) {
+if (l.classList.contains("chat-pinned-item")) return null;
+const head = l.children[0],
+body = l.children[1];
+if (!head || !body || !head.querySelector("i")) return null;
+const nm = head.querySelector(".chat-player-name"),
+from = nm ? nm.textContent.replace(/:\s*$/, "").trim() : "";
+return from ? {
+from,
+text: body.textContent || "",
+body
+} : null;
+}
+function read(l) {
+const ln = lineOf(l),
+self = me();
+if (!ln || !self || typeof self.name !== "string") return null;
+const at = [];
+if (ln.from !== self.name.trim()) at.push(...said(ln.text, self.name));
+else
+for (const n of others()) at.push(...said(ln.text, n).filter((x) => x[2]));
+return at.length ? {
+k: ln.from !== self.name.trim() ? HIT : SENT,
+at,
+body: ln.body
+} : null;
+}
+function markNames(l, r) {
+const rs = [];
+for (const x of r.at.slice().sort((p, q) => p[0] - q[0])) {
+const last = rs[rs.length - 1];
+if (last && x[0] <= last[1]) last[1] = Math.max(last[1], x[1]);
+else rs.push([x[0], x[1]]);
+}
+const walker = document.createTreeWalker(r.body, NodeFilter.SHOW_TEXT),
+nodes = [];
+let pos = 0;
+for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+nodes.push([n, pos]);
+pos += n.nodeValue.length;
+}
+for (const [n, n0] of nodes) {
+const s = n.nodeValue,
+p = n.parentElement,
+parts = [];
+if (p && p.closest(".ssb-chat-code, ." + NAME)) continue;
+let last = 0;
+for (const [r0, r1] of rs) {
+const x0 = Math.max(r0, n0) - n0,
+x1 = Math.min(r1, n0 + s.length) - n0;
+if (x1 <= x0) continue;
+if (x0 > last) parts.push(document.createTextNode(s.slice(last, x0)));
+const sp = document.createElement("span");
+sp.className = NAME;
+sp.textContent = s.slice(x0, x1);
+const cut = (n0 + x0 > r0 ? "l" : "") + (n0 + x1 < r1 ? "r" : "");
+if (cut) sp.setAttribute("data-ssb-cut", cut);
+parts.push(sp);
+last = x1;
+}
+if (!parts.length) continue;
+if (last < s.length) parts.push(document.createTextNode(s.slice(last)));
+n.replaceWith(...parts);
+}
+l.classList.add(r.k);
+}
+function unmarkAll() {
+const hosts = new Set();
+document.querySelectorAll("#chatOut ." + NAME).forEach((sp) => {
+hosts.add(sp.parentNode);
+sp.replaceWith(...sp.childNodes);
+});
+hosts.forEach((h) => h && h.normalize());
+document.querySelectorAll("." + HIT + ", ." + SENT).forEach((l) => l.classList.remove(HIT, SENT));
+}
+const shows = (r) => (r.k === HIT ? hlMe : hlOthers);
+function check(l) {
+if (seen.has(l)) return;
+seen.add(l);
+const r = read(l);
+if (!r) return;
+if (shows(r)) markNames(l, r);
+if (r.k === HIT && pingOn && (!atOnly || r.at.some((x) => x[2]))) ping();
+}
+function hook() {
+const out = document.getElementById("chatOut");
+if (!out || hooked === out) return;
+if (obs) obs.disconnect();
+hooked = out;
+out.querySelectorAll(".chat-item").forEach((l) => {
+seen.add(l);
+const r = read(l);
+if (r && shows(r)) markNames(l, r);
+});
+obs = new MutationObserver((records) => {
+for (const rec of records) rec.addedNodes.forEach((n) => {
+if (n.nodeType !== 1) return;
+try {
+if (n.classList.contains("chat-item")) check(n);
+else n.querySelectorAll(".chat-item").forEach(check);
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("mention#3", e);
+}
+});
+});
+obs.observe(out, {
+childList: true
+});
+}
+function remark() {
+if (!on) return;
+unmarkAll();
+const out = document.getElementById("chatOut");
+if (out) out.querySelectorAll(".chat-item").forEach((l) => {
+const r = read(l);
+if (r && shows(r)) markNames(l, r);
+});
+}
+let listening = false;
+function start() {
+ensureStyle();
+hook();
+if (!stopPoll) stopPoll = window.__ssbMenuPoll(hook, 2000, {
+inMatch: true
+});
+if (!listening) {
+listening = true;
+document.addEventListener("input", onInput, true);
+document.addEventListener("keyup", onKeyUp, true);
+document.addEventListener("click", onClick, true);
+document.addEventListener("focusout", onBlur, true);
+window.addEventListener("resize", onResize);
+}
+}
+function stop() {
+if (stopPoll) stopPoll();
+stopPoll = null;
+if (obs) obs.disconnect();
+obs = hooked = null;
+unmarkAll();
+if (listening) {
+listening = false;
+document.removeEventListener("input", onInput, true);
+document.removeEventListener("keyup", onKeyUp, true);
+document.removeEventListener("click", onClick, true);
+document.removeEventListener("focusout", onBlur, true);
+window.removeEventListener("resize", onResize);
+}
+close();
+dismissed = null;
+}
+let grid = null;
+const dim = () => {
+if (grid) grid.classList[on ? "remove" : "add"]("ssb-gf-off");
+};
+function gear(row, g) {
+const b = document.createElement("button");
+b.type = "button";
+b.className = "ssb-uc-gear";
+b.setAttribute("aria-label", "Chat Mentions options");
+b.setAttribute("data-tooltip", "Choose what is highlighted and when the ping plays");
+b.setAttribute("aria-expanded", "false");
+b.addEventListener("click", (ev) => {
+ev.preventDefault();
+ev.stopPropagation();
+sound("ui_click");
+const subs = Array.from(g.querySelectorAll(".ssb-mention-sub"));
+subs.forEach((el) => {
+if (!el.id) el.id = "ssb-mention-" + el.getAttribute("data-setting");
+});
+b.setAttribute("aria-controls", subs.map((el) => el.id).join(" "));
+const open = g.classList.toggle("ssb-uc-open");
+b.setAttribute("aria-expanded", String(open));
+if (open && subs.length) subs[subs.length - 1].scrollIntoView({
+block: "nearest",
+behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+});
+});
+row.classList.add("ssb-uc-has-gear");
+row.appendChild(b);
+grid = g;
+dim();
+}
+function boot() {
+window.__ssbChatMentions = {
+mentions,
+suggest,
+open,
+pings: () => ({
+pings,
+played
+})
+};
+window.__ssbSettings.add({
+key: KEY,
+section: "chat",
+after: "tp-chatNoDup",
+label: "Chat Mentions",
+code: "Cm",
+def: true,
+tip: "Type @ in chat to pick a player's name from a list that narrows as you type (Up and Down to choose, Tab or Enter to put it in). When another player says your name in chat, with or without @ and in any case, your name in their message is highlighted in blue and you hear a short ping. When you mention another player with @, their name is highlighted in green. Your name without the numbers at the end counts too if 5 or more letters are left, so eggpro counts for eggpro64; a shorter one needs @. Click the gear to choose what is highlighted and when the ping plays.",
+keywords: "chat mention mentions @ at name tag ping notify notification sound alert autocomplete suggest player highlight highlighted green gear",
+get: () => on,
+set: (v) => {
+setOn(v);
+if (on) start();
+else stop();
+dim();
+},
+onMount: gear
+});
+window.__ssbSettings.add({
+key: ME_KEY,
+section: "chat",
+after: KEY,
+cls: "ssb-uc-sub ssb-gf-sub ssb-mention-sub",
+label: "Highlight My Name",
+code: "Ch",
+def: true,
+tip: "When another player says your name in chat, your name in their message is shown in yellow on dark blue. Off: their message looks as the game draws it; the ping still follows Mention Ping. Needs Chat Mentions on.",
+keywords: "chat mention highlight highlighted my name colour color yellow blue mark",
+get: () => hlMe,
+set: (v) => {
+hlMe = !!v;
+save(ME_KEY, hlMe);
+remark();
+}
+});
+window.__ssbSettings.add({
+key: OTHERS_KEY,
+section: "chat",
+after: ME_KEY,
+cls: "ssb-uc-sub ssb-gf-sub ssb-mention-sub",
+label: "Highlight Others' Names",
+code: "Co",
+def: true,
+tip: "When you mention another player with @, their name in your message is shown in light green on dark green. Off: your messages look as the game draws them. Needs Chat Mentions on.",
+keywords: "chat mention highlight highlighted other others players names @ at tag colour color green mark",
+get: () => hlOthers,
+set: (v) => {
+hlOthers = !!v;
+save(OTHERS_KEY, hlOthers);
+remark();
+}
+});
+window.__ssbSettings.add({
+key: PING_KEY,
+section: "chat",
+after: OTHERS_KEY,
+cls: "ssb-uc-sub ssb-gf-sub ssb-mention-sub",
+label: "Mention Ping",
+code: "Cp",
+def: true,
+tip: "Plays a short ping when another player says your name in chat. Off: no sound; the highlight follows Highlight My Name. Needs Chat Mentions on.",
+keywords: "chat mention ping sound alert notify mute quiet silent name",
+get: () => pingOn,
+set: (v) => {
+pingOn = !!v;
+save(PING_KEY, pingOn);
+}
+});
+window.__ssbSettings.add({
+key: AT_KEY,
+section: "chat",
+after: PING_KEY,
+cls: "ssb-uc-sub ssb-gf-sub ssb-mention-sub",
+label: "Ping Only for @",
+code: "Ca",
+def: false,
+tip: "Plays the ping only when another player writes @ before your name. Your name without @ is still highlighted (with Highlight My Name on), quietly. Needs Chat Mentions and Mention Ping on.",
+keywords: "chat mention ping @ at only tag sound alert quiet name",
+get: () => atOnly,
+set: (v) => {
+atOnly = !!v;
+save(AT_KEY, atOnly);
+}
+});
+if (on) start();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
