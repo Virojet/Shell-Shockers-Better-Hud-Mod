@@ -203,14 +203,18 @@
     "2026-11-18": {
       "count": 2,
       "uniques": 2
+    },
+    "2026-11-19": {
+      "count": 12,
+      "uniques": 9
     }
   },
   "popular_paths": [
     {
-      "count": 79,
+      "count": 73,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 47
+      "uniques": 46
     },
     {
       "count": 6,
@@ -256,14 +260,14 @@
     },
     {
       "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/LICENSE",
-      "title": "/blob/main/LICENSE",
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
+      "title": "/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
       "uniques": 1
     },
     {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
-      "title": "/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/actions/workflows/sync-meta.yml",
+      "title": "/actions/workflows/sync-meta.yml",
       "uniques": 1
     }
   ],
@@ -274,9 +278,9 @@
       "uniques": 10
     },
     {
-      "count": 9,
+      "count": 7,
       "referrer": "github.com",
-      "uniques": 9
+      "uniques": 7
     },
     {
       "count": 5,
@@ -296,12 +300,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 1125,
-      "uniques": 573
+      "count": 1137,
+      "uniques": 582
     },
     "views": {
-      "count": 448,
-      "uniques": 254
+      "count": 451,
+      "uniques": 256
     }
   },
   "views": {
@@ -508,6 +512,10 @@
     "2026-11-18": {
       "count": 21,
       "uniques": 4
+    },
+    "2026-11-19": {
+      "count": 3,
+      "uniques": 2
     }
   }
 }
