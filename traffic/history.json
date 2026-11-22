@@ -211,14 +211,18 @@
     "2026-11-20": {
       "count": 23,
       "uniques": 15
+    },
+    "2026-11-21": {
+      "count": 3,
+      "uniques": 3
     }
   },
   "popular_paths": [
     {
-      "count": 76,
+      "count": 72,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 47
+      "uniques": 45
     },
     {
       "count": 6,
@@ -277,9 +281,9 @@
   ],
   "referrers": [
     {
-      "count": 12,
+      "count": 9,
       "referrer": "Google",
-      "uniques": 8
+      "uniques": 7
     },
     {
       "count": 7,
@@ -304,8 +308,8 @@
   ],
   "totals": {
     "clones": {
-      "count": 1160,
-      "uniques": 597
+      "count": 1163,
+      "uniques": 600
     },
     "views": {
       "count": 456,
@@ -524,6 +528,10 @@
     "2026-11-20": {
       "count": 5,
       "uniques": 4
+    },
+    "2026-11-21": {
+      "count": 0,
+      "uniques": 0
     }
   }
 }
