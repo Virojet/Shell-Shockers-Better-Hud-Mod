@@ -223,14 +223,24 @@
     "2026-11-23": {
       "count": 24,
       "uniques": 11
+    },
+    "2026-11-24": {
+      "count": 31,
+      "uniques": 15
     }
   },
   "popular_paths": [
     {
-      "count": 75,
+      "count": 70,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 47
+      "uniques": 45
+    },
+    {
+      "count": 5,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/README.md",
+      "title": "/blob/main/README.md",
+      "uniques": 3
     },
     {
       "count": 4,
@@ -276,12 +286,6 @@
     },
     {
       "count": 1,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/README.md",
-      "title": "/blob/main/README.md",
-      "uniques": 1
-    },
-    {
-      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
       "uniques": 1
@@ -289,19 +293,19 @@
   ],
   "referrers": [
     {
-      "count": 8,
+      "count": 9,
       "referrer": "Google",
-      "uniques": 6
-    },
-    {
-      "count": 7,
-      "referrer": "github.com",
       "uniques": 7
     },
     {
       "count": 7,
       "referrer": "shellshock.io",
       "uniques": 3
+    },
+    {
+      "count": 5,
+      "referrer": "github.com",
+      "uniques": 5
     },
     {
       "count": 3,
@@ -311,12 +315,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 1202,
-      "uniques": 620
+      "count": 1233,
+      "uniques": 635
     },
     "views": {
-      "count": 472,
-      "uniques": 268
+      "count": 481,
+      "uniques": 273
     }
   },
   "views": {
@@ -543,6 +547,10 @@
     "2026-11-23": {
       "count": 2,
       "uniques": 2
+    },
+    "2026-11-24": {
+      "count": 9,
+      "uniques": 5
     }
   }
 }
