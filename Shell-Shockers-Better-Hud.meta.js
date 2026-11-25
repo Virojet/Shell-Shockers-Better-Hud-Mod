@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.7.0
+// @version      6.7.1
 // @description  Adds a MODS tab to the Shell Shockers settings: FPS and ping display, HUD and effect toggles, match stats history, a custom crosshair editor, FPS helpers and a server picker, all styled like the game.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet

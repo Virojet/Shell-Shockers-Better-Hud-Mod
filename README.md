@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.7.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.7.1-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/traffic/installs/better-hud.json&style=flat-square)](#privacy)
@@ -67,6 +67,7 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ## What's new in v6.7
 
+- **SFC Block** (v6.7.1): if the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game until SFC is removed.
 - **League Stats:** a new **Stats Style** choice in **MODS ▸ Stats**. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.
 - **Show Guns:** a new switch in **MODS ▸ Stats**, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures.
 - **Match History:** a **Progress** page with your KDR or kills over your last 50 matches (click a dot to open that match), a search box and a date calendar, ticking several matches to keep, unkeep, delete or export them together, importing your exports back, and **Saved Match Limit** in place of Infinite Match History.
@@ -256,7 +257,7 @@ Open **MODS ▸ Manage** and press **Copy Support Info**, then [open an issue](h
 
 ## Compatibility
 
-Works on **shellshock.io and 70+ mirror domains**, in any browser that runs Tampermonkey or Violentmonkey.
+Works on **shellshock.io and 70+ mirror domains**, in any browser that runs Tampermonkey or Violentmonkey. It doesn't run next to the StateFarm Client cheat script (SFC): the game stays covered until SFC is removed and the page reloaded.
 
 <details>
 <summary>Show all domains</summary>
@@ -282,7 +283,11 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.7.0 — current
+#### v6.7.1 — current
+
+- **SFC Block:** if the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game with a block screen until SFC is removed and the page reloaded. It has no switch, and nothing is saved or sent.
+
+#### v6.7.0
 
 - **League Stats:** a new choice in **MODS ▸ Stats**, **Stats Style**. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.
 - **Show Guns:** a new switch in **MODS ▸ Stats**, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures: the primary they got the most kills with (pistol, grenade and melee kills don't count), or the one they last held before their first kill.

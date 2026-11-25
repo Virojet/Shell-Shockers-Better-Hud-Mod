@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.7.0
+// @version      6.7.1
 // @description  Adds a MODS tab to the Shell Shockers settings: FPS and ping display, HUD and effect toggles, match stats history, a custom crosshair editor, FPS helpers and a server picker, all styled like the game.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.0";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.1";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.7.0");
+.version) || "6.7.1");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.0",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.1",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1635,7 +1635,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.7.0",
+version: "6.7.1",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -16978,7 +16978,7 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.7";
+const displayVersion = "6.7.1";
 const changelogVersion = "6.7";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
@@ -16989,6 +16989,10 @@ window.__ssbErr("changelog.sound", err);
 }
 }
 const v67Items = [{
+label: "SFC Block",
+text: "If the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game with a block screen until SFC is removed and the page reloaded. It has no switch, and nothing is saved or sent.",
+group: "v6.7.1"
+}, {
 label: "League Stats",
 text: "A new choice in MODS ▸ Stats, Stats Style. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.",
 group: "v6.7"
@@ -17096,7 +17100,7 @@ group: "v6.6"
 }];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.7:",
+intro: "Here's what's new in v6.7.1 and v6.7:",
 items: v67Items
 }, {
 version: "6.6.3",
@@ -22516,4 +22520,154 @@ if (on) start();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
+})();
+(function() {
+"use strict";
+if (window.__ssbSfcBlock) return;
+const ID = "ssb-sfc-block",
+STYLE_ID = "ssb-sfc-style",
+TITLE = /^\s*[SЅ]tate\s*Farm\s+Client\b/i,
+SVG = "http://www.w3.org/2000/svg",
+EVENTS = ["keydown", "keyup", "keypress", "mousedown", "mouseup", "click", "dblclick", "auxclick", "pointerdown",
+"pointerup", "wheel", "touchstart", "touchend"
+];
+let blocked = false,
+by = "",
+root = null,
+stopCheck = null;
+const CSS = `
+        #${ID} { position:fixed; inset:0; z-index:2147483647; display:flex; align-items:center; justify-content:center; padding:18px; box-sizing:border-box; background:rgba(16,6,8,0.9); backdrop-filter:blur(6px); font-family:"Nunito",system-ui,sans-serif; pointer-events:auto; cursor:default; user-select:none; }
+        #${ID} * { box-sizing:border-box; margin:0; font-size:inherit; letter-spacing:normal; }
+        #${ID} .ssb-sfc-panel { width:min(600px,100%); padding:22px 26px 18px; border:4px solid #881a1a; border-radius:10.5px; background:linear-gradient(#c41212,#d42f2f 30%,#df4a4a 55%,#e86464 78%,#ef7d7d); box-shadow:0 18px 42px rgba(0,0,0,0.5); text-align:center; color:#fff; }
+        #${ID}.ssb-sfc-new .ssb-sfc-panel { animation:ssb-sfc-in 0.18s ease; }
+        #${ID} .ssb-sfc-icon { display:block; width:76px; height:76px; margin:0 auto 12px; filter:drop-shadow(rgba(0,0,0,0.28) 0 3px 0); }
+        #${ID} .ssb-sfc-title { font-family:"Sigmar One",sans-serif; font-weight:normal; font-size:clamp(20px,1.3vw + 12px,30px); line-height:1.15; text-transform:uppercase; color:#fff; text-shadow:rgba(136,26,26,0.9) 3px 3px 0; overflow-wrap:anywhere; }
+        #${ID} .ssb-sfc-text { margin-top:12px; font-size:clamp(15px,0.4vw + 11px,18px); font-weight:800; line-height:1.4; color:#fff; text-shadow:rgba(0,0,0,0.3) 1px 1px 0; }
+        #${ID} .ssb-sfc-btn { min-width:150px; height:46px; margin-top:20px; padding:0 22px; border:4px solid #0C576F; border-radius:8.4px; background:#0b93bd; color:#fff; font-family:"Nunito",system-ui,sans-serif; font-size:18px; font-weight:800; cursor:pointer; text-shadow:rgba(0,0,0,0.3) 2px 2px 0; box-shadow:rgba(136,26,26,0.55) 3.4px 3.4px 0 0, #086e8d -2.1px -3.2px 2.1px 0 inset, #00ade6 0 3.2px 4.2px 0 inset; transition:filter 0.1s, transform 0.1s; }
+        #${ID} .ssb-sfc-btn:hover { filter:brightness(1.08); }
+        #${ID} .ssb-sfc-btn:active { transform:translateY(2px); }
+        #${ID} .ssb-sfc-btn:focus-visible { outline:3px solid #fff; outline-offset:2px; }
+        #${ID} .ssb-sfc-by { margin-top:14px; font-size:12px; font-weight:900; letter-spacing:0.6px; text-transform:uppercase; color:#fff; opacity:0.92; text-shadow:rgba(136,26,26,0.7) 1px 1px 0; }
+        @keyframes ssb-sfc-in { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:none; } }
+        @media (max-height:420px) { #${ID} .ssb-sfc-icon { width:52px; height:52px; margin-bottom:8px; } #${ID} .ssb-sfc-btn { margin-top:14px; } }
+        @media (prefers-reduced-motion:reduce) { #${ID}.ssb-sfc-new .ssb-sfc-panel { animation:none; } }
+    `;
+function find() {
+if (document.querySelector(".tp-statefarm")) return "tp-statefarm element";
+const titles = document.querySelectorAll(".tp-rotv_t");
+for (let i = 0; i < titles.length; i++)
+if (TITLE.test(titles[i].textContent || "")) return "StateFarm Client menu";
+return "";
+}
+function el(tag, cls, text) {
+const e = document.createElement(tag);
+if (cls) e.className = cls;
+if (text != null) e.textContent = text;
+return e;
+}
+function icon() {
+const s = document.createElementNS(SVG, "svg");
+s.setAttribute("viewBox", "0 0 64 64");
+s.setAttribute("class", "ssb-sfc-icon");
+s.setAttribute("aria-hidden", "true");
+const add = (tag, attrs) => {
+const n = document.createElementNS(SVG, tag);
+for (const k in attrs) n.setAttribute(k, attrs[k]);
+s.appendChild(n);
+};
+add("circle", { cx: 32, cy: 32, r: 28.5, fill: "#fff", stroke: "#881a1a", "stroke-width": 3 });
+add("circle", { cx: 32, cy: 32, r: 23, fill: "none", stroke: "#e81616", "stroke-width": 8 });
+add("line", { x1: 17.5, y1: 17.5, x2: 46.5, y2: 46.5, stroke: "#e81616", "stroke-width": 8 });
+return s;
+}
+function build() {
+const o = el("div", "ssb-sfc-new");
+o.id = ID;
+o.setAttribute("role", "alertdialog");
+o.setAttribute("aria-modal", "true");
+o.setAttribute("aria-labelledby", ID + "-title");
+o.setAttribute("aria-describedby", ID + "-text");
+const p = el("div", "ssb-sfc-panel"),
+t = el("h2", "ssb-sfc-title", "You are banned for using the SFC script"),
+x = el("p", "ssb-sfc-text", "StateFarm Client (SFC) was detected. Turn off your hacks, remove the script and reload the page."),
+b = el("button", "ssb-sfc-btn", "Reload Page");
+t.id = ID + "-title";
+x.id = ID + "-text";
+b.type = "button";
+p.append(icon(), t, x, b, el("div", "ssb-sfc-by", "Better HUD"));
+o.appendChild(p);
+setTimeout(() => o.classList.remove("ssb-sfc-new"), 400);
+return o;
+}
+function ensureStyle() {
+if (document.getElementById(STYLE_ID)) return;
+const s = el("style", "", CSS);
+s.id = STYLE_ID;
+(document.head || document.documentElement).appendChild(s);
+}
+function releaseLock() {
+try {
+if (document.pointerLockElement && document.exitPointerLock) document.exitPointerLock();
+} catch (e) {}
+}
+function keep() {
+if (!blocked || !document.body) return;
+ensureStyle();
+if (!root) root = build();
+if (root.parentNode !== document.body || document.body.lastElementChild !== root) {
+const had = root.contains(document.activeElement);
+document.body.appendChild(root);
+if (had || !document.activeElement || document.activeElement === document.body) focusButton();
+}
+releaseLock();
+}
+function focusButton() {
+const b = root && root.querySelector(".ssb-sfc-btn");
+if (b) try {
+b.focus({ preventScroll: true });
+} catch (e) {}
+}
+function block(how) {
+if (blocked) return;
+blocked = true;
+by = how;
+if (stopCheck) stopCheck();
+stopCheck = null;
+console.warn("[Better HUD] StateFarm Client (SFC) detected (" + how + "): the game is blocked until SFC is removed and the page reloaded.");
+if (document.body) {
+keep();
+focusButton();
+} else document.addEventListener("DOMContentLoaded", () => {
+keep();
+focusButton();
+}, { once: true });
+window.__ssbMenuPoll(keep, 1000, { inMatch: true });
+}
+function check() {
+try {
+const how = find();
+if (how) block(how);
+} catch (e) {
+window.__ssbErr("sfc.check", e);
+}
+}
+function swallow(e) {
+if (!blocked) return;
+e.stopImmediatePropagation();
+if (e.type === "keydown" && e.key === "Tab") {
+e.preventDefault();
+focusButton();
+} else if (e.type === "click" && e.target && e.target.closest && e.target.closest("#" + ID + " .ssb-sfc-btn")) {
+location.reload();
+}
+}
+for (const t of EVENTS) window.addEventListener(t, swallow, { capture: true, passive: t === "wheel" || t.startsWith("touch") });
+document.addEventListener("pointerlockchange", () => {
+if (blocked) releaseLock();
+});
+window.__ssbSfcBlock = {
+status: () => ({ blocked, by, shown: !!(root && root.isConnected) })
+};
+stopCheck = window.__ssbMenuPoll(check, 2000, { inMatch: true });
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", check, { once: true });
 })();
