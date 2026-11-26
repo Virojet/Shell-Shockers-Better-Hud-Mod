@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Shell Shockers Better UI
-// @version      6.7.1
+// @version      6.8.0
 // @description  Adds a MODS tab to the Shell Shockers settings: FPS and ping display, HUD and effect toggles, match stats history, a custom crosshair editor, FPS helpers and a server picker, all styled like the game.
 // @namespace    https://github.com/ViroGear/Shell-Shockers-Better-Hud-Mod
 // @author       Virojet
@@ -113,7 +113,7 @@ once: true
 });
 })();
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.1";
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.8.0";
 var list = window.__ssbCopies;
 if (!list) {
 list = window.__ssbCopies = [];
@@ -126,11 +126,11 @@ version: mine
 });
 })();
 window.SSB_VERSION = window.SSB_VERSION || ((typeof GM_info !== "undefined" && GM_info.script && GM_info.script
-.version) || "6.7.1");
+.version) || "6.8.0");
 window.SSB_DISCORD = "https://discord.com/invite/yWnDAYKA9n";
 window.SSB_YOUTUBE = "https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw";
 (function() {
-var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.7.1",
+var mine = (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) || "6.8.0",
 K = "ssb-last-version";
 function newer(a, b) {
 var x = String(a).split("."),
@@ -1635,7 +1635,7 @@ function visibility() {
 reset();
 }
 const api = window.__ssbEffects60 = {
-version: "6.7.1",
+version: "6.8.0",
 clean,
 settings: () => ({
 enabled: rate > 0,
@@ -3116,6 +3116,7 @@ const _ssbCore = [
 ["ui", "advancedSettings", "tp-advancedSettings", "Uy", false, "b", "Advanced Settings"],
 ["ui", "guiScale", "tp-guiScale", "Ui", 1, "n", "GUI Scale"],
 ["ui", "coopIconSize", "tp-coopIconSize", "Uo", 1, "n", "Coop Icon Size"],
+["ui", "hideHudKey", "tp-hideHudKey", "Ud", "", "key", "Hide HUD Key"],
 ["gameplay", "tabOutKey", "tp-tabOutKey", "Gt", "Tab", "key", "Tab Out Key"],
 ["gameplay", "noExplosionSmoke", "tp-noExplosionSmoke", "Gs", false, "b"],
 ["gameplay", "noExplosionFire", "tp-noExplosionFire", "Gf", false, "b", "Hide Explosion Fire"],
@@ -4738,6 +4739,42 @@ r("ssb-hide-chw", "#chw-home, #chw-game-screen { display: none !important; }", e
 .hideChickenWinner);
 _ssbChlg();
 }
+const _HH_CSS = "#healthContainer, #weaponBox, #grenadeThrowContainer, .account_eggs, #shellStreakContainer, " +
+"#teamScores, #captureContainer, #captureIconContainer, #spatulaPlayer, .match-vs, .team-vs, .team-score, " +
+".gameStats, .game-stats, #playerList, #killTicker, .killTicker, [id*='killTicker'], #killLog, .kill-log, " +
+".kill-feed, #killList, .killList, .player-kill-feed, #kill-death-box, #playerChallengeComplete, " +
+"#chw-game-screen, .chat-wrapper, .chat-container, #inGameUI, #ssb-toast-stack, #ssb-update-toast, " +
+"#ssb-pinned-stats { display: none !important; }";
+let _hhOn = false,
+_hhStop = null;
+function _ssbHideHud(on) {
+on = !!on;
+if (on === _hhOn) return;
+_hhOn = on;
+r("ssb-hide-hud-key", _HH_CSS, on);
+if (on && !_hhStop) _hhStop = window.__ssbMenuPoll(() => {
+if (window.extern?.inGame !== true) _ssbHideHud(false)
+}, 1000);
+else if (!on && _hhStop) {
+_hhStop();
+_hhStop = null
+}
+}
+window.addEventListener("keydown", function(e) {
+let k = d.ui.hideHudKey;
+if (!k || !e.key || e.repeat || e.ctrlKey || e.altKey || e.metaKey || e.key.toLowerCase() !== k.toLowerCase())
+return;
+let t = document.activeElement;
+if (t && (/^(INPUT|TEXTAREA|SELECT)$/i.test(t.tagName) || t.isContentEditable)) return;
+if (window.extern?.inGame !== true) return;
+_ssbHideHud(!_hhOn);
+}, true);
+document.addEventListener("ssb:settings-change", () => {
+if (!d.ui.hideHudKey) _ssbHideHud(false)
+});
+window.__ssbHideHud = {
+on: () => _hhOn
+};
 let ea = null,
 er = false,
 es = null,
@@ -5044,6 +5081,7 @@ return i && i.some(e => e && (e.team === 1 || e.team === 2)) || eb && eb.everSee
 }
 let _histMem = null,
 _histT = 0,
+_histLockDue = 0,
 _histBigSaid = 0;
 function _ssbHist() {
 if (!_histMem) {
@@ -5060,9 +5098,14 @@ function _ssbHistWrite(now) {
 clearTimeout(_histT);
 _histT = 0;
 if (!now) {
-_histT = setTimeout(() => _ssbHistWrite(1), 2e3);
+_histT = setTimeout(() => {
+_histT = 0;
+if (document.pointerLockElement) _histLockDue = 1;
+else _ssbHistWrite(1)
+}, 2e3);
 return
 }
+_histLockDue = 0;
 for (let tries = 0;; tries++) {
 try {
 let encoded = JSON.stringify(_histMem || []);
@@ -5105,7 +5148,10 @@ hist: () => _ssbHist(),
 setHist: h => _ssbHistSet(h)
 };
 window.addEventListener("storage", e => {
-if (!(e.key !== "tp-statsHistory" && e.key !== null || _histT)) _histMem = null;
+if (!(e.key !== "tp-statsHistory" && e.key !== null || _histT || _histLockDue)) _histMem = null;
+});
+document.addEventListener("pointerlockchange", () => {
+if (_histLockDue && !document.pointerLockElement) _ssbHistWrite(0);
 });
 const _HIST_MAX = 40,
 _HIST_KEPT = 20;
@@ -5338,7 +5384,7 @@ window.__ssbErr("stats.recOn", e)
 function _ssbSaveStats(_f) {
 try {
 _stTimeTick();
-if (_f && _histT) _ssbHistWrite(1);
+if (_f && (_histT || _histLockDue)) _ssbHistWrite(1);
 if (!d.stats.enabled || !eb.matchStartMs) return;
 let _sk = 0,
 _sd = 0,
@@ -10596,6 +10642,7 @@ let o = {
 "Legacy Sounds": "Restores the classic/old weapon & game sound effects (fire, reload, pickup, grenade, swap). Loads legacy audio on first enable, then toggles live without reload.",
 "Auto Fullscreen": "Goes fullscreen like F11 when you click into a match. In Chrome and Edge, Esc only pauses: hold Esc to leave fullscreen until the next match.",
 "Tab Out Key": "The keyboard key that releases pointer lock so you can tab away without snapping the camera. Clear removes the key.",
+"Hide HUD Key": "In a match, press this key to hide the whole HUD at once for clips and screenshots; press it again to bring it back. Your crosshair and the scope stay. Leaving the match turns it off. No key by default; Clear removes the key.",
 "Render Scale": "The resolution the game is drawn at. 1 is normal. Above 1 is a lower resolution for more FPS: 2 is half the width and height, and looks blurrier. Below 1 is a higher resolution for a sharper picture: 0.5 is twice the width and height, and costs a lot of FPS. Type any value from 0.25 to 4. Smart Auto Detail can still lower the resolution when your FPS drops.",
 "GUI Scale": "Makes the game's HUD, menus, chat and scoreboard smaller or larger. 1 is the normal size and most of the range makes things smaller. The crosshair keeps its size. Applies when you let go of the slider.",
 "Coop Icon Size": "Makes the King of the Coop marker over the coop (its ring, crown and distance) smaller, so it covers less of the players on the coop. 1 is the game's size and 0.25 a quarter of it. Hide Game Stats still hides it completely.",
@@ -11422,6 +11469,7 @@ let kw = {
 "When King of the Coop Ends": "kotc game over win round end copy download save picture image screenshot scoreboard",
 "Stats Hotkey": "keybind",
 "Tab Out Key": "keybind pointer lock",
+"Hide HUD Key": "keybind hide everything whole hud clean screen screenshot clip recording video cinematic toggle",
 "Legacy Skins": "classic old guns",
 "Legacy Sounds": "classic old audio",
 "Auto Fullscreen": "full screen f11",
@@ -12094,6 +12142,12 @@ _guC.appendChild(
 _guN);
 C.appendChild(_guC);
 C.appendChild(_coopSizeRow());
+C.appendChild(hk("Hide HUD Key", d.ui.hideHudKey, function(e) {
+d.ui.hideHudKey = e || "";
+localStorage.setItem("tp-hideHudKey", d.ui.hideHudKey);
+document.dispatchEvent(new Event("ssb:settings-change"));
+}, "tp-hideHudKey", () => d.ui.hideHudKey, v => _keyClash(v, "", d.stats.hotkey, "Stats Hotkey") ||
+_keyClash(v, "", d.gameplay.tabOutKey, "Tab Out Key")));
 function _coopSizeRow() {
 const row = document.createElement("div"), label = document.createElement("div"),
 wrap = document.createElement("div"), range = document.createElement("input"),
@@ -12505,7 +12559,7 @@ localStorage.setItem("tp-statsHotkey", d.stats
 .hotkey);
 document.dispatchEvent(new Event("ssb:settings-change"));
 }, "tp-statsHotkey", () => d.stats.hotkey, v => _keyClash(v, "\\", d.gameplay.tabOutKey,
-"Tab Out Key")));
+"Tab Out Key") || _keyClash(v, "\\", d.ui.hideHudKey, "Hide HUD Key")));
 let L = a("Gameplay", "gameplay");
 s(L, "Legacy Skins", d.gameplay, "legacySkins", "tp-legacySkins", () => setLegacySkins(d
 .gameplay.legacySkins));
@@ -12521,7 +12575,7 @@ localStorage.setItem("tp-tabOutKey", d.gameplay
 .tabOutKey);
 document.dispatchEvent(new Event("ssb:settings-change"));
 }, "tp-tabOutKey", () => d.gameplay.tabOutKey, v => _keyClash(v, "Tab", d.stats.hotkey,
-"Stats Hotkey")));
+"Stats Hotkey") || _keyClash(v, "Tab", d.ui.hideHudKey, "Hide HUD Key")));
 let _fovC = document.createElement("div");
 _fovC.className = "mod-slider-container";
 _fovC.setAttribute("data-setting", "tp-fovStretch");
@@ -13592,7 +13646,7 @@ type: "success"
 });
 _rebuild();
 });
-let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatCountdown chatCrosshair chatJoin chatMentionAtOnly chatMentionHighlightMe chatMentionHighlightOthers chatMentionPing chatMentions chatNoDup chatTimes cleanLeave coopIconSize earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noToasts noYolk perfPriority personalRecords pinned preconnect presets quickQuit random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg statsAutoShow statsDebug statsEnabled statsHighlightMe statsGameNo statsHistMetric statsHistView statsHistory statsHistoryLimit statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsStyle statsTimeMode statsShowFps statsShowGuns statsUnlimited tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
+let _ssbOwnTp = new Set(("advancedSettings audioOptimized autoFullscreen autoPickBest autoPickHeld autoShow boxOpacity chatCountdown chatCrosshair chatJoin chatMentionAtOnly chatMentionHighlightMe chatMentionHighlightOthers chatMentionPing chatMentions chatNoDup chatTimes cleanLeave coopIconSize earlyRespawnGuard earlySpectate effects60FPS enabled explosionColor favFirst favItems favOnly fixChickenWinner fovResizeAll fovStretch gameFixes guiScale hide hideAmmo hideBestStreak hideBox hideChallenges hideChat hideChickenWinner hideEggCount hideFPS hideGameStats hideGrenade hideHP hideHudKey hideKillFeed hideNametags hidePing hidePlayerList hideScopeLines hotkey infiniteChat instantChickenWinner inventoryCount legacySkins legacySounds max min miniEggSize miniEggs mode noAA noBulletProjectiles noBulletSplats noChatCooldown noExplosionFire noParticles noPostProcess noShadows noShellBurst noSplats noToasts noYolk perfPriority personalRecords pinned preconnect presets quickQuit random renderScale schema sessionTimeFrom showChangedTab showFavIcon showMatchHistory showMs showServerList showSessionTime showVolumeSlider smartDetail smokeLogo smokeLogoImg spectateFix statsAutoShow statsDebug statsEnabled statsHighlightMe statsGameNo statsHistMetric statsHistView statsHistory statsHistoryLimit statsHotkey statsKillBars statsKotc statsKotcEnd statsLifetime statsPinned statsRecords statsSession statsStyle statsTimeMode statsShowFps statsShowGuns statsUnlimited tabOutKey ultraPerf uncap uncapControlled uncapFPS uncapTarget"
 + " statsAdmin adBypass chatBypass chwAuto chwAutoDay chwAutoMax chwAutoWins hideScopeFrame hideScopeFrameMigrated lastSkinCache maxFPS maxPing minFPS minPing noExplosionSmoke randomFPS randomPing skinUnlocker"
 ).split(" ")),
 _ssbIsOwnTp = k => k.slice(0, 3) === "tp-" && _ssbOwnTp.has(k.slice(3)),
@@ -16978,8 +17032,8 @@ border-radius: 6px !important;
 (document.head || document.documentElement).appendChild(style);
 }
 (function installVersionChangelog() {
-const displayVersion = "6.7.1";
-const changelogVersion = "6.7";
+const displayVersion = "6.8.0";
+const changelogVersion = "6.8";
 const changelogKey = "ssb-better-ui-changelog-seen";
 function changelogSound(name) {
 try {
@@ -16988,6 +17042,23 @@ window.BAWK?.play?.(name);
 window.__ssbErr("changelog.sound", err);
 }
 }
+const v68Items = [{
+label: "Hide HUD Key",
+text: "A new key in MODS ▸ HUD, with no key set by default. In a match it hides the whole HUD at once for clips and screenshots, and pressing it again brings back exactly what you had. Your crosshair and the scope stay, and leaving the match turns it off.",
+group: "v6.8"
+}, {
+label: "Smoother Long Matches",
+text: "With a long Match History, Better HUD no longer saves the whole history every 15 seconds while you aim. It saves when the mouse is free (a death, the pause menu, the end of the match) or when you leave, so nothing is lost.",
+group: "v6.8"
+}, {
+label: "Spectate Camera Fix",
+text: "A new fix under MODS ▸ Gameplay ▸ Game Fixes, on by default. First-person spectating no longer freezes for good when the player you watch leaves, or when Up/Down finds nobody else alive, and pressing Play after spectating no longer leaves the screen on the spectator view.",
+group: "v6.8"
+}, {
+label: "Skip Duplicate Messages",
+text: "Capital letters now count, as they do in the game: \"r\" after \"R\" is sent.",
+group: "v6.8"
+}];
 const v67Items = [{
 label: "SFC Block",
 text: "If the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game with a block screen until SFC is removed and the page reloaded. It has no switch, and nothing is saved or sent.",
@@ -17057,55 +17128,14 @@ label: "Disable Toasts",
 text: "A new switch in MODS ▸ Menus, off by default. It hides Better HUD's pop-up messages at the top of the screen, such as \"Copied to clipboard.\" and error messages. A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big.",
 group: "v6.7"
 }];
-const v66Items = [{
-label: "King of the Coop Stats",
-text: "Coop Time, Captures and Takeovers count again. The game's update of 17 November had stopped them.",
-group: "v6.6.3"
-}, {
-label: "Chat Countdown",
-text: "A new switch in MODS ▸ Chat, off by default. When the game makes you wait before your next chat message, the chat box shows how many seconds are left, and you can type anyway: your message sends itself as soon as the game allows it (up to 10 at a time).",
-group: "v6.6.1"
-}, {
-label: "Skip Duplicate Messages",
-text: "A new switch in MODS ▸ Chat, off by default. The game filters out a chat message you already sent, so this stops you sending the same message twice in a match.",
-group: "v6.6.1"
-}, {
-label: "Quick Quit",
-text: "A new switch in MODS ▸ Menus, off by default. Quit in the pause menu leaves the match at once, without the confirm pop-up.",
-group: "v6.6.1"
-}, {
-label: "Infinite Match History",
-text: "A new switch in MODS ▸ Stats, off by default. Match History keeps every match instead of only the last 40.",
-group: "v6.6.1"
-}, {
-label: "Render Scale",
-text: "Now goes from 0.25 to 4, and you can type any value in between. Below 1 draws the game at a higher resolution than normal: sharper, and much heavier on your FPS.",
-group: "v6.6.1"
-}, {
-label: "Crosshair Per Weapon",
-text: "A new card in the Crosshair tab, off by default: pick one of your saved profiles for each weapon, and it's used while you hold that weapon. Your own crosshair stays as it is.",
-group: "v6.6"
-}, {
-label: "Other Mods",
-text: "Smoke Logo, Shellstrike Mod and Crosshair Mod are now on the Other Mods page.",
-group: "v6.6"
-}, {
-label: "Your Data",
-text: "Remove All Mod Data and backup files now touch only Better HUD's own settings, so what other scripts saved stays put.",
-group: "v6.6"
-}, {
-label: "Game Didn't Start",
-text: "If another userscript breaks the game's code so the game can't start, a message now says so.",
-group: "v6.6"
-}];
 const changelogHistory = [{
 version: displayVersion,
-intro: "Here's what's new in v6.7.1 and v6.7:",
-items: v67Items
+intro: "Here's what's new in v6.8:",
+items: v68Items
 }, {
-version: "6.6.3",
-intro: "Previously in v6.6.3, v6.6.1 and v6.6:",
-items: v66Items
+version: "6.7.1",
+intro: "Previously in v6.7.1 and v6.7:",
+items: v67Items
 }];
 function hasSeenChangelog() {
 try {
@@ -19492,8 +19522,8 @@ section: "gameplay",
 label: "Game Fixes",
 code: "Gx",
 def: true,
-tip: "Workarounds for bugs in the game itself: Chick'n Winner Fix, Early Respawn Guard and Blank Egg Fix. Turns them all on or off together. Click the gear to switch each one on its own. Turn one off if the game fixes it.",
-keywords: "game fixes fix bugs workarounds repair chicken winner respawn guard blank egg leave glitch gear",
+tip: "Workarounds for bugs in the game itself: Chick'n Winner Fix, Early Respawn Guard, Blank Egg Fix and Spectate Camera Fix. Turns them all on or off together. Click the gear to switch each one on its own. Turn one off if the game fixes it.",
+keywords: "game fixes fix bugs workarounds repair chicken winner respawn guard spectate camera blank egg leave glitch gear",
 get: isOn,
 set: (v) => {
 setOn(v);
@@ -19651,6 +19681,124 @@ get: isOn,
 set: setOn
 });
 document.addEventListener("click", onClick, true);
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+(function() {
+"use strict";
+const KEY = "tp-spectateFix";
+const isOn = () => {
+try {
+const v = localStorage.getItem(KEY);
+return v === null ? true : JSON.parse(v) === true;
+} catch (e) {
+return true;
+}
+};
+const setOn = (v) => {
+try {
+localStorage.setItem(KEY, JSON.stringify(!!v));
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("specfix#1", e);
+}
+};
+const active = () => isOn() && (!window.__ssbGameFixesOn || window.__ssbGameFixesOn());
+let _next = 0;
+const picked = (cam, list, me) => {
+const p = cam && cam.playerIdx != null ? list[cam.playerIdx] : null;
+return p && p.id !== me ? p : null;
+};
+window.__ssbSpecFix = {
+keep(cam, list, me) {
+try {
+return active() && !!picked(cam, list, me);
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("specfix#2", e);
+return false;
+}
+},
+mine: () => active(),
+tick(cam, lw, list, me, alive) {
+try {
+if (lw && lw.id !== me && (lw[alive] || list[lw.id] === lw)) return;
+const now = performance.now();
+if (now < _next || !active()) return;
+_next = now + 250;
+let p = picked(cam, list, me);
+if (!p || !p[alive]) {
+p = null;
+for (let i = 0; i < list.length; i++) {
+const q = list[i];
+if (q && q[alive] && q.id !== me) {
+p = q;
+break;
+}
+}
+}
+if (p && typeof cam.spectatePlayer === "function") cam.spectatePlayer(p);
+} catch (e) {
+if (window.__ssbErr) window.__ssbErr("specfix#3", e);
+}
+}
+};
+function patch(src) {
+if (typeof src !== "string" || src.includes("__ssbSpecFix")) return src;
+const once = (text) => {
+const at = src.indexOf(text);
+return at >= 0 && src.indexOf(text, at + 1) < 0 ? at : -1;
+};
+const un = /\.prototype\.unlock=function\(\)\{([\w$]+)=null,([\w$]+)=null,this\.playerIdx=null\}/.exec(src);
+if (!un || once(un[0]) < 0) return src;
+const fid = un[1],
+fp = un[2];
+const fnAt = once(".prototype.findNextPlayer=function(");
+if (fnAt < 0 || fnAt > un.index || un.index - fnAt > 1500) return src;
+const body = src.slice(fnAt, un.index);
+const list = /let ([\w$]+)=([\w$]+)\[[\w$]+\];\1&&[\w$]+\.push\(\1\.id\)/.exec(body);
+const drop = /if\(([\w$]+)&&\1\.([\w$]+)&&\1\.id!==([\w$]+)\)return \1\}(return this\.unlock\(\),null)\}/.exec(body);
+if (!list || !drop) return src;
+const pl = list[2],
+alive = drop[2],
+me = drop[3];
+const dropAt = fnAt + drop.index + drop[0].length - drop[4].length - 1;
+const unEnd = un.index + un[0].length;
+const up = /^,[\w$]+\.prototype\.update=function\([\w$]+\)\{if\([\w$]+===[\w$]+\.firstPerson\)([\w$]+)&&\1\.([\w$]+)&&\(/
+.exec(src.slice(unEnd, unEnd + 300));
+if (!up || up[1] !== fp || up[2] !== alive) return src;
+const upAt = unEnd + up[0].length - (fp + "&&" + fp + "." + alive + "&&(").length;
+const own = "this.id==" + me + "&&(" + fid + "=" + me + ")";
+const ownAt = once(own);
+const rsAt = ownAt < 0 ? -1 : src.lastIndexOf(".prototype.respawn=function(", ownAt);
+if (ownAt < 0 || rsAt < 0 || ownAt - rsAt > 1200) return src;
+const h = "window.__ssbSpecFix";
+const edits = [
+[dropAt, drop[4], `return ${h}&&${h}.keep(this,${pl},${me})?null:(this.unlock(),null)`],
+[upAt, "", `${h}&&${h}.tick(this,${fp},${pl},${me},"${alive}"),`],
+[ownAt, own, `this.id==${me}&&(${fid}=${me},${h}&&${h}.mine()&&(${fp}=this))`]
+].sort((a, b) => b[0] - a[0]);
+let out = src;
+for (const [at, old, text] of edits) {
+if (out.slice(at, at + old.length) !== old) return src;
+out = out.slice(0, at) + text + out.slice(at + old.length);
+}
+return out;
+}
+window.__ssbPatches.add("spectate-follow", patch);
+function boot() {
+window.__ssbSettings.add({
+key: KEY,
+section: "gameplay",
+after: "tp-earlyRespawnGuard",
+cls: "ssb-uc-sub ssb-gf-sub",
+label: "Spectate Camera Fix",
+code: "Gc",
+def: true,
+tip: "First-person spectating (V) no longer freezes for good. Up/Down no longer drops the only player left alive, a view with nobody to follow (the player you watched left, say) moves to a live player, and pressing Play after spectating puts the camera back in your egg. While the player you watch is dead, the view waits for them, as in the game.",
+keywords: "spectate spectator spectating camera first person view stuck frozen freeze dies died leaves follow watch next player fix",
+get: isOn,
+set: setOn
+});
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
@@ -21279,7 +21427,7 @@ sentLines = new Set();
 const gameBox = () => document.getElementById("chatIn");
 const editable = (el) => !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
 const secs = (v) => Math.max(1, Math.ceil(v - 1e-6)) + "s";
-const normMsg = (s) => String(s || "").trim().slice(0, 64).toLowerCase();
+const normMsg = (s) => String(s || "").trim().slice(0, 64);
 function isDead() {
 try {
 const me = (window.players || [])[window.myPlayerIdx];
@@ -21851,7 +21999,7 @@ after: KEY,
 label: "Skip Duplicate Messages",
 code: "Cd",
 def: true,
-tip: "Stops you from sending the same chat message twice in a row (or queueing it twice in a row in Chat Countdown), since the game filters out a repeated message anyway. A message you sent earlier can be sent again once you have said something else.",
+tip: "Stops you from sending the same chat message twice in a row (or queueing it twice in a row in Chat Countdown), since the game filters out a repeated message anyway. A message you sent earlier can be sent again once you have said something else. Capital letters count, as in the game: \"r\" after \"R\" goes through.",
 keywords: "chat duplicate repeat same message twice second time filter skip block cooldown",
 get: () => noDup,
 set: (v) => {

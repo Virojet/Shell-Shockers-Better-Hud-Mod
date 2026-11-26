@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.7.1-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.8.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/traffic/installs/better-hud.json&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v67) &nbsp;·&nbsp; [**See it in action**](https://virojet.github.io/better-hud/) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v68) &nbsp;·&nbsp; [**See it in action**](https://virojet.github.io/better-hud/) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,19 +65,14 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.7
+## What's new in v6.8
 
-- **SFC Block** (v6.7.1): if the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game until SFC is removed.
-- **League Stats:** a new **Stats Style** choice in **MODS ▸ Stats**. Copy Image and Download can draw a match as a league's result card: Shell Strike, ShellStrike2, Shell Ranked, Shell Blitz, Shell Drill, OG Stats Mod or Nameless. Better HUD's own picture stays the default.
-- **Show Guns:** a new switch in **MODS ▸ Stats**, off by default. Each player's gun shows by their name in the stats window, Match History and the pictures.
-- **Match History:** a **Progress** page with your KDR or kills over your last 50 matches (click a dot to open that match), a search box and a date calendar, ticking several matches to keep, unkeep, delete or export them together, importing your exports back, and **Saved Match Limit** in place of Infinite Match History.
-- **Chat Mentions:** type @ in chat to pick a player's name. When someone says your name, it's highlighted in blue and you hear a ping.
-- **Crosshair Codes in Chat:** a crosshair code said in chat is underlined. Hover it to see the crosshair, click it to save it as a profile.
-- **Copy as Text:** copies a match as text for Discord, with the tables lined up.
-- **Choose What to Restore:** loading a backup file asks what to bring back, and you review the changes before anything is saved.
-- **Disable Toasts:** a new switch in **MODS ▸ Menus** that hides Better HUD's pop-up messages. A few warnings still show.
+- **Hide HUD Key:** a new key in **MODS ▸ HUD**, with no key set by default. In a match it hides the whole HUD at once for clips and screenshots; press it again to bring everything back. Your crosshair and the scope stay.
+- **Spectate Camera Fix:** first-person spectating no longer gets stuck when the player you watch leaves, and pressing Play after spectating puts you back in your egg. On by default, in **MODS ▸ Gameplay ▸ Game Fixes**.
+- **Smoother Long Matches:** with a long Match History, Better HUD no longer saves the whole history every 15 seconds while you aim.
+- **Skip Duplicate Messages:** capital letters now count, as they do in the game: "r" after "R" is sent.
 
-[Full changelog ↓](#changelog)
+Also new in v6.7: SFC Block, League Stats, Show Guns, Progress, Chat Mentions, Crosshair Codes in Chat, Copy as Text and Disable Toasts. [Full changelog ↓](#changelog)
 
 ---
 
@@ -88,7 +83,7 @@ Want to see it first? The **[Better HUD site](https://virojet.github.io/better-h
 | Feature | What it does |
 |---|---|
 | **Crosshair editor** | Build any crosshair with a live preview, save it as a profile, share it as a code, and switch in one click |
-| **HUD controls** | FPS / ping display, hide any HUD element, infinite chat history, @ mentions in chat, volume slider, tab-out key |
+| **HUD controls** | FPS / ping display, hide any HUD element or all of it with one key, infinite chat history, @ mentions in chat, volume slider, tab-out key |
 | **Effects & FPS** | Uncap FPS, Smart Auto Detail, Render Scale, FPS Check, disable anti-aliasing, hide bullets / explosions / splats / particles, wider FOV with black bars |
 | **Server picker** | Choose your region from the home screen, with live ping |
 | **Stats tracker** | Live scoreboards, session K / D / KDR, optional King of the Coop time, captures and takeovers, an end-of-match overlay, league-style pictures, and a match history you can search, filter, chart and export |
@@ -109,12 +104,13 @@ Want to see it first? The **[Better HUD site](https://virojet.github.io/better-h
 - **Crosshair Codes in Chat**: a crosshair code said in chat is underlined; hover it to see the crosshair, click it to save it as a profile. On by default
 - **Chat Mentions**: type @ in chat to pick a player's name from a list. When someone says your name, it's highlighted in blue and you hear a ping; a player you mention with @ is highlighted in green. The gear turns each highlight and the ping on or off. On by default
 - **Chat Countdown**: shows how long the game makes you wait before your next chat message, and lets you type ahead; your lines send themselves as soon as the game allows. Off by default
-- **Skip Duplicate Messages**: stops a chat message that repeats the one you sent right before it, since the game filters repeats out. On by default
+- **Skip Duplicate Messages**: stops a chat message that repeats the one you sent right before it, since the game filters repeats out. Capital letters count, as in the game. On by default
 - **Match History button**: a round clock button on the home screen, beside Game Mode
 - **Instant Chick'n Winner**: one click cracks the egg in the Chick'n Winner egg game instead of six. Off by default (**MODS ▸ Menus**)
 - **Quick Quit**: Quit in the pause menu leaves at once, without the confirm pop-up. Off by default (**MODS ▸ Menus**)
 - **Disable Toasts**: hides Better HUD's pop-up messages at the top of the screen, such as "Copied to clipboard." A few warnings still show: a game update breaking part of Better HUD, two copies running at once, and Match History getting too big. Off by default (**MODS ▸ Menus**)
 - **Coop Icon Size**: a slider in **MODS ▸ HUD** that makes the King of the Coop marker over the coop smaller, so it covers less of the players on it
+- **Hide HUD Key**: a key in **MODS ▸ HUD**, none set by default. In a match it hides the whole HUD at once, for clips and screenshots; press it again to bring it back. The crosshair and the scope stay, and leaving the match turns it off
 - **Volume slider** added directly to the pause menu
 - **Auto Fullscreen**: clicking into a match goes fullscreen, and in Chrome and Edge Esc only pauses, like F11
 - **Tab-out key**: release pointer lock without snapping the camera
@@ -169,7 +165,7 @@ Want to see it first? The **[Better HUD site](https://virojet.github.io/better-h
 - **Inventory Count**: a card with how many hats, stamps, guns, grenades and melee weapons you own, out of everything the game lists. Off by default (**MODS ▸ Menus**)
 - Searchable settings, with a sidebar of sections (HUD, Chat, FPS & Ping, Menus, Stats, Other Mods, Manage). **Effects** and **Gameplay** appear once **MODS ▸ Menus ▸ Advanced Settings** is on, and **Changed** once **Show Changed Tab** is. Open Settings and just start typing to search; search also finds settings on hidden tabs
 - **Advanced Settings**: off by default. Shows the Effects and Gameplay tabs, and explanations under the **MODS ▸ Manage** buttons
-- **Game Fixes**: workarounds for bugs in the game itself, in **MODS ▸ Gameplay**. One switch for all, and a gear that opens **Chick'n Winner Fix**, **Early Respawn Guard** and **Blank Egg Fix** one by one
+- **Game Fixes**: workarounds for bugs in the game itself, in **MODS ▸ Gameplay**. One switch for all, and a gear that opens **Chick'n Winner Fix**, **Early Respawn Guard**, **Blank Egg Fix** and **Spectate Camera Fix** one by one
 - **Changed** page (optional): only the settings you've changed, each with its own Reset. Enable **MODS ▸ Menus ▸ Show Changed Tab** to show it; off by default
 - **Copy Support Info**: a short report for bug reports (version, browser, graphics card, what failed to load). Nothing is sent anywhere
 - **Welcome Guide**: the three-step setup a new install opens with; open it again from **MODS ▸ Manage**
@@ -285,7 +281,14 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.7.1 — current
+#### v6.8.0 — current
+
+- **Hide HUD Key:** a new key in **MODS ▸ HUD**, with no key set by default. In a match it hides the whole HUD at once for clips and screenshots, and pressing it again brings back exactly what you had. Your crosshair and the scope stay, and leaving the match turns it off.
+- **Smoother Long Matches:** with a long Match History, Better HUD no longer saves the whole history every 15 seconds while you aim. It saves when the mouse is free (a death, the pause menu, the end of the match) or when you leave, so nothing is lost.
+- **Spectate Camera Fix:** a new fix under **MODS ▸ Gameplay ▸ Game Fixes**, on by default. First-person spectating no longer freezes for good when the player you watch leaves, or when Up/Down finds nobody else alive, and pressing Play after spectating no longer leaves the screen on the spectator view.
+- **Skip Duplicate Messages:** capital letters now count, as they do in the game: "r" after "R" is sent.
+
+#### v6.7.1
 
 - **SFC Block:** if the StateFarm Client cheat script (SFC) runs on the same page, Better HUD covers the game with a block screen until SFC is removed and the page reloaded. It has no switch, and nothing is saved or sent.
 
