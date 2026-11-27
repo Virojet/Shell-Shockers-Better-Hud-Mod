@@ -8,7 +8,7 @@
 
 [![Install Better HUD](https://img.shields.io/badge/Install_Better_HUD-one_click-2ea44f?style=for-the-badge&logo=tampermonkey&logoColor=white)](https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/Shell-Shockers-Better-Hud.user.js)
 
-[![Version](https://img.shields.io/badge/version-6.8.0-0E7697?style=flat-square)](#changelog)
+[![Version](https://img.shields.io/badge/version-6.9.0-0E7697?style=flat-square)](#changelog)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](./LICENSE)
 [![Auto-updates](https://img.shields.io/badge/updates-automatic-f79520?style=flat-square)](#updating)
 [![Installs](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Virojet/Shell-Shockers-Better-Hud-Mod/main/traffic/installs/better-hud.json&style=flat-square)](#privacy)
@@ -16,7 +16,7 @@
 [![YouTube](https://img.shields.io/badge/YouTube-Better_HUD-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/invite/yWnDAYKA9n)
 
-[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v68) &nbsp;·&nbsp; [**See it in action**](https://virojet.github.io/better-hud/) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
+[**Install**](#install) &nbsp;·&nbsp; [**What's new**](#whats-new-in-v69) &nbsp;·&nbsp; [**See it in action**](https://virojet.github.io/better-hud/) &nbsp;·&nbsp; [**Features**](#features) &nbsp;·&nbsp; [**Help**](#troubleshooting) &nbsp;·&nbsp; [**Changelog**](#changelog) &nbsp;·&nbsp; [**Discord**](https://discord.com/invite/yWnDAYKA9n) &nbsp;·&nbsp; [**YouTube**](https://www.youtube.com/channel/UC0tvOmAiozrBas9b6ZnCUyw)
 
 </div>
 
@@ -65,14 +65,15 @@ Want it right now? Press **Update** (or the **Check for updates** arrows button)
 
 ---
 
-## What's new in v6.8
+## What's new in v6.9
 
-- **Hide HUD Key:** a new key in **MODS ▸ HUD**, with no key set by default. In a match it hides the whole HUD at once for clips and screenshots; press it again to bring everything back. Your crosshair and the scope stay.
-- **Spectate Camera Fix:** first-person spectating no longer gets stuck when the player you watch leaves, and pressing Play after spectating puts you back in your egg. On by default, in **MODS ▸ Gameplay ▸ Game Fixes**.
-- **Smoother Long Matches:** with a long Match History, Better HUD no longer saves the whole history every 15 seconds while you aim.
-- **Skip Duplicate Messages:** capital letters now count, as they do in the game: "r" after "R" is sent.
+- **Clickable Links in Chat:** a new switch in **MODS ▸ Chat**, on by default. Web links said in chat (`https://`, `http://`, `www.`, or `discord.gg/...`) are underlined — click a link, confirm the exact address, and it opens in a new tab.
+- **Chat Mentions: Tab Badge & Ping Volume:** two new options inside the Chat Mentions gear: **Show Mentions in Tab Title** shows an unread `(N) ` count while you're in another tab (clears on return), and **Ping Volume** adjusts the mention chime from `0%` to `100%` with a preview on release.
+- **Discord-Safe Copy as Text:** Match History's **Copy as Text** now stays under Discord's 2,000-character limit even in large King of the Coop matches (progressively shortens names, drops coop columns if still over, or splits teams across two copy steps).
+- **Faster Screenshots & Lighter Overhead:** stats screenshots share the Latin-only font embedder, chat features share one ordered chat-line pipeline, and idle home-screen polling was reduced by ~30%.
+- **Settings Shade & Menu Sound Fixes:** fixed the dark backdrop behind Settings appearing with noticeable latency, and made menu opening sounds recover cleanly when browser audio is briefly suspended or interrupted.
 
-Also new in v6.7: SFC Block, League Stats, Show Guns, Progress, Chat Mentions, Crosshair Codes in Chat, Copy as Text and Disable Toasts. [Full changelog ↓](#changelog)
+Also new in v6.8: Hide HUD Key, Spectate Camera Fix, Smoother Long Matches and case-sensitive Skip Duplicate Messages. [Full changelog ↓](#changelog)
 
 ---
 
@@ -102,7 +103,8 @@ Want to see it first? The **[Better HUD site](https://virojet.github.io/better-h
 - **Copy Chat**: a button under **MODS ▸ Chat** that copies the chat the game still has as plain text
 - **Join From Chat**: click a game code said in chat to leave the match and join that game
 - **Crosshair Codes in Chat**: a crosshair code said in chat is underlined; hover it to see the crosshair, click it to save it as a profile. On by default
-- **Chat Mentions**: type @ in chat to pick a player's name from a list. When someone says your name, it's highlighted in blue and you hear a ping; a player you mention with @ is highlighted in green. The gear turns each highlight and the ping on or off. On by default
+- **Clickable Links in Chat**: web links said in chat (`https://`, `http://`, `www.`, or `discord.gg/...`) are underlined; click to confirm the exact address and open in a new tab. On by default
+- **Chat Mentions**: type @ in chat to pick a player's name from a list. When someone says your name, you hear a ping (with adjustable **Ping Volume**) and get an unread `(N) ` tab-title badge while in another tab. The gear toggles ping, `@`-only mode, volume, and tab-title badge. On by default
 - **Chat Countdown**: shows how long the game makes you wait before your next chat message, and lets you type ahead; your lines send themselves as soon as the game allows. Off by default
 - **Skip Duplicate Messages**: stops a chat message that repeats the one you sent right before it, since the game filters repeats out. Capital letters count, as in the game. On by default
 - **Match History button**: a round clock button on the home screen, beside Game Mode
@@ -281,7 +283,15 @@ Your settings, saved presets, crosshairs, personal records and match history sta
 
 ## Changelog
 
-#### v6.8.0 — current
+#### v6.9.0 — current
+
+- **Clickable Links in Chat:** a new switch in **MODS ▸ Chat**, on by default. Web links said in chat (`https://`, `http://`, `www.`, or `discord.gg/...`) are underlined: click a link, confirm the exact address in the pop-up, and it opens in a new tab.
+- **Chat Mentions: Tab Badge & Ping Volume:** two new options inside the Chat Mentions gear: **Show Mentions in Tab Title** shows an unread `(N) ` count while the tab is in the background (clears when you switch back), and **Ping Volume** sets the mention chime from `0%` to `100%` (default `80%`) with a preview on release.
+- **Discord-Safe Copy as Text:** Match History's **Copy as Text** now stays under Discord's 2,000-character limit even in large King of the Coop games: it shortens names to 14 characters, drops coop columns if still over, or splits Blue/Red across two copy steps with toast guidance.
+- **Faster Screenshots & Lighter Overhead:** stats screenshots now share the Latin-only font embedder instead of downloading non-Latin font subsets, all chat features share one ordered chat-line pipeline instead of overlapping observers, and idle home-screen polling was reduced by ~30%.
+- **Settings Shade & Menu Sound Fixes:** fixed the dark shade behind Settings showing up with latency, and made opening menu sounds recover cleanly when browser audio is briefly suspended or interrupted.
+
+#### v6.8.0
 
 - **Hide HUD Key:** a new key in **MODS ▸ HUD**, with no key set by default. In a match it hides the whole HUD at once for clips and screenshots, and pressing it again brings back exactly what you had. Your crosshair and the scope stay, and leaving the match turns it off.
 - **Smoother Long Matches:** with a long Match History, Better HUD no longer saves the whole history every 15 seconds while you aim. It saves when the mouse is free (a death, the pause menu, the end of the match) or when you leave, so nothing is lost.
