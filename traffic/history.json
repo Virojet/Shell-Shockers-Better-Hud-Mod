@@ -235,20 +235,24 @@
     "2026-11-26": {
       "count": 47,
       "uniques": 24
+    },
+    "2026-11-27": {
+      "count": 72,
+      "uniques": 31
     }
   },
   "popular_paths": [
     {
-      "count": 61,
+      "count": 67,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod",
       "title": "Overview",
-      "uniques": 43
+      "uniques": 46
     },
     {
-      "count": 5,
+      "count": 7,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/README.md",
       "title": "/blob/main/README.md",
-      "uniques": 3
+      "uniques": 4
     },
     {
       "count": 4,
@@ -263,21 +267,9 @@
       "uniques": 1
     },
     {
-      "count": 3,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
-      "title": "/commit/be3b00dfb26eb5a4a2a5c8c281a5e9f3cafdcf70",
-      "uniques": 2
-    },
-    {
       "count": 2,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/.github/scripts/traffic.py",
       "title": "/blob/main/.github/scripts/traffic.py",
-      "uniques": 1
-    },
-    {
-      "count": 2,
-      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
-      "title": "/commit/2eae41f2125e76825193e6bcac1f3b7cdb18f250",
       "uniques": 1
     },
     {
@@ -294,26 +286,38 @@
     },
     {
       "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blame/main/README.md",
+      "title": "/blame/main/README.md",
+      "uniques": 1
+    },
+    {
+      "count": 1,
       "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/blob/main/Shell-Shockers-Better-Hud.user.js",
       "title": "/blob/main/Shell-Shockers-Better-Hud.user.js",
+      "uniques": 1
+    },
+    {
+      "count": 1,
+      "path": "/Virojet/Shell-Shockers-Better-Hud-Mod/branches",
+      "title": "/branches",
       "uniques": 1
     }
   ],
   "referrers": [
     {
-      "count": 11,
+      "count": 14,
       "referrer": "Google",
-      "uniques": 9
+      "uniques": 12
+    },
+    {
+      "count": 8,
+      "referrer": "shellshock.io",
+      "uniques": 4
     },
     {
       "count": 6,
       "referrer": "github.com",
       "uniques": 5
-    },
-    {
-      "count": 6,
-      "referrer": "shellshock.io",
-      "uniques": 3
     },
     {
       "count": 2,
@@ -328,12 +332,12 @@
   ],
   "totals": {
     "clones": {
-      "count": 1314,
-      "uniques": 677
+      "count": 1386,
+      "uniques": 708
     },
     "views": {
-      "count": 488,
-      "uniques": 279
+      "count": 503,
+      "uniques": 286
     }
   },
   "views": {
@@ -572,6 +576,10 @@
     "2026-11-26": {
       "count": 4,
       "uniques": 3
+    },
+    "2026-11-27": {
+      "count": 15,
+      "uniques": 7
     }
   }
 }
